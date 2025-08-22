@@ -10,6 +10,7 @@ The system lets a user **log in**, **upload a resume**, then an **LLM generates 
 
 ## 📂 Repository Structure
 
+
 .
 ├── job-recommendation-framework/ # Framework: AI & LangChain
 │ ├── framework/
@@ -24,13 +25,12 @@ The system lets a user **log in**, **upload a resume**, then an **LLM generates 
 │ ├── core/ # Resume parsing, scoring, jobs logic
 │ ├── web/ # FastAPI/Flask APIs (/api/v1/resumesystem/*)
 │ ├── frontend/ # React-based UI (login, Q&A, jobs)
-│ ├── integrators/ # LinkedIn scraper/API adapter
+│ ├── integrators/ # LinkedIn scraper / API adapter
 │ ├── data/ # DB migrations, seeds
 │ ├── configs/ # Configs & env files
 │ └── README.md
 │
-└── README.md # (this file)
-
+└── README.md # Root project overview (this file)
 
 
 
@@ -38,7 +38,6 @@ The system lets a user **log in**, **upload a resume**, then an **LLM generates 
 
 ## 🧭 High-Level Flow
 
-```mermaid
 flowchart TD
   subgraph FE["Frontend (React)"]
     FE1["Login"]
@@ -90,6 +89,8 @@ flowchart TD
   C6 -->|Fetch jobs| S1
   C6 -. rerank .-> F4
   C6 --> FE6
+
+<img width="3840" height="2656" alt="image" src="https://github.com/user-attachments/assets/d3c373ec-e120-40d3-9fb5-0204b513d93e" />
 
 
 🔌 Module Responsibilities

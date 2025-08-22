@@ -1,5 +1,5 @@
 from core.service.UserService import UserService
-from core.models.User import User
+from core.entity.UserEntity import User
 from typing import List, Optional
 
 # Implementation of UserService

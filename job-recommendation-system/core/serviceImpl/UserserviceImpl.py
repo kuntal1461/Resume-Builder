@@ -2,6 +2,7 @@ from core.service.UserService import UserService
 from core.models.User import User
 from typing import List, Optional
 
+# Implementation of UserService
 class UserServiceImpl(UserService):
     def __init__(self):
         self.users = []  # In-memory storage for users (replace with database in production)
@@ -44,3 +45,5 @@ class UserServiceImpl(UserService):
             if user.email == email:
                 return user
         return None
+    
+

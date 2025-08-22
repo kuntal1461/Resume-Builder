@@ -44,6 +44,3 @@ class UserServiceImpl(UserService):
             if user.email == email:
                 return user
         return None
-    
-
-    

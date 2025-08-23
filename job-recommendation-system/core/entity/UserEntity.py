@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
@@ -5,6 +6,7 @@ from datetime import datetime
 # This is like @Entity . It creates a base class for ORM models.
 Base = declarative_base()
 
+@dataclass
 class UserEntity(Base): 
     __tablename__ = "users"  # Table name in DB
 

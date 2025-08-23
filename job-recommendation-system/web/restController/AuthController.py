@@ -1,19 +1,31 @@
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
-from core.service. import UserServiceImpl
-from core.repository.UserRepository import UserRepository
+
+from core.service.UserService import UserService
+from core.serviceImpl import UserServiceImpl
+from core.repository import UserRepository
 from core.exceptions.auth import UserNotFoundError, InvalidCredentialsError
-from database import get_db   # <-- your DB session dependency
+from core.requestVO.AuthEmailLoginRequestVO import AuthEmailLoginRequestVO
+from core.requestVO import AuthPhoneLoginRequestVO
+from database import get_db
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-@router.post("/login")
-def login(email: str, password: str, db: Session = Depends(get_db)):
-    service = UserServiceImpl(UserRepository(db))
+class EmailLoginBody(BaseModel):
+    email: EmailStr
+    password: str
+
+def get_user_service(db: Session = Depends(get_db)) -> UserService:
+    return UserServiceImpl(UserRepository(db))
+
+@router.post("/login/email")
+def login_email(body: EmailLoginBody, service: UserService = Depends(get_user_service)):
     try:
-        user = service.authenticate_user_email(email, password)
-        return {"message": "Login successful", "userId": user.id, "email": user.email}
+        req = AuthEmailLoginRequestVO(email=body.email, password=body.password)
+        resp = service.authenticate_user_email(req)
+        return resp.__dict__
     except UserNotFoundError:
-        raise HTTPException(status_code=404, detail="Email not registered")
+        raise HTTPException(404, "Email not registered")
     except InvalidCredentialsError:
-        raise HTTPException(status_code=401, detail="Invalid email or password")
+        raise HTTPException(401, "Invalid email or password")

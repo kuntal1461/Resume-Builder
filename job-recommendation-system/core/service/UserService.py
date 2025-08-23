@@ -1,5 +1,6 @@
+from typing import Protocol
+from core.requestVO import AuthEmailLoginRequestVO
+from core.responseVO import AuthEmailLoginResponseVO
 
-
-class UserService:
-    def authenticate_user_email(self, email: str, password: str) -> Optional[UserEntity]:
-        raise NotImplementedError
+def authenticate_user_email(self, req: AuthEmailLoginRequestVO) -> AuthEmailLoginResponseVO:
+        ...

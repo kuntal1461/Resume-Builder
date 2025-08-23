@@ -27,8 +27,9 @@ class UserEntity(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    phone_number = Column(String, nullable=True)
+    phone_number = Column(String,unique=True, nullable=True)
     is_active = Column(Boolean, default=True)
     signInBy = Column(String, nullable=True)
 
+    
     

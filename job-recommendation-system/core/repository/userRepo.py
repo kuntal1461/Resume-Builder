@@ -15,6 +15,9 @@ class UserRepository:
     def get_user(self, user_id: int) -> UserEntity:
         return self.db_session.query(UserEntity).filter(UserEntity.id == user_id).first()
 
+    def get_user_by_email(self, email: str) -> UserEntity:
+        return self.db_session.query(UserEntity).filter(UserEntity.email == email).first()
+
     def update_user(self, user: UserEntity):
         self.db_session.merge(user)
         self.db_session.commit()

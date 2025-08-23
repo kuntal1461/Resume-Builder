@@ -2,10 +2,10 @@ from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 
-# This is like @Entity in Java. It creates a base class for ORM models.
+# This is like @Entity . It creates a base class for ORM models.
 Base = declarative_base()
 
-class UserEntity(Base):
+class UserEntity(Base): 
     __tablename__ = "users"  # Table name in DB
 
     # Primary Key with auto increment (same as @Id + @GeneratedValue in JPA)
@@ -27,7 +27,6 @@ class UserEntity(Base):
 
     phone_number = Column(String, nullable=True)
     is_active = Column(Boolean, default=True)
-    resume_path = Column(String, nullable=True)
+    signInBy = Column(String, nullable=True)
 
-    def full_name(self):
-        return f"{self.first_name} {self.last_name}"
+    

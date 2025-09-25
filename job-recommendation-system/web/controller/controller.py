@@ -1,0 +1,1 @@
+// This is a simple controller file to set up the project. If the setup is done, you can delete this file.

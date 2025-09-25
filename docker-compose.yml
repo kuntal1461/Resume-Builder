@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    image: resume-system-api:latest
+    env_file: .env
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./job-recommendation-system/web:/app:rw,cached
+
+  mysql:
+    image: mysql:8.0
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DB:-resumes}
+      MYSQL_USER: ${MYSQL_USER:-resume_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-resume_pass}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysqldata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  mysqldata:

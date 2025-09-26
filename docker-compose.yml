@@ -5,26 +5,32 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.api
-    image: resume-system-api:latest
+    image: job-rec-api:latest
     env_file: .env
     depends_on:
       mysql:
         condition: service_healthy
+      db_migrator:
+        condition: service_completed_successfully
     ports:
       - "8000:8000"
     volumes:
       - ./job-recommendation-system/web:/app:rw,cached
+    user: "1000:1000"  # non-root runtime
 
   mysql:
     image: mysql:8.0
-    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    command:
+      - "--character-set-server=utf8"
+      - "--collation-server=utf8_general_ci"
+      - "--local-infile=0"
+      - "--secure-file-priv=/var/lib/mysql-files"
+      - "--sql_mode=STRICT_ALL_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
     environment:
       MYSQL_DATABASE: ${MYSQL_DB:-resumes}
       MYSQL_USER: ${MYSQL_USER:-resume_user}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-resume_pass}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
-    ports:
-      - "3306:3306"
     volumes:
       - mysqldata:/var/lib/mysql
     healthcheck:
@@ -32,6 +38,23 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+
+  db_migrator:
+    image: mysql:8.0
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_USER: root
+      MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+      MYSQL_DB: ${MYSQL_DB:-resumes}
+    volumes:
+      - ./docker/db-seed.sh:/seed/db-seed.sh:ro
+      - ./job-recommendation-system/data/sql:/seed/sql:ro
+    entrypoint: ["/bin/bash", "/seed/db-seed.sh"]
+    restart: "no"
 
 volumes:
   mysqldata:

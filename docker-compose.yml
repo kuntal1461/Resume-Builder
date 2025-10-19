@@ -17,6 +17,22 @@ services:
     volumes:
       - ./job-recommendation-system/web:/app:rw,cached
     user: "1000:1000"  # non-root runtime
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    image: job-rec-frontend:latest
+    environment:
+      NODE_ENV: development
+      NEXT_TELEMETRY_DISABLED: "1"
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./job-recommendation-system/front-end:/app:rw,cached
+      - frontend_node_modules:/app/node_modules
+    working_dir: /app
+    restart: unless-stopped
 
   mysql:
     image: mysql:8.0
@@ -58,3 +74,4 @@ services:
 
 volumes:
   mysqldata:
+  frontend_node_modules:

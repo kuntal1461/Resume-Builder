@@ -1,147 +1,258 @@
-# Job Recommendation System
+# Job Recommendation System 🚀
 
-An AI-driven platform that ingests resumes, runs a conversational Q&A round, scores candidates, and recommends jobs using LangChain-powered ranking.
+An **AI-driven job recommendation platform**.  
+Users **log in**, **upload a resume**, and an **LLM generates 7–8 tailored questions**. Resume data + answers are scored:
 
-## Highlights
-- Guided onboarding: resume upload, 7–8 generated questions, instant scoring feedback.
-- Hybrid scoring: 60% resume quality + 40% Q&A answers; prompts retries when the score falls below 60.
-- Job sourcing: integrates with LinkedIn (or other providers) and reranks suggestions via LangChain.
-- Modular architecture: FastAPI backend, Next.js frontend, reusable AI framework package.
+- **Score < 60** → show popup warning, user may retry.  
+- **Score ≥ 60** → system fetches jobs (e.g., from LinkedIn) and recommends them via **LangChain reranking**.
 
-## Architecture Snapshot
-- **Frontend (Next.js)** – authentication, resume upload, Q&A experience, job explorer.
-- **API (FastAPI)** – authentication, resume parsing, scoring orchestration, job endpoints.
-- **Core services** – parsing fallbacks, business entities, scoring and recommendation pipelines.
-- **Framework package** – LLM wrappers for extraction, question generation, scoring, reranking.
-- **Job source adapters** – LinkedIn scraper/integrations with compliance safeguards.
+---
 
-`final_score = 0.6 * resume_score + 0.4 * qa_score`  
-Scores below 60 trigger a retry prompt; higher scores unlock curated job recommendations.
+## ⚡ Quick Start in 1 Minute (with Docker)
 
-![System overview](https://github.com/user-attachments/assets/d3c373ec-e120-40d3-9fb5-0204b513d93e)
-
-## Tech Stack
-| Layer | Technologies |
-|-------|--------------|
-| Backend | Python 3.9+, FastAPI, SQLAlchemy, Uvicorn |
-| Frontend | Next.js, React, Tailwind CSS |
-| AI | LangChain, LLM providers (OpenAI, etc.) |
-| Data | MySQL/PostgreSQL, FAISS or PGVector, Redis |
-| Tooling | Docker, Make, GitHub Actions |
-
-## Getting Started
-
-### 1. Run with Docker (recommended)
 ```bash
 git clone https://github.com/your-org/job-recommendation-system.git
 cd job-recommendation-system
-cp .env.example .env    # update credentials
-docker compose up -d --build
+cp .env.example .env   # edit values
+docker compose up -d   # build & start
 ```
 
-Access points once the stack is up:
-- API health: http://localhost:8000/health
-- Frontend: http://localhost:3000
-- MySQL: localhost:3306 (credentials from `.env`)
+**Access Points:**
+- 🌐 **API** → http://localhost:8000/health
+- 🗄️ **Database** → auto-created (schema + seed from data/sql/)
 
-Useful lifecycle commands:
-```bash
-docker compose logs -f        # tail all services
-docker compose up db_migrator # run migrations
-docker compose down -v        # stop and reset volumes
-```
+---
 
-### 2. Local development (no Docker)
+## 📂 Repository Structure
 
-Backend:
-```bash
-cd job-recommendation-system
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r web/requirements.txt
-export DATABASE_URL="mysql+pymysql://user:pass@localhost:3306/resumes?charset=utf8mb4"
-uvicorn web.main:app --reload
-```
-
-Frontend:
-```bash
-cd job-recommendation-system/front-end
-npm install
-echo "NEXT_PUBLIC_API_BASE_URL=http://localhost:8000" > .env.local
-npm run dev
-```
-
-Ensure MySQL 8.x (or compatible) is running and seeded with the SQL files under `job-recommendation-system/data/sql/`.
-
-## Repository Layout
 ```
 .
-├── docker/                       # Dockerfiles and entrypoints
+├── job-recommendation-framework/      # Framework: AI & LangChain
+│   └── framework/
+│
+├── job-recommendation-system/         # Main system
+│   ├── core/                          # business logic & entities
+│   ├── web/                           # FastAPI API layer
+│   ├── frontend/                      # React/NxT.js UI
+│   └── data/sql/                      # DB migrations & seeds
+│       ├── Major_01/
+│       │   ├── Major1_DDL.sql
+│       │   └── Major1_DML.sql
+│       └── Major_02/
+│           ├── Major2_DDL.sql
+│           └── Major2_DML.sql
+│
+├── docker/                            # Docker configs
+│   ├── Dockerfile.api
+│   ├── entrypoint.api.sh
+│   └── db-seed.sh
+│
 ├── docker-compose.yml
-├── job-recommendation-framework/ # Reusable LangChain helpers
-├── job-recommendation-system/
-│   ├── core/                     # Business logic & domain entities
-│   ├── data/sql/                 # Schema + seed SQL
-│   ├── frontend/                 # Next.js app
-│   └── web/                      # FastAPI application
-├── Makefile
+├── .env.example
+├── .dockerignore
+├── Makefile                           # dev shortcuts
 └── README.md
 ```
 
-## Development Workflow
-- `make up` / `make down` – start or stop the Docker stack.
-- `make logs` – follow container logs.
-- `make mysql` – open a MySQL shell with project credentials.
-- Backend quality checks: `python -m compileall core web`.
-- Frontend quality checks: `npm run lint && npm run build` from `job-recommendation-system/front-end`.
-- Insert a demo user for testing:
-  ```bash
-  docker compose exec mysql sh -lc '
-    mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" -e "
-      INSERT INTO $MYSQL_DB.users (username,email,password_hash,first_name,last_name,is_active,signInBy)
-      VALUES (\"demo\",\"demo@example.com\",\"hash\",\"Demo\",\"User\",1,\"email\");
-    "'
-  ```
+---
 
-## API Surface (selected)
-| Method | Endpoint | Purpose |
-|--------|----------|---------|
-| POST | `/auth/register` | Create a new user |
-| POST | `/auth/login/email` | Authenticate via email/password |
-| POST | `/resume` | Upload and parse a resume |
-| GET | `/qa/start` | Begin the interview round (7–8 questions) |
-| POST | `/qa/answer` | Submit an answer, receive incremental score |
-| GET | `/score` | Retrieve the final blended score |
-| GET | `/jobs/recommend` | Fetch personalized job listings |
+## 🧭 High-Level Flow
 
-Explore interactive docs at http://localhost:8000/docs.
+**Frontend (React/NxT.js)** → login, resume upload, Q&A, jobs view  
+**API (FastAPI)** → /resume, /qa/*, /score, /jobs/recommend  
+**Core** → parsing, scoring, job recommendation  
+**Framework** → LangChain parsing assist, QGen, scoring, reranking  
+**Job Source** → LinkedIn scraper / adapter  
 
-## Deployment Notes
-- Use `.env.production` (or secrets manager) to supply production credentials.
-- Containerized deployments are available via Docker Compose, ECS/EKS, Cloud Run, Azure Container Instances, or Heroku.
-- Protect secrets, keep MySQL closed to the public internet, and store password hashes only.
+**Final Score = 0.6 × ResumeScore + 0.4 × QAScore**  
+- **< 60** → retry  
+- **≥ 60** → job recommendations  
 
-## Monitoring & Troubleshooting
-- Health checks:
-  ```bash
-  curl http://localhost:8000/health
-  docker compose exec mysql mysqladmin ping
-  docker compose ps
-  ```
-- Common fixes:
-  - Port conflicts → adjust exposed ports in `docker-compose.yml`.
-  - Database issues → `make reset && make up` to recreate volumes.
-  - Repeat build failures → `docker compose build --no-cache`.
+<img width="3840" height="2656" alt="image" src="https://github.com/user-attachments/assets/d3c373ec-e120-40d3-9fb5-0204b513d93e" />
 
-## Support & License
-- Issues: https://github.com/your-org/job-recommendation-system/issues
-- Docs placeholder: https://github.com/your-org/job-recommendation-system/docs
-- Email: support@your-org.com
-- License: MIT (see `LICENSE`).
+---
 
-## Contributing
-We welcome pull requests and ideas! Review the guidelines in `CONTRIBUTING.md` before opening an issue or PR.
+## 🔌 Module Responsibilities
+
+### 🧠 **job-recommendation-framework**
+- LLM-based resume parsing, question generation, answer scoring, job reranking.
+- Independent package — plug & play with system.
+
+### ⚙️ **job-recommendation-system**
+- Core resume parser (non-LLM fallback).
+- Scoring logic (resume + answers).
+- Job fetching (LinkedIn scraper/integrator).
+- API layer (/api/v1/resumesystem/*).
+- React frontend (Login, Resume upload, Q&A, Jobs view).
+
+---
+
+## ⚙️ Tech Stack
+
+**Backend:** Python 3.9.6, FastAPI (or Flask)  
+**Frontend:** Nxt.Js + Tailwind  
+**AI:** LangChain + LLMs  
+**DBs:** PostgreSQL/MySQL, FAISS/PGVector, Redis/Elastic  
+**Scraping:** LinkedIn (with compliance checks)  
+**Infra:** Docker optional, .env configs for secrets  
+
+---
+
+## 🧪 Scoring Logic
+
+**Final Score = 0.6 × Resume Score + 0.4 × Q&A Score**
+
+**Threshold:**
+- **< 60** → popup: "Your score is below 60"
+- **≥ 60** → LinkedIn scraping + job recommendations
+
+---
+
+## 🧵 Sequence Diagram (Q&A Round)
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant FE as Frontend
+  participant API as Web API
+  participant CORE as Core
+  participant FW as Framework
+  participant DB as DB
+
+  FE->>API: POST /resume (file)
+  API->>CORE: parse_and_normalize(uri)
+  CORE->>FW: LLM.extract_entities(text)
+  FW-->>CORE: entities
+  CORE->>DB: save profile
+  API-->>FE: profileId
+
+  FE->>API: GET /qa/start
+  API->>CORE: generate_questions(profile)
+  CORE->>FW: LLM.qgen(profile)
+  FW-->>CORE: 7-8 questions
+  CORE-->>API: questions
+  API-->>FE: show questions
+
+  loop For each answer
+    FE->>API: POST /qa/answer
+    API->>CORE: score_answer
+    CORE->>FW: LLM.score(q,a,profile)
+    FW-->>CORE: score
+    CORE->>DB: save partial score
+  end
+
+  FE->>API: GET /score
+  API->>CORE: compute_score
+  CORE-->>API: score
+  API-->>FE: final score + decision
+```
+
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+
+### Development Guidelines
+
+1. **Fork the repository**
+2. **Create a feature branch**
+3. **Follow coding standards**
+4. **Write tests for new features**
+5. **Submit pull request**
+
+### Code Style
+
+- **Python**: PEP 8 compliance
+- **JavaScript**: ESLint with standard config
+- **SQL**: Proper indexing and constraints
+- **Docker**: Multi-stage builds for optimization
+
+---
+
+## 📊 Monitoring & Logging
+
+### Health Checks
+
+```bash
+# API health
+curl http://localhost:8000/health
+
+# Database health
+docker compose exec mysql mysqladmin ping
+
+# Service status
+docker compose ps
+```
+
+### Log Management
+
+```bash
+# View all logs
+docker compose logs -f
+
+# Service-specific logs
+docker compose logs -f api
+docker compose logs -f mysql
+
+# Log levels (set in .env)
+LOG_LEVEL=INFO  # DEBUG, INFO, WARNING, ERROR
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Port conflicts:**
+```bash
+# Check port usage
+netstat -tulpn | grep :8000
+
+# Change ports in docker-compose.yml
+```
+
+**Database connection issues:**
+```bash
+# Check MySQL status
+docker compose ps mysql
+
+# Reset database
+make reset
+make up
+```
+
+**Build failures:**
+```bash
+# Clean build
+docker compose build --no-cache
+
+# Check Docker daemon
+docker info
+```
+
+---
+
+## 📞 Support
+
+- **GitHub Issues**: [Report bugs](https://github.com/your-org/job-recommendation-system/issues)
+- **Documentation**: [Full docs](https://github.com/your-org/job-recommendation-system/docs)
+- **Email**: support@your-org.com
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
 
 <div align="center">
-Happy job hunting! 🎯  
+
+**Happy job hunting!** 🎯
+
 [⭐ Star us on GitHub](https://github.com/your-org/job-recommendation-system)
+
 </div>

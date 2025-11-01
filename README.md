@@ -29,7 +29,8 @@ docker compose up -d   # build & start
 1. `cd job-recommendation-system`
 2. (Optional) create a virtualenv: `python3 -m venv .venv && source .venv/bin/activate`
 3. Install dependencies: `pip install -r web/requirements.txt`
-4. Override the database if needed: `export DATABASE_URL="sqlite:///./app.db"` (defaults to this value)
+4. Ensure MySQL is available and export the DSN (example below matches docker-compose):
+   `export DATABASE_URL="mysql+pymysql://resume_user:resume_pass@localhost:3306/resumes?charset=utf8mb4"`
 5. Run the API: `uvicorn web.main:app --reload`
 
 Auth endpoints now available:
@@ -43,6 +44,14 @@ Auth endpoints now available:
 4. Start the dev server: `npm run dev`
 
 Login and signup flows talk to the FastAPI backend. Successful registration shows a message and flips back to the login tab; successful logins return the authenticated user metadata for downstream pages to consume.
+
+If you run via Docker Compose, the API container already points `DATABASE_URL` at the bundled MySQL service (`mysql` hostname). For local bare-metal runs, replace `localhost` in the example above with your MySQL host/port credentials.
+
+### Full Stack with Docker
+1. From repo root, bootstrap the stack: `docker compose up --build`
+2. API health check: `curl http://localhost:8000/health`
+3. Frontend dev server: http://localhost:3000
+4. Stop the stack: `docker compose down`
 
 ---
 

@@ -1,0 +1,25 @@
+# macOS cruft
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Virtual environments
+venv/
+.venv/
+env/
+env.bak/
+
+# Node / frontend
+node_modules/
+.next/
+*.log
+
+# IDE files
+.vscode/
+.idea/

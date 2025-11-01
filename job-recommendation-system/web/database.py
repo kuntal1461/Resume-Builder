@@ -8,15 +8,25 @@ from sqlalchemy.orm import sessionmaker
 from core.baseEntity.baseEntity import Base
 import core.entity.UserEntity  # noqa: F401  # ensure models are registered
 
-DEFAULT_SQLITE_URL = "sqlite:///./app.db"
 
-DATABASE_URL = os.getenv("DATABASE_URL", DEFAULT_SQLITE_URL)
+DEFAULT_MYSQL_URL = (
+    "mysql+pymysql://resume_user:resume_pass@mysql:3306/resumes?charset=utf8mb4"
+)
 
-engine_kwargs = {"future": True, "echo": False}
+DATABASE_URL = os.getenv("DATABASE_URL", DEFAULT_MYSQL_URL)
+
 if DATABASE_URL.startswith("sqlite"):
-    engine_kwargs["connect_args"] = {"check_same_thread": False}
+    raise RuntimeError(
+        "SQLite connections are disabled for this project. "
+        "Set DATABASE_URL to a MySQL connection string."
+    )
 
-engine = create_engine(DATABASE_URL, **engine_kwargs)
+engine = create_engine(
+    DATABASE_URL,
+    pool_pre_ping=True,
+    pool_recycle=3600,
+    future=True,
+)
 
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
 

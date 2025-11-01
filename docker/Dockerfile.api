@@ -5,10 +5,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends tini && rm -rf 
 RUN useradd -m appuser
 
 WORKDIR /app
-COPY job-recommendation-system/web/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY job-recommendation-system/web/requirements.txt ./web/requirements.txt
+RUN pip install --no-cache-dir -r web/requirements.txt
 
-COPY job-recommendation-system/web/ /app/
+COPY job-recommendation-system/ /app/
 COPY docker/entrypoint.api.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 

@@ -15,7 +15,8 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./job-recommendation-system/web:/app:rw,cached
+      - ./job-recommendation-system:/app:rw,cached
+    working_dir: /app
     user: "1000:1000"  # non-root runtime
   frontend:
     build:

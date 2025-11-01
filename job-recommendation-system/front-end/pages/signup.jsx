@@ -3,6 +3,52 @@ import { useState } from 'react';
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8000';
 
+const normalizeDetail = (detail, fallback) => {
+  if (!detail) {
+    return fallback;
+  }
+
+  if (typeof detail === 'string') {
+    return detail;
+  }
+
+  if (Array.isArray(detail)) {
+    const first = detail[0];
+    if (first && typeof first === 'object') {
+      if (first.msg) {
+        return first.msg;
+      }
+      if (first.message) {
+        return first.message;
+      }
+    }
+    return detail.join(', ');
+  }
+
+  if (typeof detail === 'object') {
+    if (detail.message) {
+      return detail.message;
+    }
+    return JSON.stringify(detail);
+  }
+
+  return fallback;
+};
+
+const mapNetworkError = (error, fallback) => {
+  if (error?.name === 'TypeError') {
+    const message = String(error.message || '').toLowerCase();
+    if (
+      message.includes('failed to fetch') ||
+      message.includes('load failed') ||
+      message.includes('network request failed')
+    ) {
+      return `Cannot reach API at ${API_BASE}. Ensure the backend is running and accessible.`;
+    }
+  }
+  return error?.message || fallback;
+};
+
 export default function AuthPage() {
   const [tab, setTab] = useState('login');
   const [flash, setFlash] = useState(null);
@@ -96,12 +142,19 @@ function LoginForm({ onSuccess, onError }) {
       const payload = await response.json();
 
       if (!response.ok) {
-        throw new Error(payload.detail ?? 'Unable to log in. Please try again.');
+        const message = normalizeDetail(
+          payload.detail,
+          'Unable to log in. Please try again.'
+        );
+        throw new Error(message);
       }
 
       onSuccess?.(payload);
     } catch (error) {
-      onError?.(error.message);
+      console.error('Login failed', error);
+      onError?.(
+        mapNetworkError(error, 'Unable to log in. Please try again later.')
+      );
     } finally {
       setLoading(false);
     }
@@ -165,18 +218,24 @@ function RegisterForm({ onSuccess, onError }) {
     setLoading(true);
 
     try {
+      const requestPayload = {
+        ...form,
+        phone_number: form.phone_number.trim() === '' ? null : form.phone_number,
+      };
       const response = await fetch(`${API_BASE}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify(requestPayload),
       });
 
       const payload = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          payload.detail ?? 'Unable to create the account. Please try again.'
+        const message = normalizeDetail(
+          payload.detail,
+          'Unable to create the account. Please try again.'
         );
+        throw new Error(message);
       }
 
       onSuccess?.(payload);
@@ -189,7 +248,13 @@ function RegisterForm({ onSuccess, onError }) {
         password: '',
       });
     } catch (error) {
-      onError?.(error.message);
+      console.error('Registration failed', error);
+      onError?.(
+        mapNetworkError(
+          error,
+          'Unable to create the account. Please try again later.'
+        )
+      );
     } finally {
       setLoading(false);
     }

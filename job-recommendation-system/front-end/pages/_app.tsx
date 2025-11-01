@@ -1,3 +1,4 @@
+import '../styles/globals.css';
 import '../styles/auth.css';
 import type { AppProps } from "next/app";
 

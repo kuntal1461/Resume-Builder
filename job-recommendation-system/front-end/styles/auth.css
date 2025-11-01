@@ -87,6 +87,14 @@
   font-size: 15px;
 }
 
+.auth-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #524f68;
+  margin-bottom: 6px;
+}
+
 .auth-options-row {
   display: flex;
   justify-content: space-between;
@@ -156,6 +164,13 @@
 
 .auth-google-btn:hover {
   background: #ece6fd;
+}
+
+.auth-footer-link {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #77748f;
+  text-align: center;
 }
 
 .auth-primary-btn {

@@ -3,6 +3,7 @@
 
 # Python
 __pycache__/
+**/__pycache__/
 *.py[cod]
 *.pyo
 .mypy_cache/
@@ -17,7 +18,9 @@ env.bak/
 
 # Node / frontend
 node_modules/
+**/node_modules/
 .next/
+**/.next/
 *.log
 
 # IDE files

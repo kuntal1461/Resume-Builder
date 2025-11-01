@@ -21,6 +21,7 @@ docker compose up -d   # build & start
 - 🌐 **API** → http://localhost:8000/health
 - 🗄️ **Database** → auto-created (schema + seed from data/sql/)
 
+
 ---
 
 ## 🛠️ Local Development (Manual Setup)

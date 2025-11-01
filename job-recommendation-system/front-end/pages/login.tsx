@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useState } from 'react';
 
 const API_BASE =
@@ -173,9 +174,9 @@ export default function LoginPage() {
 
         <p className="auth-footer-link">
           Don&apos;t have an account?{' '}
-          <a href="/signup" className="auth-forgot">
+          <Link href="/signup" className="auth-forgot">
             Create one now
-          </a>
+          </Link>
         </p>
       </div>
     </div>

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { ChangeEvent, FormEvent, useState } from 'react';
 
 const API_BASE =
@@ -251,9 +252,9 @@ export default function SignupPage() {
 
         <p className="auth-footer-link">
           Already have an account?{' '}
-          <a href="/login" className="auth-forgot">
+          <Link href="/login" className="auth-forgot">
             Log in here
-          </a>
+          </Link>
         </p>
       </div>
     </div>

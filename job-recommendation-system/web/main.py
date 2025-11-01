@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .database import init_db
 from .db_ping import ping_db
-from .restController.AuthController import router as auth_router
+from .RestController.AuthController import router as auth_router
 
 app = FastAPI(title="Job Recommendation API")
 

@@ -5,8 +5,8 @@ from core.exceptions.auth import (
     UserNotFoundError,
 )
 from core.repository.userRepo import UserRepository
-from core.requestVO.AuthEmailLoginRequestVO import AuthEmailLoginRequestVO
-from core.requestVO.AuthRegisterRequestVO import AuthRegisterRequestVO
+from core.RequestVo.AuthEmailLoginRequestVO import AuthEmailLoginRequestVO
+from core.RequestVo.AuthRegisterRequestVO import AuthRegisterRequestVO
 from core.responseVO.AuthEmailLoginResponseVO import AuthEmailLoginResponseVO
 from core.responseVO.AuthRegisterResponseVO import AuthRegisterResponseVO
 from core.service.UserService import UserService

@@ -6,15 +6,15 @@ from pydantic import BaseModel, EmailStr, constr
 from sqlalchemy.orm import Session
 
 from core.service.UserService import UserService
-from core.serviceImpl.UserServiceImpl import UserServiceImpl
+from core.ServiceImpl.UserServiceImpl import UserServiceImpl
 from core.repository.userRepo import UserRepository
 from core.exceptions.auth import (
     InvalidCredentialsError,
     UserAlreadyExistsError,
     UserNotFoundError,
 )
-from core.requestVO.AuthEmailLoginRequestVO import AuthEmailLoginRequestVO
-from core.requestVO.AuthRegisterRequestVO import AuthRegisterRequestVO
+from core.RequestVo.AuthEmailLoginRequestVO import AuthEmailLoginRequestVO
+from core.RequestVo.AuthRegisterRequestVO import AuthRegisterRequestVO
 from ..database import get_db
 
 router = APIRouter(prefix="/auth", tags=["auth"])

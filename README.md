@@ -23,6 +23,29 @@ docker compose up -d   # build & start
 
 ---
 
+## 🛠️ Local Development (Manual Setup)
+
+### Backend (FastAPI)
+1. `cd job-recommendation-system`
+2. (Optional) create a virtualenv: `python3 -m venv .venv && source .venv/bin/activate`
+3. Install dependencies: `pip install -r web/requirements.txt`
+4. Override the database if needed: `export DATABASE_URL="sqlite:///./app.db"` (defaults to this value)
+5. Run the API: `uvicorn web.main:app --reload`
+
+Auth endpoints now available:
+- `POST /auth/register` — create a user (username, first_name, last_name, email, password, phone optional)
+- `POST /auth/login/email` — authenticate with email + password
+
+### Frontend (Next.js)
+1. `cd job-recommendation-system/front-end`
+2. Install dependencies: `npm install`
+3. (Optional) create `.env.local` with `NEXT_PUBLIC_API_BASE_URL=http://localhost:8000`
+4. Start the dev server: `npm run dev`
+
+Login and signup flows talk to the FastAPI backend. Successful registration shows a message and flips back to the login tab; successful logins return the authenticated user metadata for downstream pages to consume.
+
+---
+
 ## 📂 Repository Structure
 
 ```

@@ -1,0 +1,8 @@
+# Update these entries with the GitHub usernames or teams who must review changes.
+# See https://docs.github.com/articles/about-code-owners/ for syntax details.
+
+* @kuntal1461
+
+# Example granular ownership (uncomment and adjust as needed)
+# job-recommendation-system/web/ @backend-team
+# job-recommendation-system/front-end/ @frontend-team

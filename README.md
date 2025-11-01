@@ -443,6 +443,23 @@ We welcome contributions! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for 
 4. **Write tests for new features**
 5. **Submit pull request**
 
+### Code Quality Checks
+
+- Backend: `cd job-recommendation-system && python -m compileall core web`
+- Frontend: `cd job-recommendation-system/front-end && npm run lint && npm run build`
+- Run these locally before opening a PR to catch regressions early.
+
+### Commit Sign-off
+
+- Every commit must include a `Signed-off-by: Name <email>` trailer. Create it automatically with `git commit -s`.
+- The CI workflow (`CI`) validates that each commit touching the branch is signed off; unsigned commits will fail the pipeline.
+
+### Continuous Integration
+
+GitHub Actions (`.github/workflows/ci.yml`) runs on every push and pull request to `main`. It installs backend dependencies and compiles the FastAPI services, then lints and builds the Next.js frontend to ensure both stacks remain healthy.
+
+> Tip: Protect the `main` branch (Settings → Branches) by requiring pull requests, at least one approval, and the `CI` workflow to pass before merge. Combine that with the CODEOWNERS file to ensure the right reviewers are requested automatically.
+
 ### Code Style
 
 - **Python**: PEP 8 compliance

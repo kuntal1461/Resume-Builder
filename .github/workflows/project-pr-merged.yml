@@ -1,0 +1,36 @@
+name: Project Sync - PR Merged
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  move-to-done:
+    name: Move PR to Done when merged
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    permissions:
+      pull-requests: read
+      issues: write
+      projects: write
+    steps:
+      - name: Move PR to Done in Resume-Builder-Roadmap
+        uses: peter-evans/create-or-update-project-card@v4
+        with:
+          project-name: Resume-Builder-Roadmap
+          column-name: Done
+          issue-number: ${{ github.event.pull_request.number }}
+
+      - name: Remove Code Review label (cleanup)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = context.payload.pull_request.number;
+            try {
+              await github.rest.issues.removeLabel({ owner, repo, issue_number, name: 'Code Review' });
+            } catch (e) {
+              // ignore if label doesn't exist
+            }
+

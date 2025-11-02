@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       issues: write
+      projects: write
     steps:
       - name: Ensure label exists and apply to issue
         uses: actions/github-script@v7
@@ -41,3 +42,9 @@ jobs:
             await ensureLabel(labelName);
             await github.rest.issues.addLabels({ owner, repo, issue_number, labels: [labelName] });
 
+      - name: Add issue to Resume-Builder-Roadmap project (Todo)
+        uses: peter-evans/create-or-update-project-card@v4
+        with:
+          project-name: Resume-Builder-Roadmap
+          column-name: Todo
+          issue-number: ${{ github.event.issue.number }}

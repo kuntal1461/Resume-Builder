@@ -1,0 +1,21 @@
+name: Project Sync - PR Opened
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  add-pr-to-project:
+    name: Add PR to project (Todo)
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+      projects: write
+    steps:
+      - name: Move PR to Todo in Resume-Builder-Roadmap
+        uses: peter-evans/create-or-update-project-card@v4
+        with:
+          project-name: Resume-Builder-Roadmap
+          column-name: Todo
+          issue-number: ${{ github.event.pull_request.number }}
+

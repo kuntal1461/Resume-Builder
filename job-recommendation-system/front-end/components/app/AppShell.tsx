@@ -106,7 +106,7 @@ export default function AppShell({
                       isRouteActive(item.href) || itemHasActiveChild(item) ? styles.menuLinkActive : ''
                     }`}
                     aria-haspopup={hasSubmenu ? 'true' : undefined}
-                    aria-expanded={hasSubmenu ? String(isExpanded) : undefined}
+                    aria-expanded={hasSubmenu ? isExpanded : undefined}
                     onFocus={() => (hasSubmenu ? setActiveMenu(item.label) : undefined)}
                   >
                     {item.icon ? <span className={styles.menuIcon}>{item.icon}</span> : null}

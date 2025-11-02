@@ -45,6 +45,8 @@ jobs:
       - name: Add issue to Resume-Builder-Roadmap project (Todo)
         uses: peter-evans/create-or-update-project-card@v4
         with:
+          token: ${{ secrets.PROJECT_PAT }}
+          project-owner: kuntal1461
           project-title: Resume-Builder-Roadmap
           column-name: Todo
           issue-number: ${{ github.event.issue.number }}

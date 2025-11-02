@@ -204,6 +204,8 @@ jobs:
       - name: Move PR to Code Review in Resume-Builder-Roadmap
         uses: peter-evans/create-or-update-project-card@v4
         with:
-          project-name: Resume-Builder-Roadmap
+          token: ${{ secrets.PROJECT_PAT }}
+          project-owner: kuntal1461
+          project-title: Resume-Builder-Roadmap
           column-name: Code Review
           issue-number: ${{ github.event.pull_request.number }}

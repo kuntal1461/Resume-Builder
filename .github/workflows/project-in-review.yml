@@ -13,10 +13,147 @@ jobs:
       repository-projects: write
     steps:
       - name: Move PR to In Review in Resume-Builder-Roadmap
-        uses: peter-evans/create-or-update-project-card@v4
+        uses: actions/github-script@v7
         with:
-          token: ${{ secrets.PROJECT_PAT }}
-          project-owner: kuntal1461
-          project-title: Resume-Builder-Roadmap
-          column-name: In Review
-          issue-number: ${{ github.event.pull_request.number }}
+          github-token: ${{ secrets.PROJECT_PAT }}
+          script: |
+            const owner = 'kuntal1461';
+            const projectTitle = 'Resume-Builder-Roadmap';
+            const statusName = 'In Review';
+            const contentId = context.payload.pull_request.node_id;
+
+            async function fetchProject(login, title) {
+              const data = await github.graphql(
+                `query($login: String!, $title: String!) {
+                  user(login: $login) {
+                    projectV2s(first: 20, query: $title) {
+                      nodes {
+                        id
+                        title
+                        fields(first: 50) {
+                          nodes {
+                            ... on ProjectV2SingleSelectField {
+                              id
+                              name
+                              options {
+                                id
+                                name
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }`,
+                { login, title }
+              );
+
+              const projects = data?.user?.projectV2s?.nodes || [];
+              return projects.find((project) => project.title === title);
+            }
+
+            async function findItemId(projectId, contentNodeId) {
+              let cursor = null;
+              while (true) {
+                const data = await github.graphql(
+                  `query($projectId: ID!, $after: String) {
+                    node(id: $projectId) {
+                      ... on ProjectV2 {
+                        items(first: 100, after: $after) {
+                          nodes {
+                            id
+                            content {
+                              ... on Issue { id }
+                              ... on PullRequest { id }
+                            }
+                          }
+                          pageInfo {
+                            hasNextPage
+                            endCursor
+                          }
+                        }
+                      }
+                    }
+                  }`,
+                  { projectId, after: cursor }
+                );
+
+                const items = data?.node?.items?.nodes || [];
+                const match = items.find((node) => node.content?.id === contentNodeId);
+                if (match) {
+                  return match.id;
+                }
+
+                const pageInfo = data?.node?.items?.pageInfo;
+                if (!pageInfo?.hasNextPage) {
+                  return null;
+                }
+                cursor = pageInfo.endCursor;
+              }
+            }
+
+            async function ensureItem(projectId, contentNodeId) {
+              try {
+                const addResp = await github.graphql(
+                  `mutation($projectId: ID!, $contentId: ID!) {
+                    addProjectV2ItemById(input: { projectId: $projectId, contentId: $contentId }) {
+                      item { id }
+                    }
+                  }`,
+                  { projectId, contentId: contentNodeId }
+                );
+                return addResp.addProjectV2ItemById.item.id;
+              } catch (error) {
+                const alreadyExists = Array.isArray(error?.errors) && error.errors.some((err) => err.type === 'UNPROCESSABLE' || (err.message || '').includes('already exists'));
+                if (!alreadyExists) {
+                  throw error;
+                }
+
+                const existingId = await findItemId(projectId, contentNodeId);
+                if (!existingId) {
+                  throw new Error('Project item already exists but could not be located');
+                }
+                return existingId;
+              }
+            }
+
+            async function updateStatus(projectId, itemId, field, status) {
+              if (!field || !field.options) {
+                throw new Error('Status field not found in project');
+              }
+
+              const option = field.options.find((opt) => opt.name.toLowerCase() === status.toLowerCase());
+              if (!option) {
+                throw new Error(`Status option "${status}" not found`);
+              }
+
+              await github.graphql(
+                `mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+                  updateProjectV2ItemFieldValue(input: {
+                    projectId: $projectId,
+                    itemId: $itemId,
+                    fieldId: $fieldId,
+                    value: { singleSelectOptionId: $optionId }
+                  }) {
+                    projectV2Item { id }
+                  }
+                }`,
+                {
+                  projectId,
+                  itemId,
+                  fieldId: field.id,
+                  optionId: option.id,
+                }
+              );
+            }
+
+            const project = await fetchProject(owner, projectTitle);
+            if (!project) {
+              throw new Error(`Project "${projectTitle}" not found for user ${owner}`);
+            }
+
+            const itemId = await ensureItem(project.id, contentId);
+
+            const statusField = project.fields?.nodes?.find((field) => field.name === 'Status');
+            await updateStatus(project.id, itemId, statusField, statusName);

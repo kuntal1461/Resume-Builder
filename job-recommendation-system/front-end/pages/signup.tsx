@@ -237,18 +237,7 @@ export default function SignupPage() {
           </button>
         </form>
 
-        <div className="auth-or-row">
-          <hr />
-          <span className="auth-or-text">or continue with</span>
-          <hr />
-        </div>
-
-        <button className="auth-google-btn" type="button" disabled={loading}>
-          <span aria-hidden="true" style={{ marginRight: 8 }}>
-            ✨
-          </span>
-          Sign up with LinkedIn
-        </button>
+        
 
         <p className="auth-footer-link">
           Already have an account?{' '}

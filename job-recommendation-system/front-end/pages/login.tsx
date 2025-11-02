@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8000';
@@ -51,6 +52,7 @@ const mapNetworkError = (error: unknown, fallback: string) => {
 };
 
 export default function LoginPage() {
+  const router = useRouter();
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [flash, setFlash] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -86,6 +88,9 @@ export default function LoginPage() {
         type: 'success',
         message: `Welcome back, ${payload.username ?? payload.email ?? 'candidate'}!`,
       });
+
+      // Navigate to the authenticated home after successful login
+      router.push('/dashboard');
     } catch (error) {
       console.error('Login failed', error);
       setFlash({
@@ -159,18 +164,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="auth-or-row">
-          <hr />
-          <span className="auth-or-text">or continue with</span>
-          <hr />
-        </div>
-
-        <button className="auth-google-btn" type="button" disabled={loading}>
-          <span aria-hidden="true" style={{ marginRight: 8 }}>
-            🔐
-          </span>
-          Sign in with SSO
-        </button>
+        {/* SSO sign-in removed until implemented */}
 
         <p className="auth-footer-link">
           Don&apos;t have an account?{' '}

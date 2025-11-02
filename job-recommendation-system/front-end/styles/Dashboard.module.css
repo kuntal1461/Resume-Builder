@@ -1,0 +1,159 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px clamp(20px, 4vw, 48px) 80px;
+}
+
+.welcome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 12px 0 28px;
+}
+
+.welcome h1 {
+  margin: 0 0 8px 0;
+  font-size: clamp(1.6rem, 3.2vw, 2.2rem);
+  color: #1b103f;
+}
+
+.welcome p {
+  margin: 0;
+  color: #5d5873;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.primaryCta, .secondaryCta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+
+.primaryCta {
+  background: linear-gradient(135deg, #7c5dfa, #5c4de5);
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(124, 93, 250, 0.25);
+}
+
+.secondaryCta {
+  border: 1px solid rgba(73, 58, 139, 0.18);
+  background: #fff;
+  color: #1b103f;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: clamp(16px, 3vw, 24px);
+}
+
+.card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 20px 20px 16px;
+  box-shadow: 0 18px 36px rgba(48, 35, 103, 0.08);
+}
+
+.card h2 {
+  margin: 0 0 8px;
+  color: #1b103f;
+  font-size: 1.15rem;
+}
+
+.muted {
+  color: #6d6a86;
+  margin: 0 0 14px;
+}
+
+.cardActions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #816cf7;
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.linkBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #4f39b4;
+  text-decoration: none;
+  padding: 10px 12px;
+  font-weight: 600;
+}
+
+.jobsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.jobsList li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0eff8;
+}
+
+.jobsList li div {
+  color: #1b103f;
+}
+
+.jobsList li span {
+  color: #6d6a86;
+}
+
+.fitTag {
+  background: rgba(88, 197, 255, 0.18);
+  color: #236a8e;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+
+.activityList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #4d4a66;
+}
+
+@media (max-width: 820px) {
+  .welcome {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+

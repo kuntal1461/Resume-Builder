@@ -12,7 +12,7 @@ jobs:
     permissions:
       pull-requests: read
       issues: write
-      projects: write
+      repository-projects: write
     steps:
       - name: Move PR to Done in Resume-Builder-Roadmap
         uses: peter-evans/create-or-update-project-card@v4
@@ -33,4 +33,3 @@ jobs:
             } catch (e) {
               // ignore if label doesn't exist
             }
-

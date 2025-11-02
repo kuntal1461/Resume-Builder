@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: read
-      projects: write
+      repository-projects: write
     steps:
       - name: Move PR to In Review in Resume-Builder-Roadmap
         uses: peter-evans/create-or-update-project-card@v4
@@ -18,4 +18,3 @@ jobs:
           project-name: Resume-Builder-Roadmap
           column-name: In Review
           issue-number: ${{ github.event.pull_request.number }}
-

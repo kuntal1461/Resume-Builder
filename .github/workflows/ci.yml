@@ -106,3 +106,88 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  mark-code-review:
+    name: Mark PR for Code Review and assign maintainers
+    runs-on: ubuntu-latest
+    needs: frontend
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Label PR and assign code maintainers
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const pull_number = context.payload.pull_request.number;
+            const labelName = 'Code Review';
+
+            async function ensureLabel(name) {
+              try {
+                await github.rest.issues.getLabel({ owner, repo, name });
+              } catch (e) {
+                if (e.status === 404) {
+                  await github.rest.issues.createLabel({
+                    owner,
+                    repo,
+                    name,
+                    color: 'FBCA04',
+                    description: 'Ready for code review',
+                  });
+                } else {
+                  throw e;
+                }
+              }
+            }
+
+            await ensureLabel(labelName);
+            await github.rest.issues.addLabels({ owner, repo, issue_number: pull_number, labels: [labelName] });
+
+            // Parse CODEOWNERS for global maintainers
+            const fs = require('fs');
+            let maintainers = [];
+            try {
+              const content = fs.readFileSync('.github/CODEOWNERS', 'utf8');
+              const lines = content
+                .split(/\r?\n/)
+                .map((l) => l.trim())
+                .filter((l) => l && !l.startsWith('#'));
+              // Prefer global rule '*'
+              const starLine = lines.find((l) => l.startsWith('*'));
+              if (starLine) {
+                const tokens = starLine.trim().split(/\s+/).slice(1);
+                maintainers = tokens.map((t) => t.replace(/^@/, '')).filter(Boolean);
+              }
+            } catch (e) {
+              core.warning(`Could not read CODEOWNERS: ${e.message}`);
+            }
+
+            if (maintainers.length === 0) {
+              // Fallback to repository-wide owner if present in CODEOWNERS, else set your username
+              maintainers = ['kuntal1461'];
+            }
+
+            // Assign PR to maintainers (best-effort)
+            try {
+              await github.rest.issues.addAssignees({ owner, repo, issue_number: pull_number, assignees: maintainers });
+            } catch (e) {
+              core.warning(`Could not assign maintainers: ${e.message}`);
+            }
+
+            // Request reviews (users and teams)
+            const reviewers = maintainers.filter((m) => !m.includes('/'));
+            const team_reviewers = maintainers
+              .filter((m) => m.includes('/'))
+              .map((m) => m.split('/')[1]);
+            try {
+              await github.rest.pulls.requestReviewers({ owner, repo, pull_number, reviewers, team_reviewers });
+            } catch (e) {
+              core.warning(`Could not request reviewers: ${e.message}`);
+            }

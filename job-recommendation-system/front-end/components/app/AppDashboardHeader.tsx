@@ -1,0 +1,76 @@
+import Link from 'next/link';
+import AppDashboardAccountMenu from './AppDashboardAccountMenu';
+import styles from '../../styles/AppLayout.module.css';
+import { ArrowIcon, SparkIcon, UnlimitedLearningIcon } from './icons';
+
+const HERO = {
+  greeting: 'Good afternoon, Kuntal',
+  badge: 'Fresh this week',
+  title: 'Level up your JobMatch workspace',
+  subtitle:
+    'Upgrade to unlock autopilot applications, unlimited ATS scans, and guided learning journeys tailored to your target role.',
+  primaryCta: {
+    label: 'Upgrade now',
+    href: '/app/billing/plans',
+  },
+  secondaryCta: {
+    label: 'Explore learning catalog',
+    href: '/app/unlimited-learning',
+  },
+};
+
+const INSIGHT = {
+  label: 'Profile completeness',
+  value: '45%',
+  description: 'Finish your checklist to boost match quality and outreach wins.',
+  action: {
+    label: 'Complete profile',
+    href: '/app/career-profile/profile',
+  },
+};
+
+const ACCOUNT_PROFILE = {
+  name: 'Kuntal Maity',
+  email: 'kuntal.1461@gmail.com',
+  initials: 'KM',
+};
+
+export default function AppDashboardHeader() {
+  return (
+    <header className={styles.dashboardHeader} aria-label="Workspace spotlight">
+      <div className={styles.dashboardHeaderLeft}>
+        <span className={styles.dashboardGreeting}>{HERO.greeting}</span>
+        <span className={styles.dashboardHeaderBadge}>
+          <SparkIcon aria-hidden="true" />
+          {HERO.badge}
+        </span>
+        <h2 className={styles.dashboardHeaderTitle}>{HERO.title}</h2>
+        <p className={styles.dashboardHeaderSubtitle}>{HERO.subtitle}</p>
+        <div className={styles.dashboardHeaderCtas}>
+          <Link href={HERO.primaryCta.href} className={styles.dashboardPrimaryAction}>
+            <span>{HERO.primaryCta.label}</span>
+            <ArrowIcon aria-hidden="true" />
+          </Link>
+          <Link href={HERO.secondaryCta.href} className={styles.dashboardSecondaryAction}>
+            <UnlimitedLearningIcon aria-hidden="true" />
+            <span>{HERO.secondaryCta.label}</span>
+          </Link>
+        </div>
+      </div>
+
+      <div className={styles.dashboardHeaderRight}>
+        <article className={styles.dashboardInsightCard} aria-live="polite">
+          <span className={styles.dashboardInsightLabel}>{INSIGHT.label}</span>
+          <span className={styles.dashboardInsightValue}>{INSIGHT.value}</span>
+          <span className={styles.dashboardInsightMeta}>{INSIGHT.description}</span>
+          <Link className={styles.dashboardInsightLink} href={INSIGHT.action.href}>
+            {INSIGHT.action.label}
+          </Link>
+        </article>
+        <div className={styles.dashboardUtilities}>
+          <AppDashboardAccountMenu profile={ACCOUNT_PROFILE} />
+        </div>
+      </div>
+    </header>
+  );
+}

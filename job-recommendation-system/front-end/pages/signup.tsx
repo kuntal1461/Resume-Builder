@@ -1,8 +1,6 @@
 import Link from 'next/link';
 import { ChangeEvent, FormEvent, useState } from 'react';
-
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8000';
+import { getEnvironmentConfig } from '../lib/runtimeConfig';
 
 const normalizeDetail = (detail: unknown, fallback: string) => {
   if (!detail) {
@@ -33,7 +31,7 @@ const normalizeDetail = (detail: unknown, fallback: string) => {
   return fallback;
 };
 
-const mapNetworkError = (error: unknown, fallback: string) => {
+const mapNetworkError = (error: unknown, fallback: string, apiBaseUrl?: string) => {
   if (error && typeof error === 'object' && 'name' in error && error.name === 'TypeError') {
     const message = String((error as Error).message || '').toLowerCase();
     if (
@@ -41,7 +39,10 @@ const mapNetworkError = (error: unknown, fallback: string) => {
       message.includes('load failed') ||
       message.includes('network request failed')
     ) {
-      return `Cannot reach API at ${API_BASE}. Ensure the backend is running and accessible.`;
+      if (apiBaseUrl) {
+        return `Cannot reach API at ${apiBaseUrl}. Ensure the backend is running and accessible.`;
+      }
+      return 'Cannot reach the API. Ensure the backend is running and accessible.';
     }
   }
   if (error instanceof Error) {
@@ -86,8 +87,12 @@ export default function SignupPage() {
       password: form.password,
     };
 
+    let apiBaseUrl = '';
     try {
-      const response = await fetch(`${API_BASE}/auth/register`, {
+      const config = await getEnvironmentConfig();
+      apiBaseUrl = config.apiBaseUrl;
+
+      const response = await fetch(`${apiBaseUrl}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -116,7 +121,7 @@ export default function SignupPage() {
       console.error('Registration failed', error);
       setFlash({
         type: 'error',
-        message: mapNetworkError(error, 'Unable to create the account. Please try again later.'),
+        message: mapNetworkError(error, 'Unable to create the account. Please try again later.', apiBaseUrl),
       });
     } finally {
       setLoading(false);

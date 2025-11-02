@@ -1,5 +1,6 @@
 name: Project Sync - PR Opened
 
+
 on:
   pull_request:
     types: [opened, reopened]

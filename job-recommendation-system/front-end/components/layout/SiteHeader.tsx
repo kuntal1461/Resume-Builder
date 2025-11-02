@@ -57,7 +57,7 @@ export default function SiteHeader() {
         </nav>
 
         <div className={styles.navCtas}>
-          <Link href="/signup" className={styles.secondaryCta}>
+          <Link href="/login" className={styles.secondaryCta}>
             Sign in
           </Link>
           <Link href="/signup" className={styles.primaryCta}>
@@ -91,7 +91,7 @@ export default function SiteHeader() {
           ))}
         </div>
         <div className={styles.navMobileCtas}>
-          <Link href="/signup" className={styles.secondaryCta} onClick={closeMobileMenu}>
+          <Link href="/login" className={styles.secondaryCta} onClick={closeMobileMenu}>
             Sign in
           </Link>
           <Link href="/signup" className={styles.primaryCta} onClick={closeMobileMenu}>

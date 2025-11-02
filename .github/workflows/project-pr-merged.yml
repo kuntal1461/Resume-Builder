@@ -17,7 +17,7 @@ jobs:
       - name: Move PR to Done in Resume-Builder-Roadmap
         uses: peter-evans/create-or-update-project-card@v4
         with:
-          project-name: Resume-Builder-Roadmap
+          project-title: Resume-Builder-Roadmap
           column-name: Done
           issue-number: ${{ github.event.pull_request.number }}
 

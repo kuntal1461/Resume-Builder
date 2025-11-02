@@ -30,42 +30,41 @@ const FOOTER_LINK_GROUPS = [
 export default function SiteFooter() {
   return (
     <footer className={styles.footer}>
+      <div className={styles.footerGlow} aria-hidden="true" />
       <div className={styles.footerTop}>
-        <div className={styles.footerBrand}>
-          <div className={styles.brandMark}>JR</div>
-          <div>
-            <h3 className={styles.footerTitle}>JobMatch</h3>
-            <p className={styles.footerLead}>
-              Built by recruiters to help you uncover the roles that fit your story—and land them faster.
-            </p>
+        <div className={styles.footerContent}>
+          <div className={styles.footerLinks}>
+            {FOOTER_LINK_GROUPS.map((group) => (
+              <div key={group.title} className={styles.footerCol}>
+                <h4>{group.title}</h4>
+                <ul>
+                  {group.links.map((link) => (
+                    <li key={link.label}>
+                      <a href={link.href}>{link.label}</a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          <div className={styles.footerNewsletter}>
+            <h4>Stay in the loop</h4>
+            <p className={styles.footerSmall}>One concise email each month with hiring trends and workflow tips.</p>
+            <form className={styles.footerForm}>
+              <label htmlFor="newsletter-email" className={styles.srOnly}>
+                Email address
+              </label>
+              <div className={styles.footerInputGroup}>
+                <input id="newsletter-email" type="email" name="email" placeholder="you@email.com" />
+                <button type="submit">Subscribe</button>
+              </div>
+            </form>
+            <p className={styles.footerDisclaimer}>No spam. Unsubscribe anytime.</p>
           </div>
         </div>
-        <div className={styles.footerLinks}>
-          {FOOTER_LINK_GROUPS.map((group) => (
-            <div key={group.title} className={styles.footerCol}>
-              <h4>{group.title}</h4>
-              <ul>
-                {group.links.map((link) => (
-                  <li key={link.label}>
-                    <a href={link.href}>{link.label}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-        <div className={styles.footerCta}>
-          <h4>Subscribe for insider hiring trends</h4>
-          <form className={styles.footerForm}>
-            <label htmlFor="newsletter-email" className={styles.srOnly}>
-              Email address
-            </label>
-            <input id="newsletter-email" type="email" name="email" placeholder="you@email.com" />
-            <button type="submit">Keep me posted</button>
-          </form>
-          <p className={styles.footerSmall}>We curate one short email per month. No spam—ever.</p>
-        </div>
       </div>
+
       <div className={styles.footerBottom}>
         <p>© {new Date().getFullYear()} JobMatch. All rights reserved.</p>
         <div className={styles.footerLegal}>

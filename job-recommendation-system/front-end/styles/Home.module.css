@@ -853,111 +853,158 @@
 }
 
 .footer {
-  background: #120a2a;
-  color: rgba(255, 255, 255, 0.76);
-  padding: 64px 0 32px;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(circle at top left, rgba(124, 93, 250, 0.28), transparent 55%),
+    linear-gradient(160deg, #0f0a1f 0%, #1a1040 100%);
+  color: rgba(255, 255, 255, 0.84);
+  padding: 80px 0 36px;
+  border-top: 1px solid rgba(124, 93, 250, 0.18);
+}
+
+.footerGlow {
+  position: absolute;
+  inset: -30% -25% auto;
+  height: 420px;
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.35), transparent 65%);
+  filter: blur(62px);
+  opacity: 0.8;
 }
 
 .footerTop {
+  position: relative;
+  z-index: 1;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 clamp(20px, 4vw, 48px) 48px;
+  padding: 0 clamp(20px, 4vw, 48px) 56px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: clamp(32px, 6vw, 52px);
-  align-items: start;
+  gap: clamp(36px, 6vw, 64px);
 }
 
-.footerBrand {
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-}
-
-.footerTitle {
-  color: white;
-  margin: 0 0 10px;
-}
-
-.footerLead {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.65);
-  line-height: 1.6;
+.footerContent {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.5fr);
+  gap: clamp(32px, 5vw, 48px);
 }
 
 .footerLinks {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 24px;
+  gap: 28px;
 }
 
 .footerCol h4 {
   margin: 0 0 14px;
   color: white;
+  font-size: 1rem;
 }
 
 .footerCol ul {
   list-style: none;
   padding: 0;
   margin: 0;
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 10px;
 }
 
 .footerCol a {
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(255, 255, 255, 0.7);
   text-decoration: none;
   font-size: 0.95rem;
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, transform 0.2s ease;
 }
 
 .footerCol a:hover {
   color: white;
+  transform: translateX(4px);
 }
 
-.footerCta h4 {
-  margin: 0 0 12px;
+.footerNewsletter {
+  padding: clamp(24px, 4vw, 32px);
+  background: rgba(15, 10, 32, 0.66);
+  border: 1px solid rgba(96, 82, 175, 0.28);
+  border-radius: 24px;
+  box-shadow: 0 24px 44px rgba(8, 5, 20, 0.38);
+  backdrop-filter: blur(16px);
+}
+
+.footerNewsletter h4 {
+  margin: 0 0 10px;
   color: white;
 }
 
+.footerSmall {
+  font-size: 0.9rem;
+  color: rgba(226, 224, 255, 0.72);
+  margin: 0 0 18px;
+}
+
 .footerForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footerInputGroup {
   display: flex;
   gap: 12px;
 }
 
 .footerForm input {
   flex: 1 1 auto;
-  border-radius: 12px;
-  border: none;
-  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(124, 93, 250, 0.28);
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
   font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.footerForm input::placeholder {
+  color: rgba(226, 224, 255, 0.5);
+}
+
+.footerForm input:focus {
+  border-color: rgba(124, 93, 250, 0.6);
+  background: rgba(124, 93, 250, 0.12);
 }
 
 .footerForm button {
-  border-radius: 12px;
+  border-radius: 16px;
   border: none;
   background: linear-gradient(135deg, #7c5dfa, #5c4de5);
   color: white;
   font-weight: 600;
-  padding: 12px 18px;
+  padding: 14px 20px;
   cursor: pointer;
+  box-shadow: 0 18px 32px rgba(124, 93, 250, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.footerSmall {
+.footerForm button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 38px rgba(124, 93, 250, 0.45);
+}
+
+.footerDisclaimer {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.55);
-  margin-top: 12px;
+  color: rgba(226, 224, 255, 0.6);
+  margin: 6px 0 0;
 }
 
 .footerBottom {
+  position: relative;
+  z-index: 1;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 24px clamp(20px, 4vw, 48px) 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 28px clamp(20px, 4vw, 48px) 0;
+  border-top: 1px solid rgba(124, 93, 250, 0.16);
   display: flex;
   flex-direction: column;
   gap: 14px;
+  color: rgba(226, 224, 255, 0.7);
 }
 
 .footerBottom p {
@@ -971,9 +1018,10 @@
 }
 
 .footerLegal a {
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(226, 224, 255, 0.74);
   text-decoration: none;
   font-size: 0.9rem;
+  transition: color 0.2s ease;
 }
 
 .footerLegal a:hover {
@@ -991,6 +1039,10 @@
 
   .mobileToggle {
     display: inline-flex;
+  }
+
+  .footerContent {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1023,7 +1075,7 @@
     padding: 0 20px 40px;
   }
 
-  .footerForm {
+  .footerInputGroup {
     flex-direction: column;
   }
 

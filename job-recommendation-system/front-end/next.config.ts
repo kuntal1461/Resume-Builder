@@ -1,26 +1,32 @@
 import type { NextConfig } from 'next';
-import type { RuleSetRule, RuleSetUseItem } from 'webpack';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   webpack(config) {
-    const rules = config.module?.rules ?? [];
-
-    const isRuleWithOneOf = (rule: RuleSetRule): rule is RuleSetRule & { oneOf: RuleSetRule[] } => {
-      return Array.isArray((rule as { oneOf?: unknown }).oneOf);
+    type CssModuleOptions = {
+      localIdentName?: string;
+      getLocalIdent?: (context: unknown, identifier: string, localName: string) => string;
     };
 
     type CssLoaderUse = {
-      loader: string;
+      loader?: string;
       options?: {
-        modules?: {
-          localIdentName?: string;
-          getLocalIdent?: (context: unknown, identifier: string, localName: string) => string;
-        };
+        modules?: CssModuleOptions;
       };
     };
 
-    const isCssLoaderUse = (use: RuleSetUseItem): use is CssLoaderUse => {
+    type RuleLike = {
+      oneOf?: RuleLike[];
+      use?: Array<unknown>;
+    };
+
+    const rules = (config.module?.rules ?? []) as RuleLike[];
+
+    const isRuleWithOneOf = (rule: RuleLike): rule is RuleLike & { oneOf: RuleLike[] } => {
+      return Array.isArray(rule.oneOf);
+    };
+
+    const isCssLoaderUse = (use: unknown): use is CssLoaderUse => {
       if (typeof use !== 'object' || use === null) {
         return false;
       }

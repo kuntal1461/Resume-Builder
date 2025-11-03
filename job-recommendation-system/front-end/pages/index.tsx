@@ -1,3 +1,4 @@
+import type { GetStaticProps } from 'next';
 import Head from 'next/head';
 import SiteHeader from '../components/layout/SiteHeader';
 import SiteFooter from '../components/layout/SiteFooter';
@@ -10,7 +11,11 @@ import PricingTeaser from '../components/home/PricingTeaser';
 import FaqSection from '../components/home/FaqSection';
 import FinalCallToAction from '../components/home/FinalCallToAction';
 
-export default function HomePage() {
+interface HomePageProps {
+  currentYear: number;
+}
+
+export default function HomePage({ currentYear }: HomePageProps) {
   return (
     <>
       <Head>
@@ -31,7 +36,15 @@ export default function HomePage() {
         <FaqSection />
         <FinalCallToAction />
       </main>
-      <SiteFooter />
+      <SiteFooter currentYear={currentYear} />
     </>
   );
 }
+
+export const getStaticProps: GetStaticProps<HomePageProps> = async () => {
+  return {
+    props: {
+      currentYear: new Date().getFullYear(),
+    },
+  };
+};

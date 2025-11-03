@@ -455,12 +455,10 @@
   gap: 28px;
   padding: 26px 28px;
   border-radius: 28px;
-  background:
-    radial-gradient(120% 140% at 0% 0%, rgba(124, 93, 250, 0.16) 0%, rgba(124, 93, 250, 0) 55%),
-    linear-gradient(135deg, #fefcff 0%, #f4f6ff 55%, #eaf2ff 100%);
-  color: #1b103f;
-  box-shadow: 0 28px 60px rgba(102, 94, 168, 0.14);
-  border: 1px solid rgba(124, 93, 250, 0.16);
+  background: #0e1e63;
+  color: #f5f7ff;
+  box-shadow: 0 32px 64px rgba(10, 24, 76, 0.28);
+  border: 1px solid rgba(88, 112, 205, 0.28);
   overflow: visible;
   isolation: isolate;
   z-index: 0;
@@ -480,12 +478,13 @@
 .dashboardHeader::before {
   top: -80px;
   right: -40px;
+  background: radial-gradient(circle at center, rgba(246, 197, 80, 0.28) 0%, rgba(246, 197, 80, 0) 70%);
 }
 
 .dashboardHeader::after {
   bottom: -40px;
   left: -20px;
-  background: radial-gradient(circle at center, rgba(88, 197, 255, 0.24) 0%, rgba(88, 197, 255, 0) 70%);
+  background: radial-gradient(circle at center, rgba(103, 140, 255, 0.3) 0%, rgba(103, 140, 255, 0) 70%);
 }
 
 .dashboardHeaderLeft {
@@ -503,7 +502,7 @@
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: rgba(27, 16, 63, 0.6);
+  color: rgba(229, 235, 255, 0.72);
 }
 
 .dashboardHeaderBadge {
@@ -512,8 +511,8 @@
   gap: 8px;
   padding: 5px 12px;
   border-radius: 999px;
-  background: rgba(124, 93, 250, 0.12);
-  color: #5c4de5;
+  background: rgba(246, 197, 80, 0.24);
+  color: #f6c550;
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -521,7 +520,7 @@
 }
 
 .dashboardHeaderBadge svg {
-  color: #f0a202;
+  color: #ffe18c;
 }
 
 .dashboardHeaderTitle {
@@ -529,12 +528,12 @@
   font-size: 30px;
   font-weight: 700;
   line-height: 1.15;
-  color: #130c2f;
+  color: #f5f7ff;
 }
 
 .dashboardHeaderSubtitle {
   margin: 0;
-  color: rgba(27, 16, 63, 0.68);
+  color: rgba(225, 232, 255, 0.78);
   line-height: 1.5;
   font-size: 14px;
 }
@@ -554,15 +553,15 @@
   text-decoration: none;
   font-weight: 600;
   font-size: 15px;
-  color: #0a1735;
-  background: linear-gradient(135deg, #7c5dfa, #5c4de5);
-  box-shadow: 0 18px 32px rgba(124, 93, 250, 0.24);
+  color: #2c1a01;
+  background: linear-gradient(135deg, #ffe18c, #f0b33c);
+  box-shadow: 0 20px 36px rgba(240, 179, 60, 0.32);
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .dashboardPrimaryAction:hover {
   transform: translateY(-1px);
-  box-shadow: 0 22px 40px rgba(124, 93, 250, 0.3);
+  box-shadow: 0 24px 44px rgba(240, 179, 60, 0.42);
 }
 
 .dashboardPrimaryAction svg {
@@ -576,19 +575,19 @@
   gap: 8px;
   padding: 9px 14px;
   border-radius: 16px;
-  border: 1px solid rgba(124, 93, 250, 0.2);
-  color: #1b103f;
+  border: 1px solid rgba(255, 239, 174, 0.36);
+  color: #f5f7ff;
   font-weight: 600;
   font-size: 14px;
   text-decoration: none;
-  background: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.08);
   transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 }
 
 .dashboardSecondaryAction:hover {
-  background: rgba(124, 93, 250, 0.1);
-  border-color: rgba(124, 93, 250, 0.4);
-  color: #5c4de5;
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 225, 140, 0.5);
+  color: #ffe18c;
 }
 
 .dashboardSecondaryAction svg {
@@ -610,9 +609,9 @@
   gap: 8px;
   padding: 16px 18px;
   border-radius: 20px;
-  background: linear-gradient(140deg, rgba(124, 93, 250, 0.12), rgba(88, 197, 255, 0.12));
-  border: 1px solid rgba(124, 93, 250, 0.18);
-  box-shadow: 0 18px 40px rgba(95, 90, 160, 0.18);
+  background: linear-gradient(140deg, rgba(14, 30, 99, 0.52), rgba(36, 70, 170, 0.28));
+  border: 1px solid rgba(103, 140, 255, 0.28);
+  box-shadow: 0 18px 40px rgba(7, 16, 58, 0.25);
   backdrop-filter: blur(6px);
   position: relative;
   overflow: hidden;
@@ -622,7 +621,7 @@
   font-size: 13px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: rgba(27, 16, 63, 0.6);
+  color: rgba(229, 235, 255, 0.72);
   font-weight: 600;
 }
 
@@ -634,7 +633,7 @@
   top: -50px;
   right: -40px;
   border-radius: 50%;
-  background: radial-gradient(circle at center, rgba(124, 93, 250, 0.28) 0%, rgba(124, 93, 250, 0) 70%);
+  background: radial-gradient(circle at center, rgba(246, 197, 80, 0.4) 0%, rgba(246, 197, 80, 0) 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -647,7 +646,7 @@
   bottom: -70px;
   left: -40px;
   border-radius: 50%;
-  background: radial-gradient(circle at center, rgba(88, 197, 255, 0.2) 0%, rgba(88, 197, 255, 0) 70%);
+  background: radial-gradient(circle at center, rgba(103, 140, 255, 0.32) 0%, rgba(103, 140, 255, 0) 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -655,7 +654,7 @@
 .dashboardInsightValue {
   font-size: 30px;
   font-weight: 700;
-  color: #130c2f;
+  color: #ffffff;
   line-height: 1;
   position: relative;
   z-index: 1;
@@ -663,7 +662,7 @@
 
 .dashboardInsightMeta {
   font-size: 13px;
-  color: rgba(27, 16, 63, 0.68);
+  color: rgba(221, 230, 255, 0.78);
   line-height: 1.45;
   position: relative;
   z-index: 1;
@@ -674,7 +673,7 @@
   margin-top: 4px;
   font-size: 13px;
   font-weight: 600;
-  color: #5c4de5;
+  color: #ffe18c;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
@@ -690,7 +689,7 @@
 }
 
 .dashboardInsightLink:hover {
-  color: #3c2db5;
+  color: #ffefae;
 }
 
 .dashboardUtilities {
@@ -703,9 +702,9 @@
   width: 44px;
   height: 44px;
   border-radius: 14px;
-  border: 1px solid rgba(124, 93, 250, 0.24);
-  background: rgba(255, 255, 255, 0.9);
-  color: #5c4de5;
+  border: 1px solid rgba(103, 140, 255, 0.32);
+  background: rgba(10, 24, 76, 0.6);
+  color: #e9efff;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -714,8 +713,8 @@
 
 .dashboardHeaderIconButton:hover,
 .dashboardHeaderIconButton:focus-visible {
-  border-color: rgba(124, 93, 250, 0.6);
-  box-shadow: 0 12px 28px rgba(124, 93, 250, 0.24);
+  border-color: rgba(255, 225, 140, 0.6);
+  box-shadow: 0 12px 28px rgba(10, 24, 76, 0.32);
   transform: translateY(-1px);
   outline: none;
 }

@@ -70,6 +70,7 @@ export default function SiteHeader() {
           onClick={toggleMobileMenu}
           className={styles.mobileToggle}
           aria-expanded={isMobileMenuOpen}
+          aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
           aria-controls="mobile-nav"
         >
           <span />

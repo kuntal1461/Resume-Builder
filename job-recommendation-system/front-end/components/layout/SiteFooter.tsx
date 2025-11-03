@@ -1,5 +1,9 @@
 import styles from '../../styles/Home.module.css';
 
+interface SiteFooterProps {
+  currentYear: number;
+}
+
 const FOOTER_LINK_GROUPS = [
   {
     title: 'Platform',
@@ -27,7 +31,7 @@ const FOOTER_LINK_GROUPS = [
   },
 ];
 
-export default function SiteFooter() {
+export default function SiteFooter({ currentYear }: SiteFooterProps) {
   return (
     <footer className={styles.footer}>
       <div className={styles.footerGlow} aria-hidden="true" />
@@ -66,7 +70,7 @@ export default function SiteFooter() {
       </div>
 
       <div className={styles.footerBottom}>
-        <p>© {new Date().getFullYear()} JobMatch. All rights reserved.</p>
+        <p>© {currentYear} JobMatch. All rights reserved.</p>
         <div className={styles.footerLegal}>
           <a href="#top">Terms</a>
           <a href="#top">Privacy</a>

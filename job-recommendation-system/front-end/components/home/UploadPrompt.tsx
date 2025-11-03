@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import styles from '../../styles/Home.module.css';
 
 interface UploadState {
@@ -15,6 +15,17 @@ const INITIAL_STATE: UploadState = {
 
 export default function UploadPrompt() {
   const [state, setState] = useState<UploadState>(INITIAL_STATE);
+  const timeoutRef = useRef<number | null>(null);
+
+  useEffect(
+    () => () => {
+      if (timeoutRef.current !== null) {
+        window.clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    },
+    []
+  );
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -29,16 +40,21 @@ export default function UploadPrompt() {
       });
       return;
     }
+    if (timeoutRef.current !== null) {
+      window.clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
     setState({ fileName: file.name, status: 'processing', message: 'Analyzing resume skills graph…' });
 
     // Simulate async call to demonstrate flow for now.
-    setTimeout(() => {
+    timeoutRef.current = window.setTimeout(() => {
       setState({
         fileName: file.name,
         status: 'success',
         message: 'Great news! We found 12 open roles that match your skillset this week.',
       });
       form.reset();
+      timeoutRef.current = null;
     }, 1800);
   };
 

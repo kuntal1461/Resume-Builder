@@ -5,6 +5,8 @@ import SiteFooter from '../components/layout/SiteFooter';
 import styles from '../styles/workspace/Dashboard.module.css';
 
 export default function DashboardPage() {
+  const currentYear = new Date().getFullYear();
+
   return (
     <>
       <Head>
@@ -74,7 +76,7 @@ export default function DashboardPage() {
           </article>
         </section>
       </main>
-      <SiteFooter />
+      <SiteFooter currentYear={currentYear} />
     </>
   );
 }

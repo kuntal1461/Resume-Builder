@@ -2,7 +2,7 @@ import type { GetServerSideProps } from 'next';
 
 export const getServerSideProps: GetServerSideProps = async () => ({
   redirect: {
-    destination: '/app/dashboard',
+    destination: '/workspace/overview',
     permanent: false,
   },
 });

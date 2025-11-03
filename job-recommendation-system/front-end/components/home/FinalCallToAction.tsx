@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import styles from '../../styles/Home.module.css';
+import styles from '../../styles/home/Home.module.css';
 
 export default function FinalCallToAction() {
   return (
@@ -11,7 +11,7 @@ export default function FinalCallToAction() {
           minutes.
         </p>
         <div className={styles.finalCtaActions}>
-          <Link href="/signup" className={styles.heroPrimary}>
+          <Link href="/auth/signup" className={styles.heroPrimary}>
             Start for free
           </Link>
           <a href="#workflow" className={styles.heroSecondary}>

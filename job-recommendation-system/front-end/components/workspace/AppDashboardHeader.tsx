@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import AppDashboardAccountMenu from './AppDashboardAccountMenu';
-import styles from '../../styles/AppLayout.module.css';
+import styles from '../../styles/workspace/WorkspaceLayout.module.css';
 import { ArrowIcon, SparkIcon, UnlimitedLearningIcon } from './icons';
 
 const HERO = {
@@ -11,11 +11,11 @@ const HERO = {
     'Upgrade to unlock autopilot applications, unlimited ATS scans, and guided learning journeys tailored to your target role.',
   primaryCta: {
     label: 'Upgrade now',
-    href: '/app/billing/plans',
+    href: '/workspace/billing/plans',
   },
   secondaryCta: {
     label: 'Explore learning catalog',
-    href: '/app/unlimited-learning',
+    href: '/workspace/unlimited-learning',
   },
 };
 
@@ -25,7 +25,7 @@ const INSIGHT = {
   description: 'Finish your checklist to boost match quality and outreach wins.',
   action: {
     label: 'Complete profile',
-    href: '/app/career-profile/profile',
+    href: '/workspace/career-profile/profile',
   },
 };
 

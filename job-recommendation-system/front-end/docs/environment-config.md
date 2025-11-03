@@ -42,7 +42,7 @@ This mirrors the pattern many backend services follow (for example, the
    the app.
 
 4. **Consumers**  
-   Frontend code (for example `pages/login.tsx` and `pages/signup.tsx`)
+   Frontend code (for example `pages/auth/login.tsx` and `pages/auth/signup.tsx`)
    call `getEnvironmentConfig()` before making API requests:
    ```ts
    const { apiBaseUrl } = await getEnvironmentConfig();

@@ -2,7 +2,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import SiteHeader from '../components/layout/SiteHeader';
 import SiteFooter from '../components/layout/SiteFooter';
-import styles from '../styles/Dashboard.module.css';
+import styles from '../styles/workspace/Dashboard.module.css';
 
 export default function DashboardPage() {
   return (
@@ -78,4 +78,3 @@ export default function DashboardPage() {
     </>
   );
 }
-

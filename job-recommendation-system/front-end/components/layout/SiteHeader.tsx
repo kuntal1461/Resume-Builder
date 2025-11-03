@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import styles from '../../styles/Home.module.css';
+import styles from '../../styles/home/Home.module.css';
 
 const NAV_LINKS = [
   { href: '#features', label: 'Features' },
@@ -57,10 +57,10 @@ export default function SiteHeader() {
         </nav>
 
         <div className={styles.navCtas}>
-          <Link href="/login" className={styles.secondaryCta}>
+          <Link href="/auth/login" className={styles.secondaryCta}>
             Sign in
           </Link>
-          <Link href="/signup" className={styles.primaryCta}>
+          <Link href="/auth/signup" className={styles.primaryCta}>
             Get started
           </Link>
         </div>
@@ -92,10 +92,10 @@ export default function SiteHeader() {
           ))}
         </div>
         <div className={styles.navMobileCtas}>
-          <Link href="/login" className={styles.secondaryCta} onClick={closeMobileMenu}>
+          <Link href="/auth/login" className={styles.secondaryCta} onClick={closeMobileMenu}>
             Sign in
           </Link>
-          <Link href="/signup" className={styles.primaryCta} onClick={closeMobileMenu}>
+          <Link href="/auth/signup" className={styles.primaryCta} onClick={closeMobileMenu}>
             Create free account
           </Link>
         </div>

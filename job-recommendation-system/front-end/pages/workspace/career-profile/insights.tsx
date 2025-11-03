@@ -1,8 +1,8 @@
 import Head from 'next/head';
 import Link from 'next/link';
-import AppShell from '../../../components/app/AppShell';
-import { APP_MENU_ITEMS, DEFAULT_PROFILE_TASKS } from '../../../components/app/navigation';
-import styles from '../../../styles/CareerProfileInsights.module.css';
+import AppShell from '../../../components/workspace/AppShell';
+import { APP_MENU_ITEMS, DEFAULT_PROFILE_TASKS } from '../../../components/workspace/navigation';
+import styles from '../../../styles/workspace/CareerProfileInsights.module.css';
 
 const INSIGHTS = [
   {
@@ -38,17 +38,17 @@ const NEXT_STEPS = [
   {
     title: 'Refresh customer impact statements',
     description: 'Add quantified outcomes for the last two launches so ATS scoring highlights business impact automatically.',
-    href: '/app/career-profile/insights?section=impact',
+    href: '/workspace/career-profile/insights?section=impact',
   },
   {
     title: 'Record a 90-second pitch',
     description: 'Use your storytelling strength to record a reusable elevator pitch. We\'ll surface it on matched roles and outreach scripts.',
-    href: '/app/career-profile/pitch',
+    href: '/workspace/career-profile/pitch',
   },
   {
     title: 'Add two stakeholder quotes',
     description: 'Collect short testimonials from design and engineering leads to reinforce your collaborative leadership theme.',
-    href: '/app/career-profile/cover-letter',
+    href: '/workspace/career-profile/cover-letter',
   },
 ];
 
@@ -84,7 +84,7 @@ export default function CareerProfileInsightsPage() {
           <section>
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>What hiring teams notice first</h2>
-              <Link href="/app/career-profile/profile" className={styles.sectionAction}>
+              <Link href="/workspace/career-profile/profile" className={styles.sectionAction}>
                 Update profile <span aria-hidden="true">→</span>
               </Link>
             </div>

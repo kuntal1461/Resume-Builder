@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import styles from '../../styles/Home.module.css';
+import styles from '../../styles/home/Home.module.css';
 
 export default function HeroSection() {
   return (
@@ -15,7 +15,7 @@ export default function HeroSection() {
             learns your goals, and surfaces roles that fit—before they hit the job boards.
           </p>
           <div className={styles.heroActions}>
-            <Link href="/signup" className={styles.heroPrimary}>
+            <Link href="/auth/signup" className={styles.heroPrimary}>
               Create my free account
             </Link>
             <a href="#upload" className={styles.heroSecondary}>

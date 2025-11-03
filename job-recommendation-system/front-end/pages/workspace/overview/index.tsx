@@ -1,15 +1,15 @@
 import Head from 'next/head';
-import AppShell from '../../components/app/AppShell';
-import AppDashboardHeader from '../../components/app/AppDashboardHeader';
-import { APP_MENU_ITEMS, DEFAULT_PROFILE_TASKS } from '../../components/app/navigation';
-import styles from '../../styles/AppLayout.module.css';
+import AppShell from '../../../components/workspace/AppShell';
+import AppDashboardHeader from '../../../components/workspace/AppDashboardHeader';
+import { APP_MENU_ITEMS, DEFAULT_PROFILE_TASKS } from '../../../components/workspace/navigation';
+import styles from '../../../styles/workspace/WorkspaceLayout.module.css';
 
-export default function AppDashboardPage() {
+export default function WorkspaceOverviewPage() {
   return (
     <>
       <Head>
-        <title>JobMatch · Dashboard</title>
-        <meta name="description" content="Your personalized JobMatch workspace." />
+        <title>JobMatch · Workspace Overview</title>
+        <meta name="description" content="Monitor your JobMatch workspace progress and jump into priority tasks." />
       </Head>
       <AppShell
         menuItems={APP_MENU_ITEMS}

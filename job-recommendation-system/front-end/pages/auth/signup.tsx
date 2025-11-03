@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ChangeEvent, FormEvent, useState } from 'react';
-import { getEnvironmentConfig } from '../lib/runtimeConfig';
+import { getEnvironmentConfig } from '../../lib/runtimeConfig';
 
 const normalizeDetail = (detail: unknown, fallback: string) => {
   if (!detail) {
@@ -246,7 +246,7 @@ export default function SignupPage() {
 
         <p className="auth-footer-link">
           Already have an account?{' '}
-          <Link href="/login" className="auth-forgot">
+          <Link href="/auth/login" className="auth-forgot">
             Log in here
           </Link>
         </p>

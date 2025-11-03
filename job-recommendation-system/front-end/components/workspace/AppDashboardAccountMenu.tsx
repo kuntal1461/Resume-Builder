@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import styles from '../../styles/AppLayout.module.css';
+import styles from '../../styles/workspace/WorkspaceLayout.module.css';
 import { AccountSettingsIcon, FaqIcon, LogoutIcon } from './icons';
 import { useLogout } from '../../lib/hooks/useLogout';
 
@@ -87,11 +87,11 @@ export default function AppDashboardAccountMenu({ profile }: AccountMenuProps) {
         </div>
 
         <nav aria-label="Account">
-          <Link href="/app/account" role="menuitem" className={styles.accountMenuLink} onClick={() => setIsOpen(false)}>
+          <Link href="/workspace/account-settings" role="menuitem" className={styles.accountMenuLink} onClick={() => setIsOpen(false)}>
             <AccountSettingsIcon aria-hidden="true" />
             <span>Account Settings</span>
           </Link>
-          <Link href="/app/help/faq" role="menuitem" className={styles.accountMenuLink} onClick={() => setIsOpen(false)}>
+          <Link href="/workspace/help/faq" role="menuitem" className={styles.accountMenuLink} onClick={() => setIsOpen(false)}>
             <FaqIcon aria-hidden="true" />
             <span>FAQ</span>
           </Link>

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
-import styles from '../../styles/AppLayout.module.css';
+import styles from '../../styles/workspace/WorkspaceLayout.module.css';
 import type { AppMenuItem, AppProfileTask } from './navigation';
 import { CARET_ICON } from './navigation';
 
@@ -29,7 +29,7 @@ export default function AppShell({
   menuItems,
   profileTasks,
   profile,
-  brandHref = '/app/dashboard',
+  brandHref = '/workspace/overview',
   brandLabel = DEFAULT_BRAND_LABEL,
   brandMark = DEFAULT_BRAND_MARK,
 }: AppShellProps) {

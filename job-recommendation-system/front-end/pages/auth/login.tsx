@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { getEnvironmentConfig } from '../lib/runtimeConfig';
+import { getEnvironmentConfig } from '../../lib/runtimeConfig';
 
 const normalizeDetail = (detail: unknown, fallback: string) => {
   if (!detail) {
@@ -101,7 +101,7 @@ export default function LoginPage() {
       });
 
       // Navigate to the authenticated home after successful login
-      router.push('/app/dashboard');
+      router.push('/workspace/overview');
     } catch (error) {
       console.error('Login failed', error);
       setFlash({
@@ -201,7 +201,7 @@ export default function LoginPage() {
 
           <p className="auth-secondary-text">
             New to JobMatch?{' '}
-            <Link href="/signup" className="auth-link">
+            <Link href="/auth/signup" className="auth-link">
               Create a free account
             </Link>
           </p>

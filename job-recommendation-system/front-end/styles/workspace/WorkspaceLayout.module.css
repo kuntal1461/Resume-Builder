@@ -7,13 +7,17 @@
 
 .sidebar {
   width: 280px;
-  background: linear-gradient(180deg, rgba(124, 93, 250, 0.12) 0%, rgba(88, 197, 255, 0.08) 35%, rgba(255, 255, 255, 0.95) 100%);
-  border-right: 1px solid rgba(124, 93, 250, 0.16);
+  flex: 0 0 280px;
+  min-width: 260px;
+  background:
+    radial-gradient(circle at 0 0, rgba(108, 99, 255, 0.18) 0%, rgba(108, 99, 255, 0) 55%),
+    linear-gradient(185deg, #ffffff 0%, #f4f6ff 45%, #eef2ff 100%);
+  border-right: 1px solid rgba(124, 93, 250, 0.14);
   display: flex;
   flex-direction: column;
   padding: 26px 22px 34px;
   gap: 26px;
-  box-shadow: 0 18px 48px rgba(102, 94, 168, 0.12);
+  box-shadow: 0 18px 48px rgba(102, 94, 168, 0.1);
   position: relative;
   z-index: 2;
 }
@@ -27,6 +31,17 @@
   border-radius: 4px;
 }
 
+@keyframes sidebarReveal {
+  from {
+    transform: translateX(-28px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 .brandLink {
   display: inline-flex;
   align-items: center;
@@ -38,28 +53,31 @@
 }
 
 .brandMark {
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
-  background: linear-gradient(145deg, #7c5dfa, #58c5ff);
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #6952ff, #4ebeff);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: #ffffff;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 17px;
+  box-shadow: 0 12px 20px rgba(88, 197, 255, 0.28);
 }
 
 .profileCard {
-  background: linear-gradient(185deg, rgba(124, 93, 250, 0.18) 0%, rgba(255, 255, 255, 0.88) 75%);
-  border: 1px solid rgba(124, 93, 250, 0.18);
+  background: linear-gradient(180deg, #ffffff 0%, #f9faff 100%);
+  border: 1px solid rgba(124, 93, 250, 0.1);
   border-radius: 18px;
   padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  box-shadow: 0 20px 36px rgba(93, 87, 166, 0.12);
   position: relative;
-  box-shadow: 0 18px 36px rgba(93, 87, 166, 0.16);
+  overflow: visible;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
 }
 
 .profileCard::after {
@@ -72,6 +90,12 @@
   background: transparent;
 }
 
+.profileCard:hover,
+.profileCard:focus-within {
+  transform: translateY(-3px);
+  box-shadow: 0 26px 50px rgba(93, 87, 166, 0.18);
+}
+
 .profileHeader {
   display: flex;
   align-items: center;
@@ -82,13 +106,13 @@
   width: 48px;
   height: 48px;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid rgba(124, 93, 250, 0.22);
+  background: rgba(110, 99, 255, 0.12);
+  border: 1px solid rgba(108, 99, 255, 0.22);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  color: #5c4de5;
+  color: #4338ca;
 }
 
 .profileMeta {
@@ -173,7 +197,11 @@
 }
 
 @media (max-width: 960px) {
-.profileDetails {
+  .profileCard {
+    gap: 14px;
+  }
+
+  .profileDetails {
     position: static;
     width: 100%;
     margin-top: 12px;

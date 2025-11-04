@@ -230,7 +230,7 @@ export default function WorkspaceJobTrackingPage() {
         profileTasks={DEFAULT_PROFILE_TASKS}
         profile={{
           name: 'Kuntal Maity',
-          tagline: 'Keep momentum across your pipeline',
+          tagline: 'Set your target role',
           initials: 'KM',
           progressLabel: '5%',
         }}

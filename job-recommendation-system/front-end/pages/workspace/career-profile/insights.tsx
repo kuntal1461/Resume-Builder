@@ -67,7 +67,7 @@ export default function CareerProfileInsightsPage() {
         profileTasks={DEFAULT_PROFILE_TASKS}
         profile={{
           name: 'Kuntal Maity',
-          tagline: 'Product strategy leader',
+          tagline: 'Set your target role',
           initials: 'KM',
           progressLabel: '45%',
         }}

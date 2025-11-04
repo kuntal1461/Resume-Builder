@@ -76,12 +76,13 @@ while IFS= read -r file_path || [ -n "$file_path" ]; do
     continue
   fi
 
-  escaped_source=$(printf "%s" "$file_path" | sed "s/'/''/g")
+  # mysql client interprets SOURCE directly; escape for spaces/backslashes and avoid SQL quoting.
+  escaped_source=$(printf "%s" "$file_path" | tr -d '\r' | sed 's/\\/\\\\/g; s/ /\\ /g')
   printf '>> Applying: %s\n' "$rel_path"
   run_mysql "$MYSQL_DB" <<SQL
 SET autocommit=0;
 START TRANSACTION;
-SOURCE '${escaped_source}';
+SOURCE $escaped_source
 COMMIT;
 SQL
 

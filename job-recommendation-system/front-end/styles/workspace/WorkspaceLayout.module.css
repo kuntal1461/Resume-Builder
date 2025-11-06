@@ -354,7 +354,6 @@
 .menuLink:hover {
   background: rgba(124, 93, 250, 0.12);
   color: #5c4de5;
-  transform: translateY(-1px);
   box-shadow: 0 10px 18px rgba(124, 93, 250, 0.14);
 }
 
@@ -362,7 +361,6 @@
   background: linear-gradient(135deg, #7c5dfa, #5c4de5);
   color: #ffffff;
   box-shadow: 0 12px 26px rgba(124, 93, 250, 0.26);
-  transform: translateY(-1px);
 }
 
 .menuIcon {
@@ -396,7 +394,9 @@
 .submenu {
   position: absolute;
   top: 0;
-  left: calc(100% + 8px);
+  /* Remove hover gap to prevent flicker when moving cursor
+     from parent link to submenu */
+  left: 100%;
   min-width: 220px;
   padding: 12px;
   border-radius: 14px;

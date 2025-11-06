@@ -12,7 +12,6 @@ import {
   JobsIcon,
   OfferAnalyzerIcon,
   OtherIcon,
-  ResumeDistributionIcon,
   SalaryAnalyzerIcon,
   UnlimitedLearningIcon,
 } from './icons';
@@ -82,11 +81,6 @@ export const APP_MENU_ITEMS: AppMenuItem[] = [
     label: 'Offer Analyzer',
     href: '/workspace/offer-analyzer',
     icon: <OfferAnalyzerIcon />,
-  },
-  {
-    label: 'Resume Distribution',
-    href: '/workspace/resume-distribution',
-    icon: <ResumeDistributionIcon />,
   },
   {
     label: 'Salary Analyzer',

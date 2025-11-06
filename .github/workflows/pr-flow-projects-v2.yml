@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [opened, ready_for_review]
   workflow_run:
-    workflows: ["CI"]         # ← ensure this matches your CI workflow name
+    workflows: ["CI"]     # must match your CI workflow name
     types: [completed]
   pull_request_review:
     types: [submitted]
@@ -14,10 +14,11 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  repository-projects: write
   issues: write
+  repository-projects: write   # not used for user-owned projects, but harmless
 
 env:
+  # User-owned Project v2 (requires PAT with repo, project scopes)
   PROJECT_ID: PVT_kwHOA6RqoM4BHBmW
   STATUS_FIELD_ID: PVTSSF_lAHOA6RqoM4BHBmWzg35lDE
 
@@ -33,6 +34,10 @@ env:
   CI_WORKFLOW_NAME: CI
 
 jobs:
+  # ─────────────────────────────────────────────────────────────
+  # Auto-assign the *other* reviewer when PR opens / ready
+  # (REST only → GITHUB_TOKEN is fine)
+  # ─────────────────────────────────────────────────────────────
   auto_assign_reviewer:
     if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
@@ -40,8 +45,7 @@ jobs:
       - name: Auto-request the opposite reviewer
         uses: actions/github-script@v7
         with:
-          # Safer fallback: use GH_PAT if set, otherwise GITHUB_TOKEN
-          github-token: ${{ secrets.GH_PAT != '' && secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const pr = context.payload.pull_request;
             const author = pr.user.login;
@@ -60,33 +64,56 @@ jobs:
             });
             core.info(`Requested reviewers: ${reviewers.join(", ")}`);
 
+  # ─────────────────────────────────────────────────────────────
+  # When CI completes successfully, move to "Code Review Request"
+  # Uses GH_PAT for Projects v2 GraphQL; robust PR resolution.
+  # ─────────────────────────────────────────────────────────────
   to_code_review_request:
     if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.name == 'CI' && github.event.workflow_run.conclusion == 'success' }}
-
     runs-on: ubuntu-latest
     steps:
-      - name: Find PR by head SHA → add to Project → set Status=Code Review Request → request reviewers
+      - name: Find PR → add to Project → set Status=Code Review Request → request reviewers
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GH_PAT != '' && secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GH_PAT }}   # PAT required for user-owned Project v2
           script: |
             const run = context.payload.workflow_run;
             const { owner, repo } = context.repo;
 
-            // 1) Find PR associated with this CI run by head SHA
-            const prs = await github.rest.search.issuesAndPullRequests({
-              q: `repo:${owner}/${repo} is:pr sha:${run.head_sha}`
-            });
-            if (!prs.data.items.length) {
-              core.setFailed("No PR found for this workflow_run (by head_sha).");
+            // 1) Try to get PR from workflow_run payload
+            let prNumber = null;
+            if (Array.isArray(run.pull_requests) && run.pull_requests.length > 0) {
+              prNumber = run.pull_requests[0].number;
+            }
+
+            // 2) Fallback: search open PRs by head branch
+            if (!prNumber && run.head_branch) {
+              const search = await github.rest.search.issuesAndPullRequests({
+                q: `repo:${owner}/${repo} is:pr is:open head:${run.head_branch}`
+              });
+              if (search.data.items.length) prNumber = search.data.items[0].number;
+            }
+
+            // 3) Final fallback: search by head sha
+            if (!prNumber) {
+              const prs = await github.rest.search.issuesAndPullRequests({
+                q: `repo:${owner}/${repo} is:pr sha:${run.head_sha}`
+              });
+              if (prs.data.items.length) prNumber = prs.data.items[0].number;
+            }
+
+            // 4) Skip gracefully if no PR (direct push case)
+            if (!prNumber) {
+              core.info("No PR associated with this workflow_run (direct push or no open PR). Skipping project/status update.");
               return;
             }
-            const prNumber = prs.data.items[0].number;
+
+            // 5) Load PR & author
             const prFull = await github.rest.pulls.get({ owner, repo, pull_number: prNumber });
             const prNodeId = prFull.data.node_id;
             const author = prFull.data.user.login;
 
-            // 2) Add PR to Project v2 (safe if already present)
+            // 6) Add to Project v2 (idempotent)
             const addResp = await github.graphql(`
               mutation($project: ID!, $content: ID!) {
                 addProjectV2ItemById(input: { projectId: $project, contentId: $content }) {
@@ -96,7 +123,7 @@ jobs:
             `, { project: process.env.PROJECT_ID, content: prNodeId });
             const itemId = addResp.addProjectV2ItemById.item.id;
 
-            // 3) Set Status = "Code Review Request"
+            // 7) Set Status = "Code Review Request"
             await github.graphql(`
               mutation($project: ID!, $item: ID!, $field: ID!, $option: String!) {
                 updateProjectV2ItemFieldValue(input: {
@@ -113,7 +140,7 @@ jobs:
               option: process.env.OPTION_CODE_REVIEW_REQUEST
             });
 
-            // 4) (Re)request the correct reviewer automatically
+            // 8) (Re)request the correct reviewer
             let reviewers = [];
             if (author === process.env.USER_CONTRIB) reviewers = [process.env.USER_OWNER];
             else if (author === process.env.USER_OWNER) reviewers = [process.env.USER_CONTRIB];
@@ -125,6 +152,10 @@ jobs:
               core.info(`Requested reviewers: ${reviewers.join(", ")}`);
             }
 
+  # ─────────────────────────────────────────────────────────────
+  # When any review is submitted → set "In Review" (or CRR) + notify author
+  # (GraphQL → GH_PAT)
+  # ─────────────────────────────────────────────────────────────
   to_in_review:
     if: ${{ github.event_name == 'pull_request_review' }}
     runs-on: ubuntu-latest
@@ -132,7 +163,7 @@ jobs:
       - name: Set Status=In Review (or back to Code Review Request) & notify author
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GH_PAT != '' && secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GH_PAT }}   # PAT required
           script: |
             const { owner, repo } = context.repo;
             const pr = context.payload.pull_request;
@@ -140,11 +171,8 @@ jobs:
             const prNodeId = pr.node_id;
             const author = pr.user.login;
 
-            // IMPORTANT: review.state is lowercase from GitHub
-            const reviewStateRaw = context.payload.review.state || '';
-            const reviewState = reviewStateRaw.toLowerCase(); // approved | changes_requested | commented
+            const reviewState = (context.payload.review.state || '').toLowerCase(); // approved | changes_requested | commented
 
-            // 1) Add PR to Project (safe if already present)
             const addResp = await github.graphql(`
               mutation($project: ID!, $content: ID!) {
                 addProjectV2ItemById(input: { projectId: $project, contentId: $content }) {
@@ -154,7 +182,6 @@ jobs:
             `, { project: process.env.PROJECT_ID, content: prNodeId });
             const itemId = addResp.addProjectV2ItemById.item.id;
 
-            // 2) Decide which status to set
             const nextOption = (reviewState === "changes_requested")
               ? process.env.OPTION_CODE_REVIEW_REQUEST
               : process.env.OPTION_IN_REVIEW;
@@ -175,12 +202,15 @@ jobs:
               option: nextOption
             });
 
-            // 3) Notify PR author
             const msg = (reviewState === "changes_requested")
               ? `@${author} Changes were requested. Please push updates and re-request review.`
               : `@${author} A reviewer has started/updated the review. Please wait for updates.`;
             await github.rest.issues.createComment({ owner, repo, issue_number: prNumber, body: msg });
 
+  # ─────────────────────────────────────────────────────────────
+  # If approved & checks green → auto-merge main + set "Done"
+  # (merge via REST; Project update via GH_PAT)
+  # ─────────────────────────────────────────────────────────────
   automerge_and_done:
     if: ${{ github.event_name == 'pull_request_review' || github.event_name == 'check_suite' }}
     runs-on: ubuntu-latest
@@ -188,7 +218,7 @@ jobs:
       - name: Merge if approved & green; then set Status=Done
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GH_PAT != '' && secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GH_PAT }}   # PAT required for Project v2 step; REST calls also work with PAT
           script: |
             const { owner, repo } = context.repo;
 
@@ -211,7 +241,6 @@ jobs:
               if (!pr) { core.info("No PR tied to this check_suite; skipping."); return; }
             }
 
-            // Only target main (Option B)
             if (pr.base.ref !== "main") {
               core.info(`Base branch is ${pr.base.ref}; only auto-merging to 'main'.`);
               return;
@@ -221,8 +250,7 @@ jobs:
             const reviews = await github.rest.pulls.listReviews({ owner, repo, pull_number: pr.number });
             const hasApproval = reviews.data.some(r => (r.state || '').toUpperCase() === "APPROVED");
 
-            // 2) Check combined status for head SHA (legacy Statuses API)
-            // NOTE: If you rely purely on Checks, consider switching to Checks API listing instead.
+            // 2) Check combined status for head SHA (success)
             const combined = await github.rest.repos.getCombinedStatusForRef({
               owner, repo, ref: pr.head.sha
             });
@@ -233,7 +261,7 @@ jobs:
               return;
             }
 
-            // 3) Merge (squash). Change 'merge_method' if you prefer 'merge' or 'rebase'.
+            // 3) Merge (squash)
             await github.rest.pulls.merge({
               owner, repo, pull_number: pr.number,
               commit_title: `Auto-merge PR #${pr.number}`,

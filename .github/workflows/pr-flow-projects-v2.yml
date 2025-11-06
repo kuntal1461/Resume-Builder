@@ -1,0 +1,269 @@
+name: PR Flow Automation (Projects v2)
+
+on:
+  pull_request:
+    types: [opened, ready_for_review]
+  workflow_run:
+    workflows: ["CI"]         # ← ensure this matches your CI workflow name
+    types: [completed]
+  pull_request_review:
+    types: [submitted]
+  check_suite:
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  repository-projects: write
+  issues: write
+
+env:
+  PROJECT_ID: PVT_kwHOA6RqoM4BHBmW
+  STATUS_FIELD_ID: PVTSSF_lAHOA6RqoM4BHBmWzg35lDE
+
+  OPTION_TODO: f75ad846
+  OPTION_IN_PROGRESS: 47fc9ee4
+  OPTION_CODE_REVIEW_REQUEST: 544d6251
+  OPTION_IN_REVIEW: 464f60b6
+  OPTION_DONE: 98236657
+
+  USER_OWNER: kuntal1461
+  USER_CONTRIB: afridpashahp
+
+  CI_WORKFLOW_NAME: CI
+
+jobs:
+  auto_assign_reviewer:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Auto-request the opposite reviewer
+        uses: actions/github-script@v7
+        with:
+          # Safer fallback: use GH_PAT if set, otherwise GITHUB_TOKEN
+          github-token: ${{ secrets.GH_PAT != '' && secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            const author = pr.user.login;
+            const { owner, repo } = context.repo;
+
+            let reviewers = [];
+            if (author === process.env.USER_CONTRIB) reviewers = [process.env.USER_OWNER];
+            else if (author === process.env.USER_OWNER) reviewers = [process.env.USER_CONTRIB];
+            else {
+              core.info(`Author ${author} is neither ${process.env.USER_OWNER} nor ${process.env.USER_CONTRIB}; skipping.`);
+              return;
+            }
+
+            await github.rest.pulls.requestReviewers({
+              owner, repo, pull_number: pr.number, reviewers
+            });
+            core.info(`Requested reviewers: ${reviewers.join(", ")}`);
+
+  to_code_review_request:
+    if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.name == 'CI' && github.event.workflow_run.conclusion == 'success' }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Find PR by head SHA → add to Project → set Status=Code Review Request → request reviewers
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GH_PAT != '' && secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          script: |
+            const run = context.payload.workflow_run;
+            const { owner, repo } = context.repo;
+
+            // 1) Find PR associated with this CI run by head SHA
+            const prs = await github.rest.search.issuesAndPullRequests({
+              q: `repo:${owner}/${repo} is:pr sha:${run.head_sha}`
+            });
+            if (!prs.data.items.length) {
+              core.setFailed("No PR found for this workflow_run (by head_sha).");
+              return;
+            }
+            const prNumber = prs.data.items[0].number;
+            const prFull = await github.rest.pulls.get({ owner, repo, pull_number: prNumber });
+            const prNodeId = prFull.data.node_id;
+            const author = prFull.data.user.login;
+
+            // 2) Add PR to Project v2 (safe if already present)
+            const addResp = await github.graphql(`
+              mutation($project: ID!, $content: ID!) {
+                addProjectV2ItemById(input: { projectId: $project, contentId: $content }) {
+                  item { id }
+                }
+              }
+            `, { project: process.env.PROJECT_ID, content: prNodeId });
+            const itemId = addResp.addProjectV2ItemById.item.id;
+
+            // 3) Set Status = "Code Review Request"
+            await github.graphql(`
+              mutation($project: ID!, $item: ID!, $field: ID!, $option: String!) {
+                updateProjectV2ItemFieldValue(input: {
+                  projectId: $project,
+                  itemId: $item,
+                  fieldId: $field,
+                  value: { singleSelectOptionId: $option }
+                }) { clientMutationId }
+              }
+            `, {
+              project: process.env.PROJECT_ID,
+              item: itemId,
+              field: process.env.STATUS_FIELD_ID,
+              option: process.env.OPTION_CODE_REVIEW_REQUEST
+            });
+
+            // 4) (Re)request the correct reviewer automatically
+            let reviewers = [];
+            if (author === process.env.USER_CONTRIB) reviewers = [process.env.USER_OWNER];
+            else if (author === process.env.USER_OWNER) reviewers = [process.env.USER_CONTRIB];
+
+            if (reviewers.length) {
+              await github.rest.pulls.requestReviewers({
+                owner, repo, pull_number: prNumber, reviewers
+              });
+              core.info(`Requested reviewers: ${reviewers.join(", ")}`);
+            }
+
+  to_in_review:
+    if: ${{ github.event_name == 'pull_request_review' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set Status=In Review (or back to Code Review Request) & notify author
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GH_PAT != '' && secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            const pr = context.payload.pull_request;
+            const prNumber = pr.number;
+            const prNodeId = pr.node_id;
+            const author = pr.user.login;
+
+            // IMPORTANT: review.state is lowercase from GitHub
+            const reviewStateRaw = context.payload.review.state || '';
+            const reviewState = reviewStateRaw.toLowerCase(); // approved | changes_requested | commented
+
+            // 1) Add PR to Project (safe if already present)
+            const addResp = await github.graphql(`
+              mutation($project: ID!, $content: ID!) {
+                addProjectV2ItemById(input: { projectId: $project, contentId: $content }) {
+                  item { id }
+                }
+              }
+            `, { project: process.env.PROJECT_ID, content: prNodeId });
+            const itemId = addResp.addProjectV2ItemById.item.id;
+
+            // 2) Decide which status to set
+            const nextOption = (reviewState === "changes_requested")
+              ? process.env.OPTION_CODE_REVIEW_REQUEST
+              : process.env.OPTION_IN_REVIEW;
+
+            await github.graphql(`
+              mutation($project: ID!, $item: ID!, $field: ID!, $option: String!) {
+                updateProjectV2ItemFieldValue(input:{
+                  projectId: $project,
+                  itemId: $item,
+                  fieldId: $field,
+                  value: { singleSelectOptionId: $option }
+                }) { clientMutationId }
+              }
+            `, {
+              project: process.env.PROJECT_ID,
+              item: itemId,
+              field: process.env.STATUS_FIELD_ID,
+              option: nextOption
+            });
+
+            // 3) Notify PR author
+            const msg = (reviewState === "changes_requested")
+              ? `@${author} Changes were requested. Please push updates and re-request review.`
+              : `@${author} A reviewer has started/updated the review. Please wait for updates.`;
+            await github.rest.issues.createComment({ owner, repo, issue_number: prNumber, body: msg });
+
+  automerge_and_done:
+    if: ${{ github.event_name == 'pull_request_review' || github.event_name == 'check_suite' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge if approved & green; then set Status=Done
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GH_PAT != '' && secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+
+            async function findPrFromCheckSuite() {
+              const run = context.payload.check_suite;
+              const search = await github.rest.search.issuesAndPullRequests({
+                q: `repo:${owner}/${repo} is:pr sha:${run.head_sha}`
+              });
+              if (!search.data.items.length) return null;
+              const prNum = search.data.items[0].number;
+              const full = await github.rest.pulls.get({ owner, repo, pull_number: prNum });
+              return full.data;
+            }
+
+            let pr;
+            if (context.eventName === "pull_request_review") {
+              pr = context.payload.pull_request;
+            } else {
+              pr = await findPrFromCheckSuite();
+              if (!pr) { core.info("No PR tied to this check_suite; skipping."); return; }
+            }
+
+            // Only target main (Option B)
+            if (pr.base.ref !== "main") {
+              core.info(`Base branch is ${pr.base.ref}; only auto-merging to 'main'.`);
+              return;
+            }
+
+            // 1) Check approvals
+            const reviews = await github.rest.pulls.listReviews({ owner, repo, pull_number: pr.number });
+            const hasApproval = reviews.data.some(r => (r.state || '').toUpperCase() === "APPROVED");
+
+            // 2) Check combined status for head SHA (legacy Statuses API)
+            // NOTE: If you rely purely on Checks, consider switching to Checks API listing instead.
+            const combined = await github.rest.repos.getCombinedStatusForRef({
+              owner, repo, ref: pr.head.sha
+            });
+            const checksGreen = combined.data.state === "success";
+
+            if (!hasApproval || !checksGreen) {
+              core.info(`Not merging: approved=${hasApproval}, checksGreen=${checksGreen}`);
+              return;
+            }
+
+            // 3) Merge (squash). Change 'merge_method' if you prefer 'merge' or 'rebase'.
+            await github.rest.pulls.merge({
+              owner, repo, pull_number: pr.number,
+              commit_title: `Auto-merge PR #${pr.number}`,
+              merge_method: "squash"
+            });
+            core.info(`Merged PR #${pr.number} into main.`);
+
+            // 4) Add to Project & set Status = "Done"
+            const addResp = await github.graphql(`
+              mutation($project: ID!, $content: ID!) {
+                addProjectV2ItemById(input: { projectId: $project, contentId: $content }) {
+                  item { id }
+                }
+              }
+            `, { project: process.env.PROJECT_ID, content: pr.node_id });
+            const itemId = addResp.addProjectV2ItemById.item.id;
+
+            await github.graphql(`
+              mutation($project: ID!, $item: ID!, $field: ID!, $option: String!) {
+                updateProjectV2ItemFieldValue(input:{
+                  projectId: $project,
+                  itemId: $item,
+                  fieldId: $field,
+                  value: { singleSelectOptionId: $option }
+                }) { clientMutationId }
+              }
+            `, {
+              project: process.env.PROJECT_ID,
+              item: itemId,
+              field: process.env.STATUS_FIELD_ID,
+              option: process.env.OPTION_DONE
+            });
+            core.info(`Set Project status to Done.`);

@@ -2,6 +2,9 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  experimental: {
+    externalDir: true,
+  },
   webpack(config) {
     type CssModuleOptions = {
       localIdentName?: string;

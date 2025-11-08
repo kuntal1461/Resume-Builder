@@ -23,6 +23,36 @@ docker compose up -d   # build & start
 
 ---
 
+## 🌱 Environment Modes
+
+The entire stack now reads a single `SERVER_ENV` flag (`local`, `staging`, `production`) so you can branch logic with simple helpers:
+
+- **Backend** (`common/server_environment.py`) exposes `get_server_environment()` which returns booleans like `is_local`, `is_staging`, `is_prod`. Both FastAPI apps (Job API + Resume Reader) import this helper so any service can branch on the same flags.
+- **Frontend** (`job-recommendation-system/front-end/lib/server/environment.ts`) mirrors the same contract so API routes and pages can ask for `isLocal`, `isStaging`, etc.
+- **Any other frontend** (e.g., a future Resume Reader UI) can import from `frontend-common/environment` directly:
+
+```ts
+import { resolveServerEnvironment } from '../../frontend-common/environment';
+
+const serverEnv = resolveServerEnvironment();
+if (serverEnv.isLocal) {
+  // local-only logic
+}
+```
+
+Supporting variables (all live in `.env` / deployment secrets):
+
+| Variable | Purpose | Example |
+| --- | --- | --- |
+| `SERVER_ENV` | Active environment slug | `local`, `staging`, `production` |
+| `API_BASE_URL` | Where the frontend talks to the backend | `http://localhost:8000` |
+| `FRONTEND_ORIGIN` | Primary UI origin allowed by CORS | `http://localhost:3000` |
+| `CORS_EXTRA_ORIGINS` | Optional comma list of additional origins | `https://staging.example.com` |
+
+When `SERVER_ENV=local`, sensible defaults are applied (localhost ports). For staging/prod just set the URLs explicitly—both backend and frontend modules will stay in sync.
+
+---
+
 ## 📂 Repository Structure
 
 ```

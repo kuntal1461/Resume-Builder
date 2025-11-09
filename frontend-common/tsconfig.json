@@ -1,0 +1,14 @@
+{
+  // Library config for shared frontend utilities (builds declarations only).
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2020"],
+    "rootDir": ".",
+    "outDir": "dist",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": true
+  },
+  "include": ["**/*.ts", "**/*.tsx"]
+}

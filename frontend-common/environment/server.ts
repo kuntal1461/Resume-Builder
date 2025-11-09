@@ -9,6 +9,12 @@ export type ServerEnvironmentInfo = {
 };
 
 const DEFAULT_LOCAL_API = 'http://localhost:8000';
+const envFromProcess =
+  (
+    globalThis as typeof globalThis & {
+      process?: { env?: Record<string, string | undefined | null> };
+    }
+  ).process?.env ?? {};
 
 const ENV_ALIAS_MAP: Record<CanonicalEnvName, string[]> = {
   local: ['local', 'localhost', 'dev', 'development'],
@@ -36,8 +42,8 @@ function normalizeEnvName(raw?: string | null): CanonicalEnvName {
 }
 
 function resolveApiBaseUrl(envName: CanonicalEnvName): string {
-  const explicitServer = process.env.API_BASE_URL?.trim();
-  const explicitPublic = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
+  const explicitServer = envFromProcess.API_BASE_URL?.trim();
+  const explicitPublic = envFromProcess.NEXT_PUBLIC_API_BASE_URL?.trim();
 
   if (explicitServer) {
     return explicitServer;
@@ -61,9 +67,9 @@ export function resolveServerEnvironment(
 ): ServerEnvironmentInfo {
   const envName = normalizeEnvName(
     overrides?.serverEnv ??
-      process.env.SERVER_ENV ??
-      process.env.NEXT_PUBLIC_SERVER_ENV ??
-      process.env.NODE_ENV
+      envFromProcess.SERVER_ENV ??
+      envFromProcess.NEXT_PUBLIC_SERVER_ENV ??
+      envFromProcess.NODE_ENV
   );
   const apiBaseUrl = overrides?.apiBaseUrl ?? resolveApiBaseUrl(envName);
 
@@ -75,4 +81,3 @@ export function resolveServerEnvironment(
     apiBaseUrl,
   };
 }
-

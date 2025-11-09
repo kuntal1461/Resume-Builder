@@ -1,0 +1,8 @@
+{
+  // Central TS entry that wires every workspace project together.
+  "files": [],
+  "references": [
+    { "path": "./Backedc-common" },
+    { "path": "./job-recommendation-system/front-end" }
+  ]
+}

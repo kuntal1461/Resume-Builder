@@ -9,7 +9,7 @@ COPY job-recommendation-system/web/requirements.txt ./web/requirements.txt
 RUN pip install --no-cache-dir -r web/requirements.txt
 
 COPY job-recommendation-system/ /app/
-COPY common/ /app/common/
+COPY backend-common/ /app/backend_common/
 COPY docker/entrypoint.api.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 

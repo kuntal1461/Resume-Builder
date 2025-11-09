@@ -1,7 +1,7 @@
 from dataclasses import asdict
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from pydantic import BaseModel, EmailStr, constr
 from sqlalchemy.orm import Session
 
@@ -65,3 +65,21 @@ def register_user(body: RegisterBody, service: UserService = Depends(get_user_se
         return asdict(resp)
     except UserAlreadyExistsError as exc:
         raise HTTPException(status.HTTP_409_CONFLICT, str(exc))
+
+
+@router.post("/logout")
+def logout_user(response: Response):
+    """
+    Placeholder logout endpoint.
+
+    The frontend expects an `/auth/logout` route to exist so that it can revoke
+    sessions (once implemented) and clear cookies on the client. Until server-side
+    authentication issues cookies/tokens, we respond with success so the UI flow
+    completes without throwing network errors.
+    """
+    # Clear common auth cookie names defensively (no-ops if they aren't set yet).
+    response.delete_cookie("session")
+    response.delete_cookie("refresh_token")
+    response.delete_cookie("access_token")
+
+    return {"success": True, "message": "Logged out"}

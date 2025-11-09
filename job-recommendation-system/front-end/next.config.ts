@@ -1,10 +1,14 @@
+import path from 'node:path';
 import type { NextConfig } from 'next';
+
+const workspaceRoot = path.resolve(__dirname, '../..');
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   experimental: {
     externalDir: true,
   },
+  outputFileTracingRoot: workspaceRoot,
   webpack(config) {
     type CssModuleOptions = {
       localIdentName?: string;
@@ -63,6 +67,7 @@ const nextConfig: NextConfig = {
       });
     });
 
+    config.resolve = config.resolve ?? {};
     return config;
   },
 };

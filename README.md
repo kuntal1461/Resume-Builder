@@ -19,7 +19,7 @@ docker compose up -d   # build & start
 
 **Access Points:**
 - 🌐 **API** → http://localhost:8000/health
-- 🗄️ **Database** → auto-created (schema + seed from data/sql/)
+- 🗄️ **Database** → auto-created (schema + migrations from data/sql/)
 
 ---
 
@@ -64,13 +64,9 @@ When `SERVER_ENV=local`, sensible defaults are applied (localhost ports). For st
 │   ├── core/                          # business logic & entities
 │   ├── web/                           # FastAPI API layer
 │   ├── frontend/                      # React/NxT.js UI
-│   └── data/sql/                      # DB migrations & seeds
-│       ├── Major_01/
-│       │   ├── Major1_DDL.sql
-│       │   └── Major1_DML.sql
-│       └── Major_02/
-│           ├── Major2_DDL.sql
-│           └── Major2_DML.sql
+│   └── data/sql/                      # DB migrations (DDL/DML)
+│       ├── Major_01_00_00/            # schema
+│       └── Major_02_00_00/            # future DDL
 │
 ├── docker/                            # Docker configs
 │   ├── Dockerfile.api
@@ -114,8 +110,6 @@ When `SERVER_ENV=local`, sensible defaults are applied (localhost ports). For st
 - Job fetching (LinkedIn scraper/integrator).
 - API layer (/api/v1/resumesystem/*).
 - React frontend (Login, Resume upload, Q&A, Jobs view).
-
----
 
 ## ⚙️ Tech Stack
 

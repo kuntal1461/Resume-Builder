@@ -16,6 +16,7 @@ services:
       - "8000:8000"
     volumes:
       - ./job-recommendation-system:/app:rw,cached
+      - ./backend-common:/backend_common:rw,cached
     working_dir: /app
     user: "1000:1000"  # non-root runtime
   frontend:
@@ -31,6 +32,7 @@ services:
       - "3000:3000"
     volumes:
       - ./job-recommendation-system/front-end:/app:rw,cached
+      - ./frontend-common:/frontend-common:rw,cached
       - frontend_node_modules:/app/node_modules
     working_dir: /app
     restart: unless-stopped

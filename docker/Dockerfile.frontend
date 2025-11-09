@@ -10,6 +10,9 @@ WORKDIR /app
 COPY job-recommendation-system/front-end/package*.json ./
 # Dependencies are installed by entrypoint to fill the bind-mounted node_modules volume on demand
 
+# Copy shared frontend utilities that live outside the app directory.
+COPY frontend-common /frontend-common
+
 # Copy the rest of the app
 COPY job-recommendation-system/front-end/ .
 

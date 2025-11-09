@@ -4,7 +4,7 @@ from typing import List
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from common import get_server_environment
+from backend_common import get_server_environment
 
 from .database import init_db
 from .db_ping import ping_db

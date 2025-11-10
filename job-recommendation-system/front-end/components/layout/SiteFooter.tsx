@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import styles from '../../styles/home/Home.module.css';
 
 interface SiteFooterProps {
@@ -76,7 +77,7 @@ export default function SiteFooter({ currentYear }: SiteFooterProps) {
           <a href="#top">Terms</a>
           <a href="#top">Privacy</a>
           <a href="#top">Cookies</a>
-          <a href="/admin">Admin</a>
+          <Link href="/admin">Admin</Link>
         </div>
       </div>
     </footer>

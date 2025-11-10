@@ -58,12 +58,12 @@ export default function SiteHeader() {
   return (
     <header className={`${styles.header} ${isScrolled ? styles.headerScrolled : ''}`}>
       <div className={styles.headerInner}>
-        <a href="/" className={styles.brand} onClick={handleBrandClick}>
+        <Link href="/" className={styles.brand} onClick={handleBrandClick}>
           <span className={styles.brandMark}>JR</span>
           <span className={styles.brandText}>
             Job<span>Match</span>
           </span>
-        </a>
+        </Link>
 
         <nav className={styles.navDesktop} aria-label="Primary">
           {NAV_LINKS.map((link) => (

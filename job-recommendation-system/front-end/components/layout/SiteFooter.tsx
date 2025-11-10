@@ -67,6 +67,7 @@ export default function SiteFooter({ currentYear }: SiteFooterProps) {
             <p className={styles.footerDisclaimer}>No spam. Unsubscribe anytime.</p>
           </div>
         </div>
+
       </div>
 
       <div className={styles.footerBottom}>
@@ -75,6 +76,7 @@ export default function SiteFooter({ currentYear }: SiteFooterProps) {
           <a href="#top">Terms</a>
           <a href="#top">Privacy</a>
           <a href="#top">Cookies</a>
+          <a href="/admin">Admin</a>
         </div>
       </div>
     </footer>

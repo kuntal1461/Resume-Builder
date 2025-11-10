@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import styles from '../../styles/home/Home.module.css';
 
@@ -11,6 +12,7 @@ const NAV_LINKS = [
 ];
 
 export default function SiteHeader() {
+  const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -37,16 +39,31 @@ export default function SiteHeader() {
 
   const toggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
+  const handleBrandClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    closeMobileMenu();
+    if (router.pathname === '/') {
+      if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      return;
+    }
+    event.preventDefault();
+    if (typeof window !== 'undefined') {
+      window.location.href = '/';
+    } else {
+      router.push('/');
+    }
+  };
 
   return (
     <header className={`${styles.header} ${isScrolled ? styles.headerScrolled : ''}`}>
       <div className={styles.headerInner}>
-        <Link href="/" className={styles.brand} onClick={closeMobileMenu}>
+        <a href="/" className={styles.brand} onClick={handleBrandClick}>
           <span className={styles.brandMark}>JR</span>
           <span className={styles.brandText}>
             Job<span>Match</span>
           </span>
-        </Link>
+        </a>
 
         <nav className={styles.navDesktop} aria-label="Primary">
           {NAV_LINKS.map((link) => (

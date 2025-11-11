@@ -1,13 +1,17 @@
+DROP TABLE IF EXISTS users;
+
 CREATE TABLE IF NOT EXISTS users (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  -- User-specific fields
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  -- User-specific fields (PII hashed/encrypted at the service layer where noted)
   username      VARCHAR(255) NOT NULL UNIQUE,
-  email         VARCHAR(255) NOT NULL UNIQUE,
-  password_hash VARCHAR(255) NOT NULL,
-  first_name    VARCHAR(255) NOT NULL,
-  last_name     VARCHAR(255) NOT NULL,
-  phone_number  VARCHAR(32)  NULL UNIQUE,
+  email         VARCHAR(255) NOT NULL UNIQUE COMMENT 'Hashed before persistence',
+  password_hash VARCHAR(255) NOT NULL COMMENT 'BCrypt hash of user password',
+  first_name    VARCHAR(255) NOT NULL COMMENT 'Hashed before persistence',
+  last_name     VARCHAR(255) NOT NULL COMMENT 'Hashed before persistence',
+  phone_number  VARCHAR(32)  NULL UNIQUE COMMENT 'Hashed before persistence',
+  dob           TIMESTAMP NULL COMMENT 'Hashed before persistence',
   is_active     TINYINT(1)   NOT NULL DEFAULT 1,
+  is_admin      TINYINT(1)   NOT NULL DEFAULT 0,
   signInBy      VARCHAR(64)  NULL,
   -- CommonEntity fields
   rowstate        INT NOT NULL DEFAULT 1,       -- 1 = active, other values = inactive/archived
@@ -22,4 +26,7 @@ CREATE TABLE IF NOT EXISTS users (
   -- Audit timestamps (if you still want them separate from loggedInTime/lastUpdateTime)
   created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB
+  AUTO_INCREMENT=1000
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;

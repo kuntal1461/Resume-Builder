@@ -77,14 +77,18 @@ Thanks for your interest in improving the Job Recommendation System! This guide 
 ```bash
 docker compose exec mysql sh -lc '
   mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" -e "
-    INSERT INTO $MYSQL_DB.users (username,email,password_hash,first_name,last_name,is_active,signInBy)
-    VALUES (\"demo\",\"demo@example.com\",\"hash\",\"Demo\",\"User\",1,\"email\");
+    INSERT INTO $MYSQL_DB.users (
+      username,email,password_hash,first_name,last_name,phone_number,dob,is_active,is_admin,signInBy
+    )
+    VALUES (
+      \"demo\",\"demo@example.com\",\"hash\",\"Demo\",\"User\",\"+10000000000\",\"1990-01-01 00:00:00\",1,0,\"email\"
+    );
   "'
 ```
 
 **Check the user:**
 ```bash
-docker compose exec mysql sh -lc 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" -e "SELECT id,username,email FROM $MYSQL_DB.users;"'
+docker compose exec mysql sh -lc 'mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" -e "SELECT id,username,email,is_admin FROM $MYSQL_DB.users;"'
 ```
 
 ---

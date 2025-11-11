@@ -1,4 +1,5 @@
 from dataclasses import asdict
+from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
@@ -32,6 +33,8 @@ class RegisterBody(BaseModel):
     first_name: constr(min_length=1, max_length=100)  # type: ignore[call-arg]
     last_name: constr(min_length=1, max_length=100)  # type: ignore[call-arg]
     phone_number: Optional[constr(min_length=7, max_length=32)] = None  # type: ignore[call-arg]
+    dob: Optional[datetime] = None
+    is_admin: bool = False
 
 
 def get_user_service(db: Session = Depends(get_db)) -> UserService:
@@ -60,6 +63,8 @@ def register_user(body: RegisterBody, service: UserService = Depends(get_user_se
             first_name=body.first_name,
             last_name=body.last_name,
             phone_number=body.phone_number,
+            dob=body.dob,
+            is_admin=body.is_admin,
         )
         resp = service.register_user(req)
         return asdict(resp)

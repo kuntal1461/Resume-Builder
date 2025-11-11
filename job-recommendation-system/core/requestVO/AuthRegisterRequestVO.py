@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Optional
 
 
@@ -10,3 +11,5 @@ class AuthRegisterRequestVO:
     first_name: str
     last_name: str
     phone_number: Optional[str] = None
+    dob: Optional[datetime] = None
+    is_admin: bool = False

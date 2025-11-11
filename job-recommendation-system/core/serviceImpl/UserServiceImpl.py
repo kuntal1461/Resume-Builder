@@ -58,7 +58,9 @@ class UserServiceImpl(UserService):
             first_name=req.first_name,
             last_name=req.last_name,
             phone_number=req.phone_number,
+            dob=req.dob,
             is_active=True,
+            is_admin=req.is_admin,
             signInBy="email",
         )
 
@@ -71,4 +73,6 @@ class UserServiceImpl(UserService):
             email=created_user.email,
             username=created_user.username,
             phone_number=created_user.phone_number,
+            dob=created_user.dob,
+            is_admin=created_user.is_admin,
         )

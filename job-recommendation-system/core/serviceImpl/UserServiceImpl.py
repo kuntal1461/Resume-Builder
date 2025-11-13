@@ -39,6 +39,7 @@ class UserServiceImpl(UserService):
             user_id=user.id,
             email=user.email,
             username=getattr(user, "username", None),
+            is_admin=bool(getattr(user, "is_admin", False)),
         )
 
     def register_user(self, req: AuthRegisterRequestVO) -> AuthRegisterResponseVO:

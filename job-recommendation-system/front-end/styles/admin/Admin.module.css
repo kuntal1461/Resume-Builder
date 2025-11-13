@@ -300,6 +300,25 @@
   line-height: 1.5;
 }
 
+.statusBanner {
+  border-radius: 0.9rem;
+  padding: 0.85rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.statusError {
+  background: rgba(255, 99, 132, 0.15);
+  border: 1px solid rgba(255, 99, 132, 0.4);
+  color: #ffb4c0;
+}
+
+.statusSuccess {
+  background: rgba(16, 185, 129, 0.18);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #9ef3d0;
+}
+
 @media (max-width: 768px) {
   .wrapper {
     padding: 3rem 1rem 4rem;

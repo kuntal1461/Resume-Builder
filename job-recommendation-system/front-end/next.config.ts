@@ -3,12 +3,22 @@ import type { NextConfig } from 'next';
 
 const workspaceRoot = path.resolve(__dirname, '../..');
 
+const adminDashboardOrigin = (process.env.RESUME_ADMIN_DASHBOARD_ORIGIN ?? 'http://localhost:3100').replace(/\/$/, '');
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   experimental: {
     externalDir: true,
   },
   outputFileTracingRoot: workspaceRoot,
+  async rewrites() {
+    return [
+      {
+        source: '/admin/:path*',
+        destination: `${adminDashboardOrigin}/admin/:path*`,
+      },
+    ];
+  },
   webpack(config) {
     type CssModuleOptions = {
       localIdentName?: string;

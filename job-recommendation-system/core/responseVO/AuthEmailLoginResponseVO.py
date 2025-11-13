@@ -8,3 +8,4 @@ class AuthEmailLoginResponseVO:
     user_id: int
     email: str
     username: Optional[str] = None
+    is_admin: bool = False

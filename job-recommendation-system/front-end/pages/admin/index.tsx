@@ -1,10 +1,13 @@
 import Head from 'next/head';
-import { FormEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, useState } from 'react';
+import { useRouter } from 'next/router';
 import SiteHeader from '../../components/layout/SiteHeader';
 import SiteFooter from '../../components/layout/SiteFooter';
+import { getEnvironmentConfig } from '../../lib/runtimeConfig';
 import styles from '../../styles/admin/Admin.module.css';
 
 type AuthMode = 'login' | 'signup';
+type BannerState = { type: 'success' | 'error'; message: string } | null;
 
 const ADMIN_FEATURES = [
   {
@@ -27,22 +30,139 @@ const ADMIN_STATS = [
   { label: 'Avg. approval time', value: '4h' },
 ];
 
+const describeNetworkError = (error: unknown, fallback: string, apiBaseUrl?: string) => {
+  if (error && typeof error === 'object' && 'name' in error && (error as Error).name === 'TypeError') {
+    const message = String((error as Error).message || '').toLowerCase();
+    if (
+      message.includes('failed to fetch') ||
+      message.includes('load failed') ||
+      message.includes('network request failed')
+    ) {
+      if (apiBaseUrl) {
+        return `Cannot reach API at ${apiBaseUrl}. Ensure the backend is reachable.`;
+      }
+      return 'Cannot reach the API. Ensure the backend is running and accessible.';
+    }
+  }
+
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+
+  return fallback;
+};
+
+const extractDetailMessage = (payload: unknown, fallback: string) => {
+  if (!payload) {
+    return fallback;
+  }
+
+  if (typeof payload === 'string') {
+    return payload;
+  }
+
+  if (typeof payload === 'object') {
+    const record = payload as Record<string, unknown>;
+    if (typeof record.detail === 'string') {
+      return record.detail;
+    }
+    if (typeof record.message === 'string') {
+      return record.message;
+    }
+  }
+
+  return fallback;
+};
+
 export default function AdminAccessPage() {
   const [mode, setMode] = useState<AuthMode>('login');
+  const [adminForm, setAdminForm] = useState({ email: '', password: '' });
+  const [adminBanner, setAdminBanner] = useState<BannerState>(null);
+  const [adminLoading, setAdminLoading] = useState(false);
   const currentYear = new Date().getFullYear();
+  const router = useRouter();
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // Placeholder for real auth integration.
+    // Placeholder for future signup handling
+  };
+
+  const handleAdminInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = event.target;
+    const key = id === 'admin-login-password' ? 'password' : 'email';
+    setAdminForm((prev) => ({ ...prev, [key]: key === 'email' ? value.trimStart() : value }));
+  };
+
+  const handleAdminLogin = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setAdminLoading(true);
+    setAdminBanner(null);
+
+    const fallbackMessage = 'Unable to verify your admin access. Please try again.';
+    let apiBaseUrl = '';
+
+    try {
+      const config = await getEnvironmentConfig();
+      apiBaseUrl = config.apiBaseUrl;
+
+      const response = await fetch(`${apiBaseUrl}/auth/login/email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: adminForm.email.trim(), password: adminForm.password }),
+      });
+
+      const payload = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        const message = extractDetailMessage(payload, fallbackMessage);
+        throw new Error(message);
+      }
+
+      if (!payload?.is_admin) {
+        throw new Error('You do not have access to the admin dashboard. Please contact support.');
+      }
+
+      setAdminBanner({
+        type: 'success',
+        message: 'Access granted. Redirecting to the admin dashboard…',
+      });
+
+      await router.push('/admin/view');
+    } catch (error) {
+      setAdminBanner({
+        type: 'error',
+        message: describeNetworkError(error, fallbackMessage, apiBaseUrl),
+      });
+    } finally {
+      setAdminLoading(false);
+    }
   };
 
   const renderLoginForm = () => (
-    <form className={styles.form} onSubmit={handleSubmit}>
+    <form className={styles.form} onSubmit={handleAdminLogin}>
+      {adminBanner ? (
+        <div
+          className={`${styles.statusBanner} ${
+            adminBanner.type === 'error' ? styles.statusError : styles.statusSuccess
+          }`}
+        >
+          {adminBanner.message}
+        </div>
+      ) : null}
       <div className={styles.formGroup}>
         <label htmlFor="admin-login-email" className={styles.labelRow}>
           <span>Email</span>
         </label>
-        <input id="admin-login-email" type="email" className={styles.formInput} placeholder="you@company.com" required />
+        <input
+          id="admin-login-email"
+          type="email"
+          className={styles.formInput}
+          placeholder="you@company.com"
+          value={adminForm.email}
+          onChange={handleAdminInputChange}
+          autoComplete="email"
+          required
+        />
       </div>
       <div className={styles.formGroup}>
         <div className={styles.labelRow}>
@@ -51,15 +171,24 @@ export default function AdminAccessPage() {
             Forgot?
           </button>
         </div>
-        <input id="admin-login-password" type="password" className={styles.formInput} placeholder="••••••••" required />
+        <input
+          id="admin-login-password"
+          type="password"
+          className={styles.formInput}
+          placeholder="••••••••"
+          value={adminForm.password}
+          onChange={handleAdminInputChange}
+          autoComplete="current-password"
+          required
+        />
       </div>
       <label className={styles.checkbox}>
         <input type="checkbox" defaultChecked />
         Keep me signed in
       </label>
       <div className={styles.formActions}>
-        <button type="submit" className={styles.primaryButton}>
-          Access dashboard
+        <button type="submit" className={styles.primaryButton} disabled={adminLoading}>
+          {adminLoading ? 'Checking access…' : 'Access dashboard'}
         </button>
         <button type="button" className={styles.secondaryLink} onClick={() => setMode('signup')}>
           Need an account? Request access

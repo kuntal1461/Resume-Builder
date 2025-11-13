@@ -1,0 +1,355 @@
+.workspaceShell {
+  min-height: 100vh;
+  padding: 40px clamp(16px, 4vw, 48px) 72px;
+  background: #f6f8fc;
+  color: #132442;
+}
+
+.workspaceLayout {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  gap: 32px;
+}
+
+.workspaceSidebar {
+  width: 280px;
+  min-width: 260px;
+  flex: 0 0 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  padding: 26px 24px 34px;
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at 0 0, rgba(108, 99, 255, 0.2) 0%, rgba(108, 99, 255, 0) 55%),
+    linear-gradient(185deg, #ffffff 0%, #f4f6ff 45%, #eef2ff 100%);
+  border: 1px solid rgba(124, 93, 250, 0.16);
+  box-shadow: 0 22px 48px rgba(102, 94, 168, 0.12);
+}
+
+.sidebarBrandLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: #1b103f;
+}
+
+.sidebarBrandMark {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #7c5dfa, #58c5ff);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-weight: 700;
+}
+
+.sidebarProfileCard {
+  background: linear-gradient(180deg, #ffffff 0%, #f9faff 100%);
+  border: 1px solid rgba(124, 93, 250, 0.12);
+  border-radius: 22px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 24px 44px rgba(93, 87, 166, 0.12);
+}
+
+.sidebarProfileHeader {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.sidebarProfileAvatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: rgba(110, 99, 255, 0.12);
+  border: 1px solid rgba(108, 99, 255, 0.22);
+  display: grid;
+  place-items: center;
+  color: #4338ca;
+  font-weight: 600;
+}
+
+.sidebarProfileMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebarProfileName {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1b103f;
+}
+
+.sidebarProfileTagline {
+  color: rgba(27, 16, 63, 0.7);
+  font-size: 0.88rem;
+}
+
+.sidebarProfileEmail {
+  color: #7881ac;
+  font-size: 0.82rem;
+}
+
+.sidebarMenu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebarMenuItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebarMenuLink {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 14px;
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #2a2761;
+  background: transparent;
+  border: 1px solid transparent;
+  transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
+}
+
+.sidebarMenuLink:hover {
+  background: rgba(124, 93, 250, 0.14);
+  color: #5c4de5;
+  box-shadow: 0 12px 20px rgba(124, 93, 250, 0.16);
+  transform: translateY(-2px);
+}
+
+.sidebarMenuLinkActive {
+  background: linear-gradient(135deg, #7c5dfa, #5c4de5);
+  color: #fff;
+  box-shadow: 0 16px 30px rgba(124, 93, 250, 0.24);
+  border-color: transparent;
+}
+
+.sidebarMenuBadge {
+  margin-left: auto;
+  border-radius: 999px;
+  padding: 2px 9px;
+  background: rgba(255, 255, 255, 0.2);
+  color: currentColor;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.workspaceMain {
+  flex: 1;
+  background: #fefeff;
+  border-radius: 32px;
+  padding: 36px;
+  box-shadow: 0 18px 40px rgba(32, 21, 72, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.dashboardHeader {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+  gap: 24px;
+  padding: 28px;
+  border-radius: 28px;
+  background: linear-gradient(140deg, #061344, #1c2fb0 50%, #5c4cfd);
+  color: #f4f7ff;
+  box-shadow: 0 28px 64px rgba(9, 17, 61, 0.45);
+}
+
+.dashboardGreeting {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.8rem;
+  color: rgba(244, 247, 255, 0.84);
+  margin: 0 0 8px;
+}
+
+.dashboardHeader h1 {
+  margin: 0 0 10px;
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+}
+
+.dashboardHeader p {
+  margin: 0 0 16px;
+  color: rgba(244, 247, 255, 0.74);
+  line-height: 1.5;
+}
+
+.headerActions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.primaryActionButton,
+.secondaryActionButton {
+  border-radius: 16px;
+  padding: 11px 18px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+
+.primaryActionButton {
+  background: linear-gradient(120deg, #ffe38d, #ffb347);
+  color: #111a3d;
+  box-shadow: 0 12px 24px rgba(255, 179, 71, 0.28);
+}
+
+.secondaryActionButton {
+  background: rgba(6, 19, 68, 0.4);
+  border: 1px solid rgba(244, 247, 255, 0.4);
+  color: #f4f7ff;
+}
+
+.dashboardMetrics {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dashboardMetrics article {
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: rgba(6, 19, 68, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dashboardMetrics span {
+  font-size: 0.9rem;
+  color: rgba(244, 247, 255, 0.84);
+}
+
+.dashboardMetrics strong {
+  font-size: 1.8rem;
+  color: #ffe38d;
+}
+
+.sectionIntro h2 {
+  margin: 0 0 6px;
+  color: #1b103f;
+}
+
+.sectionIntro p {
+  margin: 0;
+  color: #5d5873;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.contentCard {
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px;
+  border: 1px solid rgba(27, 16, 63, 0.08);
+  box-shadow: 0 18px 36px rgba(48, 35, 103, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contentCard h3 {
+  margin: 0;
+  color: #1b103f;
+}
+
+.contentCard p {
+  margin: 0;
+  color: #5d5873;
+  flex: 1;
+}
+
+.contentCard a {
+  color: #4f39b4;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.summaryCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-radius: 18px;
+  background: #fff;
+  border: 1px solid rgba(27, 16, 63, 0.08);
+  box-shadow: 0 20px 40px rgba(32, 21, 72, 0.08);
+}
+
+.summaryCard strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #1b103f;
+}
+
+.summaryCard p {
+  margin: 0;
+  color: #5d5873;
+  max-width: 260px;
+}
+
+.summaryCard button {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 18px;
+  background: linear-gradient(135deg, #7c5dfa, #5c4de5);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@media (max-width: 960px) {
+  .workspaceLayout {
+    flex-direction: column;
+  }
+
+  .workspaceSidebar {
+    width: 100%;
+  }
+
+  .dashboardHeader {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .workspaceShell {
+    padding: 32px 16px 56px;
+  }
+
+  .headerActions {
+    flex-direction: column;
+  }
+}

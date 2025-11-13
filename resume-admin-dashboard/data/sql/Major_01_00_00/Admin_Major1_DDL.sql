@@ -84,3 +84,33 @@ CREATE TABLE IF NOT EXISTS resume_template (
   AUTO_INCREMENT=1000
   DEFAULT CHARSET=utf8mb4
   COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS resume_template_version;
+
+CREATE TABLE IF NOT EXISTS resume_template_version (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  template_id BIGINT UNSIGNED NOT NULL,
+  version_no BIGINT NOT NULL DEFAULT 1,
+  latex_source TEXT NOT NULL,
+  assets_manifest_json JSON NULL,
+  changelog TEXT NULL,
+  -- CommonEntity fields
+  rowstate        INT NOT NULL DEFAULT 1,
+  field1          VARCHAR(200) NULL,
+  field2          VARCHAR(200) NULL,
+  field3          BIGINT NULL,
+  field4          BIGINT NULL,
+  loggedBy        VARCHAR(100) NULL,
+  lastUpdatedBy   VARCHAR(100) NULL,
+  loggedInTime    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  lastUpdateTime  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  -- Audit timestamps
+  created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_resume_template_version_template
+    FOREIGN KEY (template_id) REFERENCES resume_template (id),
+  CONSTRAINT uq_resume_template_version UNIQUE (template_id, version_no)
+) ENGINE=InnoDB
+  AUTO_INCREMENT=1000
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;

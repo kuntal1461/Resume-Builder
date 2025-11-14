@@ -37,6 +37,7 @@ type LoginResponsePayload = {
   success?: boolean;
   message?: string;
   user_id?: number;
+  detail?: unknown;
   email?: string;
   username?: string;
   first_name?: string;

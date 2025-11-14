@@ -5,7 +5,7 @@ import { resolveSidebarProfile, type SidebarProfile } from '../../lib/sidebarPro
 import styles from '../../styles/admin/AdminView.module.css';
 
 const QUICK_ACTIONS = [
-  { title: 'Resume templates', description: 'Curate and publish templates for hiring pods.', href: '#' },
+  { title: 'Resume templates', description: 'Curate and publish templates for hiring pods.', href: '/view/templates' },
   { title: 'Team permissions', description: 'Grant or revoke reviewer access in seconds.', href: '#' },
   { title: 'Job pipelines', description: 'Monitor candidate progress across roles.', href: '#' },
 ];

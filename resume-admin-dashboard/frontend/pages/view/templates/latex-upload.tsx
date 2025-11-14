@@ -69,14 +69,33 @@ const SAMPLE_LATEX = String.raw`
 \end{document}
 `;
 
+const CHILD_CATEGORY_OPTIONS = [
+  { value: 'ai-specialist', label: 'AI specialist' },
+  { value: 'ats-ready', label: 'ATS ready' },
+  { value: 'campus-hiring', label: 'Campus hiring' },
+  { value: 'leadership', label: 'Leadership' },
+  { value: 'rev-ops', label: 'Revenue operations' },
+  { value: 'global', label: 'Global template' },
+  { value: 'design-system', label: 'Design system' },
+  { value: 'executive-suite', label: 'Executive suite' },
+  { value: 'university', label: 'University recruiting' },
+];
+
 export default function LatexUploadPage() {
   const [sidebarProfile, setSidebarProfile] = useState<SidebarProfile>(DEFAULT_SIDEBAR_PROFILE);
   const [latexSource, setLatexSource] = useState<string>(SAMPLE_LATEX.trim());
+  const [childCategories, setChildCategories] = useState<string[]>(['ai-specialist', 'ats-ready']);
   const [isRendering, setIsRendering] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [renderError, setRenderError] = useState<string | null>(null);
   const [previewExcerpt, setPreviewExcerpt] = useState('');
   const lineNumbersRef = useRef<HTMLDivElement | null>(null);
+
+  const toggleChildCategory = (value: string) => {
+    setChildCategories((previous) =>
+      previous.includes(value) ? previous.filter((item) => item !== value) : [...previous, value],
+    );
+  };
 
   const triggerRender = async () => {
     if (!latexSource.trim()) {
@@ -196,34 +215,6 @@ export default function LatexUploadPage() {
           </aside>
 
           <div className={styles.workspaceMain}>
-            <section className={styles.dashboardHeader}>
-              <div>
-                <p className={styles.dashboardGreeting}>LaTeX uploader</p>
-                <h1>Upload resume sources for review</h1>
-                <p>
-                  Drop LaTeX files, attach supporting classes, and route them through sanitization before publishing a
-                  workspace-ready template.
-                </p>
-                <div className={styles.headerActions}>
-                  <button type="button" className={styles.primaryActionButton}>
-                    Upload .tex file
-                  </button>
-                  <button type="button" className={styles.secondaryActionButton}>
-                    View style guide
-                  </button>
-                </div>
-              </div>
-              <div className={styles.dashboardMetrics}>
-                {PIPELINE_PHASES.map((phase) => (
-                  <article key={phase.name}>
-                    <span>{phase.name}</span>
-                    <strong>{phase.sla}</strong>
-                    <small>{phase.owner}</small>
-                  </article>
-                ))}
-              </div>
-            </section>
-
             <section className={styles.sectionIntro}>
               <h2>Upload &amp; edit resume source</h2>
               <p>Drop LaTeX files, tweak the raw source, and confirm the rendered view before publishing to pods.</p>
@@ -239,6 +230,35 @@ export default function LatexUploadPage() {
                   <label>
                     <span>Owner pod</span>
                     <input type="text" placeholder="e.g. Innovation pod" defaultValue="Innovation pod · SF" />
+                  </label>
+                  <label>
+                    <span>Parent category</span>
+                    <select defaultValue="resume-ops">
+                      <option value="">Select parent category</option>
+                      <option value="resume-ops">Resume operations</option>
+                      <option value="eng-toolkit">Engineering toolkit</option>
+                      <option value="sales">Go-to-market</option>
+                    </select>
+                  </label>
+                  <div className={styles.categoryField}>
+                    <span>Child categories</span>
+                    <div className={styles.categoryChecklist} role="group" aria-label="Child categories">
+                      {CHILD_CATEGORY_OPTIONS.map((option) => (
+                        <label key={option.value} className={styles.categoryChecklistOption}>
+                          <input
+                            type="checkbox"
+                            value={option.value}
+                            checked={childCategories.includes(option.value)}
+                            onChange={() => toggleChildCategory(option.value)}
+                          />
+                          <span>{option.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  <label>
+                    <span>Version</span>
+                    <input type="text" placeholder="e.g. v1.2" defaultValue="v1.0" />
                   </label>
                 </div>
 

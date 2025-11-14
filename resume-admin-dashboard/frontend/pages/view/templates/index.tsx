@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { resolveSidebarProfile, type SidebarProfile } from '../../../lib/sidebarProfile';
 import styles from '../../../styles/admin/AdminView.module.css';
@@ -11,7 +12,12 @@ const TEMPLATE_STATUS = [
 ];
 
 const TEMPLATE_ACTIONS = [
-  { title: 'Launch a new template', description: 'Clone a proven layout, customize sections, and ship to hiring pods.', cta: 'Create template' },
+  {
+    title: 'Launch a new template',
+    description: 'Clone a proven layout, customize sections, and ship to hiring pods.',
+    cta: 'Create template',
+    href: '/view/templates/latex-upload',
+  },
   { title: 'Review pending updates', description: 'Approve legal copy changes or reassign owners before publish.', cta: 'Open queue' },
   { title: 'Sync AI scoring', description: 'Map rubric tags so LLM scoring stays aligned with resume variants.', cta: 'Manage scoring' },
 ];
@@ -32,6 +38,7 @@ const NAV_LINKS = [
 
 export default function AdminTemplatesPage() {
   const [sidebarProfile, setSidebarProfile] = useState<SidebarProfile>(DEFAULT_SIDEBAR_PROFILE);
+  const router = useRouter();
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -113,7 +120,15 @@ export default function AdminTemplatesPage() {
                 <article key={action.title} className={styles.contentCard}>
                   <h3>{action.title}</h3>
                   <p>{action.description}</p>
-                  <button type="button" className={styles.primaryActionButton}>
+                  <button
+                    type="button"
+                    className={styles.primaryActionButton}
+                    onClick={() => {
+                      if (action.href) {
+                        void router.push(action.href);
+                      }
+                    }}
+                  >
                     {action.cta}
                   </button>
                 </article>

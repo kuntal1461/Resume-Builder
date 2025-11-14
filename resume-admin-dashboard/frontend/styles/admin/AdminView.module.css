@@ -382,13 +382,59 @@
   font-weight: 500;
 }
 
-.latexFields input {
+.latexFields input,
+.latexFields select {
   border-radius: 14px;
   border: 1px solid rgba(27, 16, 63, 0.08);
   padding: 12px 14px;
   background: #f9f7ff;
   font-size: 0.95rem;
   color: #1b103f;
+}
+
+.categoryField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #5d5873;
+  font-weight: 500;
+}
+
+.categoryChecklist {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  padding: 10px;
+  border-radius: 16px;
+  border: 1px solid rgba(27, 16, 63, 0.08);
+  background: #fefbff;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.categoryChecklistOption {
+  border-radius: 12px;
+  border: 1px solid rgba(27, 16, 63, 0.12);
+  background: #f4f1ff;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #3b2b6b;
+  cursor: pointer;
+  transition: background 0.2s ease, border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.categoryChecklistOption input {
+  accent-color: #5f46d8;
+}
+
+.categoryChecklistOption:hover {
+  border-color: #5f46d8;
+  background: #ebe5ff;
+  box-shadow: 0 4px 12px rgba(32, 21, 72, 0.15);
 }
 
 .latexTextareaLabel {

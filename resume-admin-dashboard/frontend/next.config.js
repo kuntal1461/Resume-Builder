@@ -1,7 +1,16 @@
+const path = require('node:path');
+
+const workspaceRoot = path.resolve(__dirname, '../..');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   basePath: '/admin',
+  experimental: {
+    externalDir: true,
+  },
+  turbopack: {},
+  outputFileTracingRoot: workspaceRoot,
   webpack(config) {
     const rules = config.module?.rules ?? [];
 
@@ -29,6 +38,7 @@ const nextConfig = {
     };
 
     rules.forEach(visitRule);
+
     return config;
   },
 };

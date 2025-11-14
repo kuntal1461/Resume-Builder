@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { getEnvironmentConfig } from '../../lib/runtimeConfig';
+import { persistWorkspaceProfile } from '../../lib/workspaceProfileStorage';
 
 const normalizeDetail = (detail: unknown, fallback: string) => {
   if (!detail) {
@@ -30,6 +31,17 @@ const normalizeDetail = (detail: unknown, fallback: string) => {
     return JSON.stringify(detail);
   }
   return fallback;
+};
+
+type LoginResponsePayload = {
+  success?: boolean;
+  message?: string;
+  user_id?: number;
+  email?: string;
+  username?: string;
+  first_name?: string;
+  last_name?: string;
+  is_admin?: boolean;
 };
 
 const mapNetworkError = (error: unknown, fallback: string, apiBaseUrl?: string) => {
@@ -85,7 +97,7 @@ export default function LoginPage() {
         body: JSON.stringify(form),
       });
 
-      const payload = await response.json().catch(() => ({}));
+      const payload: LoginResponsePayload = await response.json().catch(() => ({} as LoginResponsePayload));
 
       if (!response.ok) {
         const message = normalizeDetail(
@@ -94,6 +106,13 @@ export default function LoginPage() {
         );
         throw new Error(message);
       }
+
+      persistWorkspaceProfile({
+        firstName: payload.first_name ?? null,
+        lastName: payload.last_name ?? null,
+        username: payload.username ?? null,
+        email: payload.email ?? null,
+      });
 
       setFlash({
         type: 'success',

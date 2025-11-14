@@ -4,10 +4,22 @@ import { useRouter } from 'next/router';
 import SiteHeader from '../../components/layout/SiteHeader';
 import SiteFooter from '../../components/layout/SiteFooter';
 import { getEnvironmentConfig } from '../../lib/runtimeConfig';
+import { persistAdminProfile } from '../../lib/adminProfileStorage';
 import styles from '../../styles/admin/Admin.module.css';
 
 type AuthMode = 'login' | 'signup';
 type BannerState = { type: 'success' | 'error'; message: string } | null;
+
+type AdminLoginResponse = {
+  success?: boolean;
+  message?: string;
+  user_id?: number;
+  email?: string;
+  username?: string;
+  first_name?: string;
+  last_name?: string;
+  is_admin?: boolean;
+};
 
 const ADMIN_FEATURES = [
   {
@@ -111,7 +123,7 @@ export default function AdminAccessPage() {
         body: JSON.stringify({ email: adminForm.email.trim(), password: adminForm.password }),
       });
 
-      const payload = await response.json().catch(() => ({}));
+      const payload: AdminLoginResponse = await response.json().catch(() => ({} as AdminLoginResponse));
 
       if (!response.ok) {
         const message = extractDetailMessage(payload, fallbackMessage);
@@ -122,9 +134,28 @@ export default function AdminAccessPage() {
         throw new Error('You do not have access to the admin dashboard. Please contact support.');
       }
 
+      persistAdminProfile({
+        userId: payload.user_id ?? null,
+        email: payload.email ?? null,
+        username: payload.username ?? null,
+        firstName: payload.first_name ?? null,
+        lastName: payload.last_name ?? null,
+        isAdmin: Boolean(payload.is_admin),
+      });
+
+      const displayName =
+        [payload.first_name, payload.last_name]
+          .map((part) => (typeof part === 'string' ? part.trim() : ''))
+          .filter(Boolean)
+          .join(' ')
+          .trim() ||
+        payload.username ||
+        payload.email ||
+        'admin';
+
       setAdminBanner({
         type: 'success',
-        message: 'Access granted. Redirecting to the admin dashboard…',
+        message: `Access granted. Redirecting you now, ${displayName}…`,
       });
 
       await router.push('/admin/view');

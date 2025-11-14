@@ -38,6 +38,8 @@ class UserServiceImpl(UserService):
             message="Login successful",
             user_id=user.id,
             email=user.email,
+            first_name=getattr(user, "first_name", None),
+            last_name=getattr(user, "last_name", None),
             username=getattr(user, "username", None),
             is_admin=bool(getattr(user, "is_admin", False)),
         )

@@ -1,6 +1,8 @@
 import { useCallback, useState } from 'react';
 import { useRouter } from 'next/router';
 import { getEnvironmentConfig } from '../runtimeConfig';
+import { clearAdminProfile } from '../adminProfileStorage';
+import { clearWorkspaceProfile } from '../workspaceProfileStorage';
 
 type UseLogoutOptions = {
   redirectTo?: string;
@@ -44,6 +46,8 @@ export function useLogout(options: UseLogoutOptions = {}): UseLogoutResult {
 
       if (!response.ok) {
         if ([401, 403, 404].includes(response.status)) {
+          clearAdminProfile();
+          clearWorkspaceProfile();
           await router.push(redirectTo);
           return true;
         }
@@ -60,6 +64,8 @@ export function useLogout(options: UseLogoutOptions = {}): UseLogoutResult {
         return false;
       }
 
+      clearAdminProfile();
+      clearWorkspaceProfile();
       await router.push(redirectTo);
       return true;
     } catch (caughtError) {
@@ -73,4 +79,3 @@ export function useLogout(options: UseLogoutOptions = {}): UseLogoutResult {
 
   return { logout, isLoggingOut, error, resetError };
 }
-

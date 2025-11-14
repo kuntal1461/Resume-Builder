@@ -1,5 +1,7 @@
 import Head from 'next/head';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { resolveSidebarProfile, type SidebarProfile } from '../../../lib/sidebarProfile';
 import styles from '../../../styles/admin/AdminView.module.css';
 
 const TEMPLATE_STATUS = [
@@ -14,9 +16,10 @@ const TEMPLATE_ACTIONS = [
   { title: 'Sync AI scoring', description: 'Map rubric tags so LLM scoring stays aligned with resume variants.', cta: 'Manage scoring' },
 ];
 
-const ADMIN_PROFILE = {
+const DEFAULT_SIDEBAR_PROFILE: SidebarProfile = {
   name: 'Aditi Rao',
-  role: 'Template Operations',
+  initials: 'AR',
+  tagline: 'Template Operations',
   email: 'aditi@jobmatch.io',
 };
 
@@ -28,6 +31,13 @@ const NAV_LINKS = [
 ];
 
 export default function AdminTemplatesPage() {
+  const [sidebarProfile, setSidebarProfile] = useState<SidebarProfile>(DEFAULT_SIDEBAR_PROFILE);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSidebarProfile(resolveSidebarProfile(DEFAULT_SIDEBAR_PROFILE));
+  }, []);
+
   return (
     <>
       <Head>
@@ -45,17 +55,14 @@ export default function AdminTemplatesPage() {
             <section className={styles.sidebarProfileCard} aria-labelledby="profile-card-title">
               <div className={styles.sidebarProfileHeader}>
                 <span className={styles.sidebarProfileAvatar} aria-hidden="true">
-                  {ADMIN_PROFILE.name
-                    .split(' ')
-                    .map((part) => part[0])
-                    .join('')}
+                  {sidebarProfile.initials}
                 </span>
                 <div className={styles.sidebarProfileMeta}>
                   <span className={styles.sidebarProfileName} id="profile-card-title">
-                    {ADMIN_PROFILE.name}
+                    {sidebarProfile.name}
                   </span>
-                  <span className={styles.sidebarProfileTagline}>{ADMIN_PROFILE.role}</span>
-                  <span className={styles.sidebarProfileEmail}>{ADMIN_PROFILE.email}</span>
+                  <span className={styles.sidebarProfileTagline}>{sidebarProfile.tagline}</span>
+                  <span className={styles.sidebarProfileEmail}>{sidebarProfile.email}</span>
                 </div>
               </div>
             </section>

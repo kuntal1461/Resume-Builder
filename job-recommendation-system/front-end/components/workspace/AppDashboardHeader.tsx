@@ -1,7 +1,13 @@
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import AppDashboardAccountMenu from './AppDashboardAccountMenu';
 import styles from '../../styles/workspace/WorkspaceLayout.module.css';
 import { ArrowIcon, SparkIcon, UnlimitedLearningIcon } from './icons';
+import {
+  buildWorkspaceIdentity,
+  getWorkspaceFirstName,
+  loadWorkspaceProfile,
+} from '../../lib/workspaceProfileStorage';
 
 const HERO = {
   greeting: 'Good afternoon, Kuntal',
@@ -35,11 +41,33 @@ const ACCOUNT_PROFILE = {
   initials: 'KM',
 };
 
+const GREETING_PREFIX = HERO.greeting.includes(',')
+  ? HERO.greeting.split(',')[0]?.trim() ?? HERO.greeting
+  : HERO.greeting;
+
 export default function AppDashboardHeader() {
+  const [heroGreeting, setHeroGreeting] = useState(HERO.greeting);
+  const [accountProfile, setAccountProfile] = useState(ACCOUNT_PROFILE);
+
+  useEffect(() => {
+    const snapshot = loadWorkspaceProfile();
+    if (!snapshot) {
+      return;
+    }
+
+    const resolvedIdentity = buildWorkspaceIdentity(ACCOUNT_PROFILE, snapshot);
+    setAccountProfile(resolvedIdentity);
+
+    const fallbackFirst = resolvedIdentity.name.split(' ')[0] ?? resolvedIdentity.name;
+    const preferredFirstName = getWorkspaceFirstName(snapshot, fallbackFirst);
+    const greetingName = preferredFirstName || resolvedIdentity.name;
+    setHeroGreeting(`${GREETING_PREFIX}, ${greetingName}`.trim());
+  }, []);
+
   return (
     <header className={styles.dashboardHeader} aria-label="Workspace spotlight">
       <div className={styles.dashboardHeaderLeft}>
-        <span className={styles.dashboardGreeting}>{HERO.greeting}</span>
+        <span className={styles.dashboardGreeting}>{heroGreeting}</span>
         <span className={styles.dashboardHeaderBadge}>
           <SparkIcon aria-hidden="true" />
           {HERO.badge}
@@ -68,7 +96,7 @@ export default function AppDashboardHeader() {
           </Link>
         </article>
         <div className={styles.dashboardUtilities}>
-          <AppDashboardAccountMenu profile={ACCOUNT_PROFILE} />
+          <AppDashboardAccountMenu profile={accountProfile} />
         </div>
       </div>
     </header>

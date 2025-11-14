@@ -6,9 +6,11 @@ export type ServerEnvironmentInfo = {
   isLocal: boolean;
   isStaging: boolean;
   apiBaseUrl: string;
+  renderServiceBaseUrl: string;
 };
 
 const DEFAULT_LOCAL_API = 'http://localhost:8000';
+const DEFAULT_LOCAL_RENDER_SERVICE = 'http://localhost:4100';
 const envFromProcess =
   (
     globalThis as typeof globalThis & {
@@ -23,6 +25,8 @@ const ENV_ALIAS_MAP: Record<CanonicalEnvName, string[]> = {
 };
 
 const DEFAULT_ENV: CanonicalEnvName = 'local';
+
+const stripTrailingSlash = (value: string): string => value.replace(/\/+$/, '');
 
 function normalizeEnvName(raw?: string | null): CanonicalEnvName {
   const candidate = (raw ?? '').trim().toLowerCase();
@@ -46,11 +50,11 @@ function resolveApiBaseUrl(envName: CanonicalEnvName): string {
   const explicitPublic = envFromProcess.NEXT_PUBLIC_API_BASE_URL?.trim();
 
   if (explicitServer) {
-    return explicitServer;
+    return stripTrailingSlash(explicitServer);
   }
 
   if (explicitPublic) {
-    return explicitPublic;
+    return stripTrailingSlash(explicitPublic);
   }
 
   if (envName === 'local') {
@@ -62,8 +66,29 @@ function resolveApiBaseUrl(envName: CanonicalEnvName): string {
   );
 }
 
+function resolveRenderServiceBaseUrl(envName: CanonicalEnvName): string {
+  const explicitServer = envFromProcess.RENDER_SERVICE_BASE_URL?.trim();
+  const explicitPublic = envFromProcess.NEXT_PUBLIC_RENDER_SERVICE_URL?.trim();
+
+  if (explicitServer) {
+    return stripTrailingSlash(explicitServer);
+  }
+
+  if (explicitPublic) {
+    return stripTrailingSlash(explicitPublic);
+  }
+
+  if (envName === 'local') {
+    return DEFAULT_LOCAL_RENDER_SERVICE;
+  }
+
+  throw new Error(
+    'RENDER_SERVICE_BASE_URL is not configured. Set RENDER_SERVICE_BASE_URL (or NEXT_PUBLIC_RENDER_SERVICE_URL) for the frontend.'
+  );
+}
+
 export function resolveServerEnvironment(
-  overrides?: Partial<{ apiBaseUrl: string; serverEnv: string }>
+  overrides?: Partial<{ apiBaseUrl: string; serverEnv: string; renderServiceBaseUrl: string }>
 ): ServerEnvironmentInfo {
   const envName = normalizeEnvName(
     overrides?.serverEnv ??
@@ -72,6 +97,7 @@ export function resolveServerEnvironment(
       envFromProcess.NODE_ENV
   );
   const apiBaseUrl = overrides?.apiBaseUrl ?? resolveApiBaseUrl(envName);
+  const renderServiceBaseUrl = overrides?.renderServiceBaseUrl ?? resolveRenderServiceBaseUrl(envName);
 
   return {
     envName,
@@ -79,5 +105,6 @@ export function resolveServerEnvironment(
     isLocal: envName === 'local',
     isStaging: envName === 'staging',
     apiBaseUrl,
+    renderServiceBaseUrl,
   };
 }

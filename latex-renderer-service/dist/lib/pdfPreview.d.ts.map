@@ -1,0 +1,1 @@
+{"version":3,"file":"pdfPreview.d.ts","sourceRoot":"","sources":["../../src/lib/pdfPreview.ts"],"names":[],"mappings":"AA8BA,MAAM,MAAM,aAAa,GAAG;IAC1B,SAAS,CAAC,EAAE,MAAM,GAAG,SAAS,CAAC;IAC/B,IAAI,CAAC,EAAE,MAAM,GAAG,SAAS,CAAC;IAC1B,SAAS,CAAC,EAAE,MAAM,GAAG,SAAS,CAAC;CAChC,CAAC;AAEF,eAAO,MAAM,oBAAoB,GAAI,aAAa,MAAM,EAAE,SAAQ,aAAkB;;;;;;;CAkBnF,CAAC"}

@@ -1,31 +1,41 @@
 .workspaceShell {
   min-height: 100vh;
-  padding: 40px clamp(16px, 4vw, 48px) 72px;
   background: #f6f8fc;
   color: #132442;
+  display: flex;
 }
 
 .workspaceLayout {
-  max-width: 1200px;
-  margin: 0 auto;
+  flex: 1;
   display: flex;
-  gap: 32px;
+  width: 100%;
+  gap: 0;
 }
 
 .workspaceSidebar {
-  width: 280px;
-  min-width: 260px;
-  flex: 0 0 280px;
+  width: 240px;
+  min-width: 220px;
+  flex: 0 0 240px;
+  background:
+    radial-gradient(circle at 0 0, rgba(108, 99, 255, 0.18) 0%, rgba(108, 99, 255, 0) 55%),
+    linear-gradient(185deg, #ffffff 0%, #f4f6ff 45%, #eef2ff 100%);
+  border-right: 1px solid rgba(124, 93, 250, 0.14);
   display: flex;
   flex-direction: column;
+  padding: 22px 18px 30px;
   gap: 26px;
-  padding: 26px 24px 34px;
-  border-radius: 32px;
-  background:
-    radial-gradient(circle at 0 0, rgba(108, 99, 255, 0.2) 0%, rgba(108, 99, 255, 0) 55%),
-    linear-gradient(185deg, #ffffff 0%, #f4f6ff 45%, #eef2ff 100%);
-  border: 1px solid rgba(124, 93, 250, 0.16);
-  box-shadow: 0 22px 48px rgba(102, 94, 168, 0.12);
+  box-shadow: 0 18px 48px rgba(102, 94, 168, 0.1);
+  position: relative;
+  z-index: 2;
+}
+
+.workspaceSidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.workspaceSidebar::-webkit-scrollbar-thumb {
+  background: rgba(11, 27, 58, 0.18);
+  border-radius: 4px;
 }
 
 .sidebarBrandLink {
@@ -41,39 +51,50 @@
 .sidebarBrandMark {
   width: 40px;
   height: 40px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #7c5dfa, #58c5ff);
-  display: grid;
-  place-items: center;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #6952ff, #4ebeff);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: #fff;
   font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 12px 20px rgba(88, 197, 255, 0.28);
 }
 
 .sidebarProfileCard {
   background: linear-gradient(180deg, #ffffff 0%, #f9faff 100%);
-  border: 1px solid rgba(124, 93, 250, 0.12);
-  border-radius: 22px;
-  padding: 20px;
+  border: 1px solid rgba(124, 93, 250, 0.1);
+  border-radius: 18px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  box-shadow: 0 24px 44px rgba(93, 87, 166, 0.12);
+  gap: 14px;
+  box-shadow: 0 20px 36px rgba(93, 87, 166, 0.12);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.sidebarProfileCard:hover,
+.sidebarProfileCard:focus-within {
+  transform: translateY(-3px);
+  box-shadow: 0 26px 50px rgba(93, 87, 166, 0.18);
 }
 
 .sidebarProfileHeader {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   align-items: center;
 }
 
 .sidebarProfileAvatar {
-  width: 52px;
-  height: 52px;
-  border-radius: 16px;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
   background: rgba(110, 99, 255, 0.12);
   border: 1px solid rgba(108, 99, 255, 0.22);
-  display: grid;
-  place-items: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: #4338ca;
   font-weight: 600;
 }
@@ -85,19 +106,19 @@
 }
 
 .sidebarProfileName {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: #1b103f;
 }
 
 .sidebarProfileTagline {
-  color: rgba(27, 16, 63, 0.7);
-  font-size: 0.88rem;
+  color: rgba(27, 16, 63, 0.68);
+  font-size: 0.85rem;
 }
 
 .sidebarProfileEmail {
   color: #7881ac;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
 }
 
 .sidebarMenu {
@@ -106,7 +127,7 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
 
 .sidebarMenuItem {
@@ -118,29 +139,25 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 11px 14px;
-  border-radius: 14px;
+  padding: 10px 12px;
+  border-radius: 12px;
   text-decoration: none;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   font-weight: 500;
   color: #2a2761;
-  background: transparent;
-  border: 1px solid transparent;
-  transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
+  transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .sidebarMenuLink:hover {
-  background: rgba(124, 93, 250, 0.14);
+  background: rgba(124, 93, 250, 0.12);
   color: #5c4de5;
-  box-shadow: 0 12px 20px rgba(124, 93, 250, 0.16);
-  transform: translateY(-2px);
+  box-shadow: 0 10px 18px rgba(124, 93, 250, 0.14);
 }
 
 .sidebarMenuLinkActive {
   background: linear-gradient(135deg, #7c5dfa, #5c4de5);
-  color: #fff;
-  box-shadow: 0 16px 30px rgba(124, 93, 250, 0.24);
-  border-color: transparent;
+  color: #ffffff;
+  box-shadow: 0 12px 26px rgba(124, 93, 250, 0.26);
 }
 
 .sidebarMenuBadge {
@@ -155,13 +172,10 @@
 
 .workspaceMain {
   flex: 1;
-  background: #fefeff;
-  border-radius: 32px;
-  padding: 36px;
-  box-shadow: 0 18px 40px rgba(32, 21, 72, 0.08);
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  padding: 48px 56px;
+  gap: 24px;
 }
 
 .dashboardHeader {
@@ -247,6 +261,11 @@
   color: #ffe38d;
 }
 
+.dashboardMetrics small {
+  font-size: 0.8rem;
+  color: rgba(244, 247, 255, 0.84);
+}
+
 .sectionIntro h2 {
   margin: 0 0 6px;
   color: #1b103f;
@@ -330,26 +349,324 @@
   cursor: pointer;
 }
 
+.editorLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.latexEditorCard {
+  background: #fff;
+  border-radius: 28px;
+  padding: 28px;
+  border: 1px solid rgba(27, 16, 63, 0.08);
+  box-shadow: 0 24px 50px rgba(32, 21, 72, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.latexFields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.latexFields label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: #5d5873;
+  font-weight: 500;
+}
+
+.latexFields input {
+  border-radius: 14px;
+  border: 1px solid rgba(27, 16, 63, 0.08);
+  padding: 12px 14px;
+  background: #f9f7ff;
+  font-size: 0.95rem;
+  color: #1b103f;
+}
+
+.latexTextareaLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.88rem;
+  color: #5d5873;
+  font-weight: 500;
+}
+
+.latexTextareaGroup {
+  display: flex;
+  max-height: 420px;
+  border-radius: 20px;
+  background: #0b1437;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 20px 40px rgba(6, 13, 40, 0.6);
+  overflow: hidden;
+}
+
+.latexLineNumbers {
+  padding: 18px 10px;
+  background: #060b23;
+  color: #5865a5;
+  font-size: 0.8rem;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  min-width: 38px;
+  user-select: none;
+  overflow: hidden;
+}
+
+.latexLineNumbers span {
+  display: block;
+}
+
+.latexTextarea {
+  flex: 1;
+  min-height: 260px;
+  border: none;
+  padding: 18px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  background: transparent;
+  color: #e4e8ff;
+  resize: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.04);
+  outline: none;
+}
+
+.editorActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.previewPanel {
+  border-radius: 28px;
+  padding: 28px;
+  background: linear-gradient(150deg, #050e2f, #1b2a78 65%, #4b3cc5);
+  color: #f4f7ff;
+  box-shadow: 0 30px 70px rgba(5, 14, 47, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.previewToolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.previewToolbar h3 {
+  margin: 4px 0;
+  font-size: 1.3rem;
+}
+
+.previewToolbar p {
+  margin: 0;
+  color: rgba(244, 247, 255, 0.76);
+}
+
+.previewBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.previewCodeBlock {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.previewCodeBlock span {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(244, 247, 255, 0.6);
+}
+
+.previewCodeBlock pre {
+  margin: 8px 0 0;
+  max-height: 180px;
+  overflow: auto;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #e4e8ff;
+  white-space: pre-wrap;
+}
+
+.previewPdfStage {
+  border-radius: 20px;
+  background: rgba(0, 4, 24, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 16px;
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.previewPdfFrame {
+  width: 100%;
+  height: 320px;
+  border: none;
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.previewPlaceholder {
+  width: 100%;
+  text-align: center;
+  color: rgba(244, 247, 255, 0.75);
+  font-size: 0.95rem;
+}
+
+.renderError {
+  margin: 0;
+  color: #d95757;
+  font-size: 0.9rem;
+}
+
+.primaryActionButton:disabled,
+.secondaryActionButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.uploadChecklist {
+  border-radius: 24px;
+  padding: 24px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), #eef2ff);
+  border: 1px solid rgba(27, 16, 63, 0.08);
+  box-shadow: 0 18px 36px rgba(32, 21, 72, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.uploadChecklist h3 {
+  margin: 0;
+  color: #1b103f;
+}
+
+.uploadChecklist ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.uploadChecklist li {
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(27, 16, 63, 0.08);
+}
+
+.uploadChecklist li:last-child {
+  border-bottom: none;
+}
+
+.uploadChecklist strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #1b103f;
+}
+
+.uploadChecklist p {
+  margin: 0;
+  color: #5d5873;
+}
+
+.uploadMatrix {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.uploadMatrix article {
+  border-radius: 18px;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid rgba(27, 16, 63, 0.08);
+  box-shadow: 0 16px 32px rgba(32, 21, 72, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.uploadMatrix strong {
+  color: #1b103f;
+}
+
+.uploadMatrix p {
+  margin: 0;
+  color: #5d5873;
+}
+
+.uploadMatrix span {
+  font-size: 0.85rem;
+  color: #4f39b4;
+  font-weight: 600;
+}
+
 @media (max-width: 960px) {
+  .workspaceShell {
+    flex-direction: column;
+  }
+
   .workspaceLayout {
     flex-direction: column;
   }
 
   .workspaceSidebar {
     width: 100%;
+    min-width: 100%;
+    border-right: none;
+    border-bottom: 1px solid rgba(124, 93, 250, 0.14);
+    box-shadow: none;
+  }
+
+  .workspaceMain {
+    padding: 32px 24px;
   }
 
   .dashboardHeader {
     grid-template-columns: 1fr;
   }
+
+  .editorLayout {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 640px) {
-  .workspaceShell {
-    padding: 32px 16px 56px;
-  }
-
   .headerActions {
     flex-direction: column;
+  }
+
+  .editorActions {
+    flex-direction: column;
+    align-items: stretch;
   }
 }

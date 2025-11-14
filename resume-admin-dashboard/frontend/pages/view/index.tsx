@@ -102,9 +102,9 @@ export default function AdminViewPage() {
                   insights mirror the workspace overview experience for admins.
                 </p>
                 <div className={styles.headerActions}>
-                  <button type="button" className={styles.primaryActionButton}>
+                  <Link href="/view/templates/latex-upload" className={styles.primaryActionButton}>
                     Publish template
-                  </button>
+                  </Link>
                   <button type="button" className={styles.secondaryActionButton}>
                     View audit log
                   </button>

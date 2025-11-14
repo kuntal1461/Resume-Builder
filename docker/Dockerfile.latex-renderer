@@ -1,0 +1,41 @@
+FROM node:20-bookworm
+
+ENV NODE_ENV=development \
+    PORT=4100
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+    latexmk \
+    texlive-full \
+    curl \
+    unzip \
+    ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN curl -L https://github.com/liantze/AltaCV/archive/refs/heads/master.zip -o /tmp/altacv.zip \
+  && unzip /tmp/altacv.zip -d /tmp/altacv \
+  && install -d /usr/local/share/texmf/tex/latex/altacv \
+  && cp /tmp/altacv/AltaCV-main/altacv.cls /usr/local/share/texmf/tex/latex/altacv/ \
+  && cp /tmp/altacv/AltaCV-main/pubs-authoryear.cfg /usr/local/share/texmf/tex/latex/altacv/ \
+  && cp /tmp/altacv/AltaCV-main/pubs-num.cfg /usr/local/share/texmf/tex/latex/altacv/ \
+  && printf '\\input{pubs-authoryear.cfg}\n' > /usr/local/share/texmf/tex/latex/altacv/pubs-authoryear.tex \
+  && printf '\\input{pubs-num.cfg}\n' > /usr/local/share/texmf/tex/latex/altacv/pubs-num.tex \
+  && mktexlsr \
+  && rm -rf /tmp/altacv /tmp/altacv.zip
+
+WORKDIR /app
+
+COPY latex-renderer-service/package*.json ./
+COPY latex-renderer-service ./
+
+COPY docker/entrypoint.renderer.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh \
+  && mkdir -p /app/node_modules \
+  && chown -R node:node /app /entrypoint.sh /app/node_modules
+
+USER node
+
+EXPOSE 4100
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["dev"]

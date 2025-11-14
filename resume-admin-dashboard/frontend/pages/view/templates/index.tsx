@@ -93,9 +93,9 @@ export default function AdminTemplatesPage() {
                   workspace overview experience.
                 </p>
                 <div className={styles.headerActions}>
-                  <button type="button" className={styles.primaryActionButton}>
+                  <Link href="/view/templates/latex-upload" className={styles.primaryActionButton}>
                     New template
-                  </button>
+                  </Link>
                   <button type="button" className={styles.secondaryActionButton}>
                     Manage library
                   </button>

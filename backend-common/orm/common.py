@@ -31,8 +31,7 @@ class CommonEntityMixin:
   field4 = Column(BigInteger, nullable=True)
 
   # Audit metadata
-  loggedBy = Column(String(100), nullable=True)
-  lastUpdatedBy = Column(String(100), nullable=True)
+  loggedBy = Column(BigInteger, nullable=False, default=0)
+  lastUpdatedBy = Column(BigInteger, nullable=False, default=0)
   loggedInTime = Column(DateTime, default=datetime.utcnow)
   lastUpdateTime = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-

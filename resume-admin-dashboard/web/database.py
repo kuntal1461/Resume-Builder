@@ -4,6 +4,8 @@ from core.baseEntity.baseEntity import Base, CommonEntity
 import core.entity.ResumeTemplateEntity  # noqa: F401
 import core.entity.ResumeTemplateParentCategoryEntity  # noqa: F401
 import core.entity.ResumeTemplateSubCategoryEntity  # noqa: F401
+import core.entity.ResumeTemplateVersionEntity  # noqa: F401
+import core.entity.AdminUserEntity  # noqa: F401
 
 from backend_common.database import (
     create_engine_from_env,

@@ -1,16 +1,18 @@
 import Head from 'next/head';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
 import type { UIEvent } from 'react';
 import { requestLatexPreview } from '../../../lib/renderPreview';
-import { resolveSidebarProfile, type SidebarProfile } from '../../../lib/sidebarProfile';
+import { type SidebarProfile } from '../../../lib/sidebarProfile';
+import { useSidebarProfile } from '../../../lib/useSidebarProfile';
 import styles from '../../../styles/admin/AdminView.module.css';
 
 const DEFAULT_SIDEBAR_PROFILE: SidebarProfile = {
-  name: 'Aditi Rao',
-  initials: 'AR',
+  name: 'Admin User',
+  initials: 'AU',
   tagline: 'Template Operations',
-  email: 'aditi@jobmatch.io',
+  email: 'admin@example.com',
 };
 
 const NAV_LINKS = [
@@ -33,23 +35,6 @@ const UPLOAD_CHECKLIST = [
     title: 'Placeholder tokens',
     detail: 'Use {{candidate_name}} and {{role_title}} tokens so downstream automations can hydrate content.',
   },
-];
-
-const PIPELINE_PHASES = [
-  { name: 'Sanitization', owner: 'Template Ops', sla: '2 hrs', detail: 'Strip PII and enforce workspace typography.' },
-  { name: 'Render preview', owner: 'Rendering pod', sla: '4 hrs', detail: 'Compile PDF + HTML mirrors for reviewers.' },
-  {
-    name: 'Admin approval',
-    owner: 'Hiring pod',
-    sla: '1 day',
-    detail: 'Confirm alignment with active interview loops before publish.',
-  },
-];
-
-const SUPPORTED_ATTACHMENTS = [
-  { type: '.tex', purpose: 'LaTeX source', maxSize: '1 MB' },
-  { type: '.cls', purpose: 'Supporting class files', maxSize: '250 KB' },
-  { type: '.sty', purpose: 'Custom styles (optional)', maxSize: '250 KB' },
 ];
 
 const SAMPLE_PREVIEW_DATA = {
@@ -82,9 +67,33 @@ type ChildCategoryOption = {
   sort_order: number;
 };
 
+type TemplateSaveResponse = {
+  success: boolean;
+  template_id: number;
+  template_version_id: number;
+  version_number: number;
+};
+
+type TemplateDetailResponse = {
+  success: boolean;
+  template_id: number;
+  title: string;
+  parent_category_slug: string | null;
+  child_category_slug: string | null;
+  latex_source: string;
+  status_code: number;
+  status_label: string;
+  owner_email: string | null;
+  version_number: number | null;
+  version_label: string | null;
+};
+
 export default function LatexUploadPage() {
-  const [sidebarProfile, setSidebarProfile] = useState<SidebarProfile>(DEFAULT_SIDEBAR_PROFILE);
-  const [latexSource, setLatexSource] = useState<string>(SAMPLE_LATEX.trim());
+  const router = useRouter();
+  const sidebarProfile = useSidebarProfile(DEFAULT_SIDEBAR_PROFILE);
+  const [templateName, setTemplateName] = useState('');
+  const [versionLabel, setVersionLabel] = useState('');
+  const [latexSource, setLatexSource] = useState<string>('');
   const [childCategories, setChildCategories] = useState<string[]>([]);
   const [availableChildCategories, setAvailableChildCategories] = useState<ChildCategoryOption[]>([]);
   const [parentCategories, setParentCategories] = useState<ParentCategoryOption[]>([]);
@@ -98,21 +107,194 @@ export default function LatexUploadPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [renderError, setRenderError] = useState<string | null>(null);
   const [previewExcerpt, setPreviewExcerpt] = useState('');
-  const handleSave = () => {
+  const [isSaving, setIsSaving] = useState(false);
+  const [pendingSaveStatus, setPendingSaveStatus] = useState<'draft' | 'published' | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveSuccessMessage, setSaveSuccessMessage] = useState<string | null>(null);
+  const [isTemplateLoading, setIsTemplateLoading] = useState(false);
+  const [templateLoadError, setTemplateLoadError] = useState<string | null>(null);
+  const [activeTemplateId, setActiveTemplateId] = useState<number | null>(null);
+  const handleSave = async (targetStatus: 'draft' | 'published') => {
+    setSaveError(null);
+    setSaveSuccessMessage(null);
+
+    const trimmedName = templateName.trim();
+    if (!trimmedName) {
+      setSaveError('Add a template name before saving.');
+      return;
+    }
+
+    if (!selectedParentCategory) {
+      setSaveError('Select a parent category before saving.');
+      return;
+    }
+
+    if (childCategories.length !== 1) {
+      setSaveError('Select exactly one child category before saving.');
+      return;
+    }
+
+    const ownerEmail = sidebarProfile.email.trim();
+    if (!ownerEmail) {
+      setSaveError('Owner email unavailable. Refresh the page and try again.');
+      return;
+    }
+
+    const trimmedVersionLabel = versionLabel.trim();
+    if (!trimmedVersionLabel) {
+      setSaveError('Add a version label before saving.');
+      return;
+    }
+
+    if (!latexSource.trim()) {
+      setSaveError('Add LaTeX source before saving.');
+      return;
+    }
+
+    setPendingSaveStatus(targetStatus);
+    setIsSaving(true);
     try {
-      const payload = {
-        latexSource,
-        selectedParentCategory,
-        childCategories,
-        timestamp: new Date().toISOString(),
-      };
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem('latexDraft', JSON.stringify(payload));
+      const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+      const templateIdForSave = activeTemplateId;
+      const endpoint = templateIdForSave
+        ? `${basePath}/api/templates/${templateIdForSave}`
+        : `${basePath}/api/templates`;
+      const method = templateIdForSave ? 'PUT' : 'POST';
+
+      const response = await fetch(endpoint, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: trimmedName,
+          ownerEmail,
+          parentCategorySlug: selectedParentCategory,
+          childCategorySlug: childCategories[0],
+          versionLabel: trimmedVersionLabel,
+          latexSource,
+          status: targetStatus,
+        }),
+      });
+
+      const rawBody = await response.text();
+      let parsedBody: TemplateSaveResponse | { detail?: string; error?: string } | null = null;
+      if (rawBody) {
+        try {
+          parsedBody = JSON.parse(rawBody) as TemplateSaveResponse | { detail?: string; error?: string };
+        } catch (error) {
+          parsedBody = null;
+        }
+      }
+
+      if (!response.ok || !parsedBody || !('template_id' in parsedBody)) {
+        const detail =
+          (parsedBody && 'detail' in parsedBody && parsedBody.detail) ||
+          (parsedBody && 'error' in parsedBody && parsedBody.error) ||
+          `Unable to save template (status ${response.status}).`;
+        throw new Error(detail);
+      }
+
+      if (!templateIdForSave) {
+        setActiveTemplateId(parsedBody.template_id);
+      }
+
+      const statusLabel = targetStatus === 'draft' ? 'draft' : 'published';
+      const actionLabel = templateIdForSave ? 'updated' : 'saved';
+      setSaveSuccessMessage(
+        `Template ${statusLabel} ${actionLabel} (ID ${parsedBody.template_id}, version ${parsedBody.version_number}).`,
+      );
+
+      try {
+        const draftPayload = {
+          latexSource,
+          selectedParentCategory,
+          childCategories,
+          templateName: trimmedName,
+          versionLabel: trimmedVersionLabel,
+          timestamp: new Date().toISOString(),
+        };
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem('latexDraft', JSON.stringify(draftPayload));
+        }
+      } catch (error) {
+        console.error('Failed to cache template draft locally', error);
       }
     } catch (error) {
-      console.error('Failed to save draft', error);
+      const message = error instanceof Error ? error.message : 'Failed to save template.';
+      setSaveError(message);
+    } finally {
+      setIsSaving(false);
+      setPendingSaveStatus(null);
     }
   };
+
+  useEffect(() => {
+    if (!router.isReady) {
+      return;
+    }
+
+    const templateQuery = router.query.templateId;
+    const templateIdParam = Array.isArray(templateQuery) ? templateQuery[0] : templateQuery;
+    if (!templateIdParam) {
+      setActiveTemplateId(null);
+      return;
+    }
+
+    const numericTemplateId = Number(templateIdParam);
+    if (!Number.isFinite(numericTemplateId)) {
+      setActiveTemplateId(null);
+      return;
+    }
+    setActiveTemplateId(numericTemplateId);
+
+    let isMounted = true;
+    const loadTemplate = async () => {
+      setIsTemplateLoading(true);
+      setTemplateLoadError(null);
+      try {
+        const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+        const response = await fetch(`${basePath}/api/templates/${numericTemplateId}`);
+        if (!response.ok) {
+          const reason = await response.text();
+          throw new Error(`Unable to load template (status ${response.status}): ${reason || 'unknown error'}`);
+        }
+        const data = (await response.json()) as TemplateDetailResponse | { error?: string };
+        if (!('template_id' in data)) {
+          const message = 'error' in data && data.error ? data.error : 'Unexpected response while loading template.';
+          throw new Error(message);
+        }
+
+        if (isMounted) {
+          setTemplateName(data.title);
+          setSelectedParentCategory(data.parent_category_slug ?? '');
+          setChildCategories(data.child_category_slug ? [data.child_category_slug] : []);
+          setLatexSource(data.latex_source ?? '');
+          setVersionLabel(() => {
+            if (data.version_label && data.version_label.trim().length > 0) {
+              return data.version_label;
+            }
+            if (data.version_number) {
+              return `v${data.version_number}`;
+            }
+            return '';
+          });
+        }
+      } catch (error) {
+        if (isMounted) {
+          const message = error instanceof Error ? error.message : 'Unable to load template.';
+          setTemplateLoadError(message);
+        }
+      } finally {
+        if (isMounted) {
+          setIsTemplateLoading(false);
+        }
+      }
+    };
+
+    void loadTemplate();
+    return () => {
+      isMounted = false;
+    };
+  }, [router.isReady, router.query.templateId]);
   const lineNumbersRef = useRef<HTMLDivElement | null>(null);
   const parentDropdownRef = useRef<HTMLDivElement | null>(null);
   const parentTriggerRef = useRef<HTMLButtonElement | null>(null);
@@ -122,9 +304,12 @@ export default function LatexUploadPage() {
   const [childSearch, setChildSearch] = useState('');
 
   const toggleChildCategory = (value: string) => {
-    setChildCategories((previous) =>
-      previous.includes(value) ? previous.filter((item) => item !== value) : [...previous, value],
-    );
+    setChildCategories((previous) => {
+      if (previous.includes(value)) {
+        return previous.filter((item) => item !== value);
+      }
+      return [value];
+    });
   };
 
   const triggerRender = async () => {
@@ -196,9 +381,6 @@ export default function LatexUploadPage() {
   const lineNumberLabels = latexSource.split('\n');
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSidebarProfile(resolveSidebarProfile(DEFAULT_SIDEBAR_PROFILE));
-
     let isMounted = true;
 
     const loadParentCategories = async () => {
@@ -225,7 +407,7 @@ export default function LatexUploadPage() {
             if (previous && data.categories.some((category) => category.slug === previous)) {
               return previous;
             }
-            return data.categories[0]?.slug ?? '';
+            return '';
           });
           setIsParentDropdownOpen(false);
         }
@@ -426,11 +608,16 @@ export default function LatexUploadPage() {
                 <div className={styles.latexFields}>
                   <label>
                     <span>Template name</span>
-                    <input type="text" placeholder="e.g. AI Researcher Sprint" defaultValue="AI Researcher Sprint" />
+                    <input
+                      type="text"
+                      placeholder="e.g. AI Researcher Sprint"
+                      value={templateName}
+                      onChange={(event) => setTemplateName(event.target.value)}
+                    />
                   </label>
                   <label>
-                    <span>Owner pod</span>
-                    <input type="text" placeholder="e.g. Innovation pod" defaultValue="Innovation pod · SF" />
+                    <span>Owner (auto)</span>
+                    <input type="text" value={sidebarProfile.email} readOnly disabled />
                   </label>
                   <label>
                     <span>Parent category</span>
@@ -610,7 +797,12 @@ export default function LatexUploadPage() {
                   </div>
                   <label>
                     <span>Version</span>
-                    <input type="text" placeholder="e.g. v1.2" defaultValue="v1.0" />
+                    <input
+                      type="text"
+                      placeholder="e.g. v1.2"
+                      value={versionLabel}
+                      onChange={(event) => setVersionLabel(event.target.value)}
+                    />
                   </label>
                 </div>
 
@@ -644,17 +836,47 @@ export default function LatexUploadPage() {
                   >
                     {isRendering ? 'Rendering…' : 'Render preview'}
                   </button>
-                  <button type="button" className={styles.secondaryActionButton}>
-                    Save draft
+                  <button
+                    type="button"
+                    className={styles.secondaryActionButton}
+                    onClick={() => {
+                      void handleSave('draft');
+                    }}
+                    disabled={isSaving || isTemplateLoading}
+                  >
+                    {isSaving && pendingSaveStatus === 'draft' ? 'Saving…' : 'Save draft'}
                   </button>
                   <button
                     type="button"
                     className={styles.primaryActionButton}
-                    onClick={handleSave}
+                    onClick={() => {
+                      void handleSave('published');
+                    }}
+                    disabled={isSaving || isTemplateLoading}
                   >
-                    Save
+                    {isSaving && pendingSaveStatus === 'published' ? 'Saving…' : 'Save'}
                   </button>
                 </div>
+                {isTemplateLoading ? (
+                  <p className={styles.formHelperText} role="status">
+                    Loading template data…
+                  </p>
+                ) : null}
+                {templateLoadError ? (
+                  <p className={styles.renderError} role="alert">
+                    {templateLoadError}
+                  </p>
+                ) : null}
+                {saveSuccessMessage ? (
+                  <p className={styles.formHelperText} role="status">
+                    {saveSuccessMessage}
+                  </p>
+                ) : null}
+                {saveError ? (
+                  <p className={styles.renderError} role="alert">
+                    {saveError}
+                  </p>
+                ) : null}
                 {renderError ? (
                   <p className={styles.renderError} role="alert">
                     {renderError}
@@ -731,38 +953,6 @@ export default function LatexUploadPage() {
               </ul>
             </div>
 
-            <section className={styles.sectionIntro}>
-              <h2>Supported attachments</h2>
-              <p>Keep packages lean so reviewers can compile the resume preview directly from this dashboard.</p>
-            </section>
-
-            <div className={styles.uploadMatrix}>
-              {SUPPORTED_ATTACHMENTS.map((file) => (
-                <article key={file.type}>
-                  <strong>{file.type}</strong>
-                  <p>{file.purpose}</p>
-                  <span>Max {file.maxSize}</span>
-                </article>
-              ))}
-            </div>
-
-            <section className={styles.sectionIntro}>
-              <h2>Pipeline overview</h2>
-              <p>Admins see the same stages that surface in the workspace overview once a LaTeX resume is submitted.</p>
-            </section>
-
-            <div className={styles.summaryGrid}>
-              {PIPELINE_PHASES.map((phase) => (
-                <article key={phase.name} className={styles.summaryCard}>
-                  <div>
-                    <strong>{phase.name}</strong>
-                    <p>{phase.detail}</p>
-                    <p>Owner: {phase.owner}</p>
-                  </div>
-                  <button type="button">Track SLA</button>
-                </article>
-              ))}
-            </div>
           </div>
         </div>
       </main>

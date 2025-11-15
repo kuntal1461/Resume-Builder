@@ -3,16 +3,16 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
+
 from core.requestVO import ParentCategoryListRequestVO
 from core.requestVO.SubCategoryListRequestVO import SubCategoryListRequestVO
-from core.service.ResumeTemplateCategoryService import ResumeTemplateCategoryService
 from core.repository import (
     ResumeTemplateParentCategoryRepository,
     ResumeTemplateSubCategoryRepository,
 )
-from core.serviceImpl.ResumeTemplateCategoryServiceImpl import (
-    ResumeTemplateCategoryServiceImpl,
-)
+from core.service import ResumeTemplateCategoryService
+from core.serviceImpl import ResumeTemplateCategoryServiceImpl
+
 from ..database import get_db
 
 router = APIRouter(prefix="/templates", tags=["templates"])

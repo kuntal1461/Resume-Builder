@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { resolveSidebarProfile, type SidebarProfile } from '../../lib/sidebarProfile';
+import { type SidebarProfile } from '../../lib/sidebarProfile';
+import { useSidebarProfile } from '../../lib/useSidebarProfile';
 import styles from '../../styles/admin/AdminView.module.css';
 
 const QUICK_ACTIONS = [
@@ -22,10 +22,10 @@ const PIPELINE_SUMMARY = [
 ];
 
 const DEFAULT_SIDEBAR_PROFILE: SidebarProfile = {
-  name: 'Aditi Rao',
-  initials: 'AR',
+  name: 'Admin User',
+  initials: 'AU',
   tagline: 'Lead Admin',
-  email: 'aditi@jobmatch.io',
+  email: 'admin@example.com',
 };
 
 const NAV_LINKS = [
@@ -36,12 +36,7 @@ const NAV_LINKS = [
 ];
 
 export default function AdminViewPage() {
-  const [sidebarProfile, setSidebarProfile] = useState<SidebarProfile>(DEFAULT_SIDEBAR_PROFILE);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSidebarProfile(resolveSidebarProfile(DEFAULT_SIDEBAR_PROFILE));
-  }, []);
+  const sidebarProfile = useSidebarProfile(DEFAULT_SIDEBAR_PROFILE);
 
   return (
     <>

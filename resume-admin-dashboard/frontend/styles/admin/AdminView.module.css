@@ -310,6 +310,735 @@
   text-decoration: none;
 }
 
+.queuePanel {
+  margin: 32px 0;
+  padding: 32px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #10153f, #1b1f4c);
+  color: #f4f7ff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 24px 60px rgba(10, 8, 32, 0.55);
+}
+
+.queuePanelHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.queuePanelEyebrow {
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.75rem;
+  color: rgba(244, 247, 255, 0.7);
+}
+
+.queuePanelHeader h3 {
+  margin: 0 0 8px;
+  color: #fff;
+}
+
+.queuePanelHeader p {
+  margin: 0;
+  color: rgba(244, 247, 255, 0.75);
+}
+
+.queuePanelActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.queuePanelBadge {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-weight: 600;
+}
+
+.queuePanelHideButton {
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: transparent;
+  border-radius: 999px;
+  color: #f4f7ff;
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.queuePanelHideButton:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+.queueSummary {
+  margin: 24px 0 28px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.queueSummary article {
+  background: rgba(12, 17, 53, 0.65);
+  border-radius: 22px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.queueSummary span {
+  font-size: 0.85rem;
+  color: rgba(244, 247, 255, 0.75);
+}
+
+.queueSummary strong {
+  display: block;
+  margin: 8px 0 4px;
+  font-size: 1.75rem;
+  color: #ffe38d;
+}
+
+.queueSummary small {
+  color: rgba(244, 247, 255, 0.7);
+}
+
+.queueList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.queueEmptyState {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  border-radius: 20px;
+  padding: 24px;
+  color: rgba(244, 247, 255, 0.8);
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: center;
+}
+
+.queueEmptyState p {
+  margin: 0;
+}
+
+.queueSplitLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(280px, 1.2fr);
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.queueCard {
+  background: rgba(10, 15, 48, 0.9);
+  border-radius: 24px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 280px;
+  box-shadow: 0 18px 36px rgba(5, 6, 28, 0.5);
+}
+
+.queueCardHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.queueCardHeader strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #fff;
+  font-size: 1.1rem;
+}
+
+.queueCardHeader p {
+  margin: 0;
+  color: rgba(244, 247, 255, 0.75);
+}
+
+.queueCardDetails {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.queueCardOwner {
+  margin: 0;
+  color: #fff;
+  font-weight: 600;
+}
+
+.queueCardOwnerSecondary {
+  margin: 0;
+  color: rgba(244, 247, 255, 0.75);
+  font-size: 0.85rem;
+}
+
+.queuePriority {
+  align-self: flex-start;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.queuePriorityHigh {
+  border-color: rgba(255, 99, 132, 0.6);
+  background: rgba(255, 99, 132, 0.12);
+  color: #ff92a8;
+}
+
+.queuePriorityMedium {
+  border-color: rgba(255, 179, 71, 0.6);
+  background: rgba(255, 179, 71, 0.14);
+  color: #ffcd91;
+}
+
+.queuePriorityLow {
+  border-color: rgba(79, 165, 255, 0.6);
+  background: rgba(79, 165, 255, 0.1);
+  color: #8ad2ff;
+}
+
+.queueCardMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: rgba(244, 247, 255, 0.75);
+}
+
+.queueCardTimestamp {
+  margin: 4px 0 0;
+  color: rgba(244, 247, 255, 0.72);
+  font-size: 0.85rem;
+}
+
+.queuePreview {
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.queuePreview img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.queueProgressBar {
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.queueProgressFill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(120deg, #7adfff, #c89eff);
+}
+
+.queueBlockerLabel {
+  margin: 0 0 4px;
+  font-weight: 600;
+  color: rgba(244, 247, 255, 0.85);
+}
+
+.queueBlockers {
+  margin: 0;
+  padding-left: 18px;
+  color: rgba(244, 247, 255, 0.8);
+}
+
+.queueBlockers li {
+  margin-bottom: 2px;
+}
+
+.queueWatchers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.queueWatchers span {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.8rem;
+}
+
+.queueCTAGroup {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.queueCTAButton,
+.queueGhostButton {
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+.queueCTAButton {
+  background: linear-gradient(120deg, #ffe38d, #ffb347);
+  color: #111a3d;
+}
+
+.queueGhostButton {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #f4f7ff;
+  min-height: 40px;
+  padding: 10px 16px;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.queueGhostButtonCopied {
+  background: rgba(255, 227, 141, 0.15);
+  border-color: rgba(255, 227, 141, 0.5);
+  color: #ffe38d;
+  box-shadow: 0 0 12px rgba(255, 227, 141, 0.3);
+}
+
+.queueActivityPanel {
+  background: rgba(8, 13, 43, 0.85);
+  border-radius: 24px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.queueActivityHeader h4 {
+  margin: 0 0 4px;
+  color: #fff;
+}
+
+.queueActivityHeader p {
+  margin: 0;
+  color: rgba(244, 247, 255, 0.7);
+}
+
+.queueActivityList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.queueActivityList li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: start;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.queueActivityTime {
+  font-size: 0.8rem;
+  color: rgba(244, 247, 255, 0.75);
+}
+
+.queueActivityList strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #fff;
+}
+
+.queueActivityList p {
+  margin: 0;
+  color: rgba(244, 247, 255, 0.72);
+}
+
+.queueActivityTag {
+  align-self: start;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.75rem;
+  color: #ffe38d;
+  border: 1px solid rgba(255, 227, 141, 0.4);
+}
+
+.savedTemplatesHero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.8fr);
+  gap: 32px;
+  padding: 36px;
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at -20% -10%, rgba(161, 113, 255, 0.4), transparent 60%),
+    linear-gradient(135deg, #0c103f, #2d1b7c 55%, #5a46ff);
+  color: #f5f6ff;
+  box-shadow: 0 34px 60px rgba(5, 10, 40, 0.45);
+}
+
+.savedTemplatesHero h1 {
+  margin: 0 0 10px;
+  font-size: clamp(1.9rem, 3vw, 2.6rem);
+}
+
+.savedTemplatesHero p {
+  margin: 0 0 18px;
+  color: rgba(245, 246, 255, 0.78);
+  line-height: 1.5;
+}
+
+.savedTemplatesHeroActions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.savedTemplatesRefresh {
+  display: inline-block;
+  margin-top: 14px;
+  color: rgba(245, 246, 255, 0.7);
+  font-size: 0.85rem;
+}
+
+.savedTemplatesMetrics {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.savedTemplatesMetrics article {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 20px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.savedTemplatesMetrics span {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.74rem;
+  color: rgba(245, 246, 255, 0.65);
+}
+
+.savedTemplatesMetrics strong {
+  font-size: 1.8rem;
+}
+
+.savedTemplatesPanel {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  box-shadow: 0 24px 56px rgba(27, 16, 63, 0.08);
+}
+
+.savedTemplatesPanelHeader {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.savedTemplatesPanelHeader h2 {
+  margin: 0 0 8px;
+}
+
+.savedTemplatesPanelHeader p {
+  margin: 0;
+  color: #5b648c;
+}
+
+.savedTemplatesFilters {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.savedTemplatesFilterButton {
+  background: #f4f6ff;
+  border: 1px solid rgba(91, 100, 140, 0.18);
+  border-radius: 18px;
+  padding: 12px 18px;
+  min-width: 180px;
+  cursor: pointer;
+  text-align: left;
+  color: #1b1f3b;
+  font-size: 0.85rem;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border 0.18s ease;
+}
+
+.savedTemplatesFilterButton strong {
+  display: block;
+  font-size: 0.95rem;
+}
+
+.savedTemplatesFilterButton span {
+  color: #5b648c;
+  font-size: 0.78rem;
+}
+
+.savedTemplatesFilterButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(26, 32, 75, 0.12);
+}
+
+.savedTemplatesFilterButtonActive {
+  border-color: rgba(108, 99, 255, 0.4);
+  background: linear-gradient(135deg, rgba(108, 99, 255, 0.14), rgba(108, 99, 255, 0.05));
+  box-shadow: 0 16px 40px rgba(108, 99, 255, 0.18);
+}
+
+.savedTemplatesEmpty,
+.savedTemplatesError {
+  background: #f5f6ff;
+  border-radius: 20px;
+  padding: 36px;
+  text-align: center;
+  color: #3a416a;
+  border: 1px dashed rgba(90, 100, 165, 0.36);
+}
+
+.savedTemplatesError {
+  color: #832929;
+  border-color: rgba(206, 63, 63, 0.4);
+  background: rgba(255, 240, 240, 0.8);
+}
+
+.savedTemplatesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.savedTemplateCard {
+  background: linear-gradient(180deg, #ffffff 0%, #f9faff 100%);
+  border-radius: 22px;
+  padding: 22px;
+  border: 1px solid rgba(46, 62, 118, 0.08);
+  box-shadow: 0 20px 40px rgba(15, 20, 40, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.savedTemplateCardHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.savedTemplateCardEyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  color: #7881ac;
+}
+
+.savedTemplateCardHeader h3 {
+  margin: 6px 0 0;
+}
+
+.savedTemplateStatus {
+  background: rgba(108, 99, 255, 0.12);
+  color: #423dd2;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.savedTemplateMeta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 18px;
+}
+
+.savedTemplateMeta span {
+  color: #7d86ad;
+  font-size: 0.8rem;
+}
+
+.savedTemplateMeta strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.95rem;
+  color: #131b3d;
+}
+
+.savedTemplateMeta small {
+  color: #96a0c8;
+  font-size: 0.75rem;
+}
+
+.savedTemplatePreview {
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(29, 42, 92, 0.08);
+}
+
+.savedTemplatePreview img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.savedTemplateActions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.savedTemplateActions button {
+  flex: 1;
+  min-width: 160px;
+  border-radius: 16px;
+  border: none;
+  padding: 12px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  background: linear-gradient(135deg, #ffe38d, #ffb347);
+  color: #111a3d;
+  box-shadow: 0 12px 24px rgba(255, 179, 71, 0.26);
+}
+
+.savedTemplateActions button:hover {
+  transform: translateY(-2px);
+}
+
+.savedTemplateGhostButton {
+  background: rgba(14, 24, 62, 0.06) !important;
+  color: #1c234a !important;
+  box-shadow: none !important;
+  border: 1px solid rgba(21, 37, 84, 0.12) !important;
+}
+
+.savedTemplateVersionPicker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.savedTemplateVersionPicker label {
+  font-size: 0.85rem;
+  color: #5c6384;
+  font-weight: 600;
+}
+
+.savedTemplateVersionPicker select {
+  border-radius: 12px;
+  border: 1px solid rgba(34, 40, 89, 0.18);
+  padding: 8px 12px;
+  background: #ffffff;
+  color: #111a3d;
+  font-weight: 500;
+  min-width: 160px;
+}
+
+.savedTemplateVersionStatus {
+  font-size: 0.8rem;
+  color: #7d86ad;
+}
+
+.savedTemplateVersionError {
+  margin: 2px 0 0;
+  color: #b32626;
+  font-size: 0.82rem;
+}
+
+.queueInsights {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+  margin-bottom: 12px;
+}
+
+.queueInsights article {
+  background: #f6f7ff;
+  border: 1px solid rgba(34, 40, 89, 0.08);
+  border-radius: 18px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 14px 30px rgba(31, 35, 70, 0.08);
+}
+
+.queueInsights span {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  color: #7d86ad;
+}
+
+.queueInsights strong {
+  font-size: 1.6rem;
+  color: #111a3d;
+}
+
+.queueInsights p {
+  margin: 0;
+  color: #5b648c;
+  font-size: 0.85rem;
+}
+
+.queueCardCompact {
+  gap: 14px;
+}
+
+.queueCardCompact .savedTemplatePreview {
+  border: 1px dashed rgba(29, 42, 92, 0.18);
+  background: rgba(13, 23, 66, 0.02);
+}
+
+.queueCardTimestampModern {
+  display: block;
+  margin-top: 4px;
+  color: #9ba4cc;
+}
+
+@media (max-width: 960px) {
+  .queueSplitLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .queueActivityPanel {
+    order: -1;
+  }
+}
+
 .summaryGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));

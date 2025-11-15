@@ -12,13 +12,10 @@ CREATE TABLE IF NOT EXISTS resume_template_parent_category_master (
   field2          VARCHAR(200) NULL,
   field3          BIGINT NULL,
   field4          BIGINT NULL,
-  loggedBy        VARCHAR(100) NULL,
-  lastUpdatedBy   VARCHAR(100) NULL,
+  loggedBy        BIGINT NOT NULL DEFAULT 0,
+  lastUpdatedBy   BIGINT NOT NULL DEFAULT 0,
   loggedInTime    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  lastUpdateTime  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  -- Audit timestamps
-  created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  lastUpdateTime  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB
   AUTO_INCREMENT=1000
   DEFAULT CHARSET=utf8mb4
@@ -38,13 +35,10 @@ CREATE TABLE IF NOT EXISTS resume_template_sub_category_master (
   field2          VARCHAR(200) NULL,
   field3          BIGINT NULL,
   field4          BIGINT NULL,
-  loggedBy        VARCHAR(100) NULL,
-  lastUpdatedBy   VARCHAR(100) NULL,
+  loggedBy        BIGINT NOT NULL DEFAULT 0,
+  lastUpdatedBy   BIGINT NOT NULL DEFAULT 0,
   loggedInTime    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   lastUpdateTime  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  -- Audit timestamps
-  created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT fk_resume_template_sub_category_parent
     FOREIGN KEY (parent_id) REFERENCES resume_template_parent_category_master (id)
 ) ENGINE=InnoDB
@@ -69,13 +63,10 @@ CREATE TABLE IF NOT EXISTS resume_template (
   field2          VARCHAR(200) NULL,
   field3          BIGINT NULL,
   field4          BIGINT NULL,
-  loggedBy        VARCHAR(100) NULL,
-  lastUpdatedBy   VARCHAR(100) NULL,
+  loggedBy        BIGINT NOT NULL DEFAULT 0,
+  lastUpdatedBy   BIGINT NOT NULL DEFAULT 0,
   loggedInTime    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   lastUpdateTime  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  -- Audit timestamps
-  created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT fk_resume_template_category
     FOREIGN KEY (category_id) REFERENCES resume_template_sub_category_master (id),
   CONSTRAINT fk_resume_template_owner_admin
@@ -100,13 +91,10 @@ CREATE TABLE IF NOT EXISTS resume_template_version (
   field2          VARCHAR(200) NULL,
   field3          BIGINT NULL,
   field4          BIGINT NULL,
-  loggedBy        VARCHAR(100) NULL,
-  lastUpdatedBy   VARCHAR(100) NULL,
+  loggedBy        BIGINT NOT NULL DEFAULT 0,
+  lastUpdatedBy   BIGINT NOT NULL DEFAULT 0,
   loggedInTime    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   lastUpdateTime  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  -- Audit timestamps
-  created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT fk_resume_template_version_template
     FOREIGN KEY (template_id) REFERENCES resume_template (id),
   CONSTRAINT uq_resume_template_version UNIQUE (template_id, version_no)

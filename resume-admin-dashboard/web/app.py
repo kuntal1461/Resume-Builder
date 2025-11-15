@@ -6,7 +6,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend_common import get_server_environment
 from .database import init_db
-from .restController import templates_router
+from .restController import (
+    admin_profile_router,
+    template_categories_router,
+    template_mutation_router,
+)
 
 
 def _build_allowed_origins() -> List[str]:
@@ -48,7 +52,9 @@ def create_app() -> FastAPI:
     async def health():
         return {"status": "ok"}
 
-    app.include_router(templates_router)
+    app.include_router(template_categories_router)
+    app.include_router(template_mutation_router)
+    app.include_router(admin_profile_router)
     return app
 
 

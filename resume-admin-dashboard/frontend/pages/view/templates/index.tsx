@@ -1,15 +1,9 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import { resolveSidebarProfile, type SidebarProfile } from '../../../lib/sidebarProfile';
+import { type SidebarProfile } from '../../../lib/sidebarProfile';
+import { useSidebarProfile } from '../../../lib/useSidebarProfile';
 import styles from '../../../styles/admin/AdminView.module.css';
-
-const TEMPLATE_STATUS = [
-  { name: 'Engineering Manager Kit', owner: 'Ops pod · NYC', status: 'Live', updated: '2 hours ago' },
-  { name: 'Enterprise AE Pack', owner: 'Sales pod · Remote', status: 'Pending review', updated: 'Yesterday' },
-  { name: 'AI Researcher Sprint', owner: 'Innovation pod · SF', status: 'Draft', updated: '3 days ago' },
-];
 
 const TEMPLATE_ACTIONS = [
   {
@@ -18,15 +12,25 @@ const TEMPLATE_ACTIONS = [
     cta: 'Create template',
     href: '/view/templates/latex-upload',
   },
-  { title: 'Review pending updates', description: 'Approve legal copy changes or reassign owners before publish.', cta: 'Open queue' },
-  { title: 'Sync AI scoring', description: 'Map rubric tags so LLM scoring stays aligned with resume variants.', cta: 'Manage scoring' },
+  {
+    title: 'Review pending updates',
+    description: 'Approve legal copy changes or reassign owners before publish.',
+    cta: 'Open queue',
+    href: '/view/templates/queue',
+  },
+  {
+    title: 'Review saved templates',
+    description: 'Jump into the templates you have drafted or archived and pick up right where you left off.',
+    cta: 'Open saved space',
+    href: '/view/templates/saved',
+  },
 ];
 
 const DEFAULT_SIDEBAR_PROFILE: SidebarProfile = {
-  name: 'Aditi Rao',
-  initials: 'AR',
+  name: 'Admin User',
+  initials: 'AU',
   tagline: 'Template Operations',
-  email: 'aditi@jobmatch.io',
+  email: 'admin@example.com',
 };
 
 const NAV_LINKS = [
@@ -37,13 +41,8 @@ const NAV_LINKS = [
 ];
 
 export default function AdminTemplatesPage() {
-  const [sidebarProfile, setSidebarProfile] = useState<SidebarProfile>(DEFAULT_SIDEBAR_PROFILE);
+  const sidebarProfile = useSidebarProfile(DEFAULT_SIDEBAR_PROFILE);
   const router = useRouter();
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSidebarProfile(resolveSidebarProfile(DEFAULT_SIDEBAR_PROFILE));
-  }, []);
 
   return (
     <>
@@ -135,23 +134,6 @@ export default function AdminTemplatesPage() {
               ))}
             </div>
 
-            <section className={styles.sectionIntro}>
-              <h2>Recently touched templates</h2>
-              <p>Track ownership, latest updates, and publishing status at a glance.</p>
-            </section>
-
-            <div className={styles.summaryGrid}>
-              {TEMPLATE_STATUS.map((template) => (
-                <article key={template.name} className={styles.summaryCard}>
-                  <div>
-                    <strong>{template.name}</strong>
-                    <p>{template.owner}</p>
-                    <p>Status: {template.status} · Updated {template.updated}</p>
-                  </div>
-                  <button type="button">Open</button>
-                </article>
-              ))}
-            </div>
           </div>
         </div>
       </main>

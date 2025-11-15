@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -28,3 +28,17 @@ class ResumeTemplateParentCategoryRepository:
 
         result = self._session.execute(stmt)
         return list(result.scalars().all())
+
+    def find_by_slug(
+        self,
+        slug: str,
+    ) -> Optional[ResumeTemplateParentCategoryEntity]:
+        stmt = self._base_query().where(ResumeTemplateParentCategoryEntity.slug == slug)
+        result = self._session.execute(stmt)
+        return result.scalars().first()
+
+    def find_by_id(
+        self,
+        parent_id: int,
+    ) -> Optional[ResumeTemplateParentCategoryEntity]:
+        return self._session.get(ResumeTemplateParentCategoryEntity, parent_id)

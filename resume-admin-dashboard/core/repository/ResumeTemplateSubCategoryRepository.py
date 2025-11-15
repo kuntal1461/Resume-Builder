@@ -37,3 +37,17 @@ class ResumeTemplateSubCategoryRepository:
 
         result = self._session.execute(stmt)
         return list(result.scalars().all())
+
+    def find_by_slug(
+        self,
+        slug: str,
+    ) -> Optional[ResumeTemplateSubCategoryEntity]:
+        stmt = self._base_query().where(ResumeTemplateSubCategoryEntity.slug == slug)
+        result = self._session.execute(stmt)
+        return result.scalars().first()
+
+    def find_by_id(
+        self,
+        category_id: int,
+    ) -> Optional[ResumeTemplateSubCategoryEntity]:
+        return self._session.get(ResumeTemplateSubCategoryEntity, category_id)

@@ -14,6 +14,11 @@ class ResumeTemplateSummaryResponseVO:
     status_label: str
     last_update_time: Optional[str]
     preview_image_url: Optional[str]
+    preview_pdf_url: Optional[str] = None
+    parent_category_slug: Optional[str] = None
+    parent_category_label: Optional[str] = None
+    child_category_slug: Optional[str] = None
+    child_category_label: Optional[str] = None
 
 
 @dataclass(frozen=True)

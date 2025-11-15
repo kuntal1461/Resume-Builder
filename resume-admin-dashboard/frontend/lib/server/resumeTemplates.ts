@@ -54,6 +54,11 @@ export type ResumeTemplateRecord = {
   status_label: string;
   last_update_time: string | null;
   preview_image_url: string | null;
+  preview_pdf_url?: string | null;
+  parent_category_slug?: string | null;
+  parent_category_label?: string | null;
+  child_category_slug?: string | null;
+  child_category_label?: string | null;
 };
 
 export type ResumeTemplateListResponse = {

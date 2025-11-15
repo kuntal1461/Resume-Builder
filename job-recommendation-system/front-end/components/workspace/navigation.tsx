@@ -12,13 +12,14 @@ import {
   JobsIcon,
   OfferAnalyzerIcon,
   OtherIcon,
+  ResumeDistributionIcon,
   SalaryAnalyzerIcon,
   UnlimitedLearningIcon,
 } from './icons';
 
 export type AppMenuItem = {
   label: string;
-  href: string;
+  href?: string;
   icon?: ReactNode;
   badge?: string;
   subItems?: AppMenuItem[];
@@ -57,7 +58,7 @@ export const APP_MENU_ITEMS: AppMenuItem[] = [
     href: '/workspace',
     icon: <DocumentsIcon />,
     subItems: [
-      { label: 'My Resumes', href: '/workspace/resumes' },
+      { label: 'My Resumes' },
       { label: 'My Cover Letters', href: '/workspace/cover-letters' },
       { label: 'Hire Resume Writer', href: '/workspace/hire-resume-writer' },
     ],
@@ -71,6 +72,12 @@ export const APP_MENU_ITEMS: AppMenuItem[] = [
     label: 'Job Tracker',
     href: '/workspace/job-tracking',
     icon: <JobTrackerIcon />,
+  },
+  {
+    label: 'Create Resume',
+    href: '/workspace/create-resume',
+    icon: <ResumeDistributionIcon />,
+    badge: 'New',
   },
   {
     label: 'Interview Prep',

@@ -48,7 +48,7 @@ export default function AppShell({
 
   const normalizePath = (path: string) => path.split('?')[0];
   const currentPath = normalizePath(router.asPath);
-  const isRouteActive = (target: string) => normalizePath(target) === currentPath;
+  const isRouteActive = (target?: string) => (target ? normalizePath(target) === currentPath : false);
   const itemHasActiveChild = (item: AppMenuItem) =>
     item.subItems?.some((subItem) => isRouteActive(subItem.href)) ?? false;
 
@@ -103,6 +103,28 @@ export default function AppShell({
               const hasSubmenu = Boolean(item.subItems?.length);
               const isExpanded = hasSubmenu && (activeMenu === item.label || itemHasActiveChild(item));
 
+              const linkClasses = `${styles.menuLink} ${
+                isRouteActive(item.href) || itemHasActiveChild(item) ? styles.menuLinkActive : ''
+              }`;
+              const commonLinkProps = {
+                className: linkClasses,
+                'aria-haspopup': hasSubmenu ? 'true' : undefined,
+                'aria-expanded': hasSubmenu ? isExpanded : undefined,
+                onFocus: () => (hasSubmenu ? setActiveMenu(item.label) : undefined),
+              };
+              const linkContent = (
+                <>
+                  {item.icon ? <span className={styles.menuIcon}>{item.icon}</span> : null}
+                  <span>{item.label}</span>
+                  {(item.badge || hasSubmenu) && (
+                    <span className={styles.menuMeta}>
+                      {item.badge ? <span className={styles.menuBadge}>{item.badge}</span> : null}
+                      {hasSubmenu ? CARET_ICON : null}
+                    </span>
+                  )}
+                </>
+              );
+
               return (
                 <li
                   key={item.label}
@@ -110,37 +132,38 @@ export default function AppShell({
                   onMouseEnter={() => (hasSubmenu ? setActiveMenu(item.label) : undefined)}
                   onMouseLeave={() => (hasSubmenu ? setActiveMenu(null) : undefined)}
                 >
-                  <Link
-                    href={item.href}
-                    className={`${styles.menuLink} ${
-                      isRouteActive(item.href) || itemHasActiveChild(item) ? styles.menuLinkActive : ''
-                    }`}
-                    aria-haspopup={hasSubmenu ? 'true' : undefined}
-                    aria-expanded={hasSubmenu ? isExpanded : undefined}
-                    onFocus={() => (hasSubmenu ? setActiveMenu(item.label) : undefined)}
-                  >
-                    {item.icon ? <span className={styles.menuIcon}>{item.icon}</span> : null}
-                    <span>{item.label}</span>
-                    {(item.badge || hasSubmenu) && (
-                      <span className={styles.menuMeta}>
-                        {item.badge ? <span className={styles.menuBadge}>{item.badge}</span> : null}
-                        {hasSubmenu ? CARET_ICON : null}
-                      </span>
-                    )}
-                  </Link>
+                  {item.href ? (
+                    <Link href={item.href} {...commonLinkProps}>
+                      {linkContent}
+                    </Link>
+                  ) : (
+                    <span
+                      {...commonLinkProps}
+                      role={hasSubmenu ? 'button' : 'text'}
+                      tabIndex={hasSubmenu ? 0 : -1}
+                    >
+                      {linkContent}
+                    </span>
+                  )}
                   {hasSubmenu ? (
                     <ul className={`${styles.submenu} ${isExpanded ? styles.submenuOpen : ''}`}>
                       {item.subItems?.map((subItem) => (
                         <li key={subItem.label} className={styles.menuItem}>
-                          <Link
-                            href={subItem.href}
-                            className={`${styles.menuLink} ${
-                              isRouteActive(subItem.href) ? styles.menuLinkActive : ''
-                            }`}
-                            onFocus={() => setActiveMenu(item.label)}
-                          >
-                            <span>{subItem.label}</span>
-                          </Link>
+                          {subItem.href ? (
+                            <Link
+                              href={subItem.href}
+                              className={`${styles.menuLink} ${
+                                isRouteActive(subItem.href) ? styles.menuLinkActive : ''
+                              }`}
+                              onFocus={() => setActiveMenu(item.label)}
+                            >
+                              <span>{subItem.label}</span>
+                            </Link>
+                          ) : (
+                            <span className={styles.menuLink} role="text">
+                              <span>{subItem.label}</span>
+                            </span>
+                          )}
                         </li>
                       ))}
                     </ul>

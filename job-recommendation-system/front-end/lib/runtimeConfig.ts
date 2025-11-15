@@ -3,6 +3,7 @@ export type EnvironmentConfig = {
   isProd: boolean;
   isLocal: boolean;
   apiBaseUrl: string;
+  renderServiceBaseUrl: string;
 };
 
 let cachedConfig: EnvironmentConfig | null = null;

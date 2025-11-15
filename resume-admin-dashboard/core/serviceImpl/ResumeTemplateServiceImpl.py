@@ -105,6 +105,18 @@ class ResumeTemplateServiceImpl(ResumeTemplateService):
         owner_map = self._user_repo.fetch_by_ids(
             template.owner_admin_id for template in templates
         )
+        category_ids = {
+            int(template.category_id)
+            for template in templates
+            if template.category_id is not None
+        }
+        child_map = self._sub_repo.fetch_by_ids(category_ids)
+        parent_ids = {
+            int(child.parent_id)
+            for child in child_map.values()
+            if getattr(child, "parent_id", None)
+        }
+        parent_map = self._parent_repo.fetch_by_ids(parent_ids)
 
         summaries = []
         for template in templates:
@@ -129,6 +141,13 @@ class ResumeTemplateServiceImpl(ResumeTemplateService):
                 else None
             )
 
+            child_category = None
+            parent_category = None
+            if template.category_id is not None:
+                child_category = child_map.get(int(template.category_id))
+                if child_category and getattr(child_category, "parent_id", None):
+                    parent_category = parent_map.get(int(child_category.parent_id))
+
             status_label = TemplateState(int(template.status)).status
             summaries.append(
                 ResumeTemplateSummaryResponseVO(
@@ -142,6 +161,11 @@ class ResumeTemplateServiceImpl(ResumeTemplateService):
                     preview_image_url=getattr(
                         template, "preview_image_url", None
                     ),
+                    preview_pdf_url=getattr(template, "preview_pdf_url", None),
+                    parent_category_slug=getattr(parent_category, "slug", None),
+                    parent_category_label=getattr(parent_category, "name", None),
+                    child_category_slug=getattr(child_category, "slug", None),
+                    child_category_label=getattr(child_category, "name", None),
                 )
             )
 

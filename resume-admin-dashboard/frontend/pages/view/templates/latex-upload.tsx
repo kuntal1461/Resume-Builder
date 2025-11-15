@@ -114,6 +114,7 @@ export default function LatexUploadPage() {
   const [isTemplateLoading, setIsTemplateLoading] = useState(false);
   const [templateLoadError, setTemplateLoadError] = useState<string | null>(null);
   const [activeTemplateId, setActiveTemplateId] = useState<number | null>(null);
+  const [latestSavedVersionLabel, setLatestSavedVersionLabel] = useState('');
   const handleSave = async (targetStatus: 'draft' | 'published') => {
     setSaveError(null);
     setSaveSuccessMessage(null);
@@ -143,6 +144,11 @@ export default function LatexUploadPage() {
     const trimmedVersionLabel = versionLabel.trim();
     if (!trimmedVersionLabel) {
       setSaveError('Add a version label before saving.');
+      return;
+    }
+
+    if (latestSavedVersionLabel && trimmedVersionLabel === latestSavedVersionLabel) {
+      setSaveError('Update the version label (e.g., bump v1 to v1.1 or v2) before saving again.');
       return;
     }
 
@@ -202,6 +208,7 @@ export default function LatexUploadPage() {
       setSaveSuccessMessage(
         `Template ${statusLabel} ${actionLabel} (ID ${parsedBody.template_id}, version ${parsedBody.version_number}).`,
       );
+      setLatestSavedVersionLabel(trimmedVersionLabel);
 
       try {
         const draftPayload = {
@@ -268,15 +275,11 @@ export default function LatexUploadPage() {
           setSelectedParentCategory(data.parent_category_slug ?? '');
           setChildCategories(data.child_category_slug ? [data.child_category_slug] : []);
           setLatexSource(data.latex_source ?? '');
-          setVersionLabel(() => {
-            if (data.version_label && data.version_label.trim().length > 0) {
-              return data.version_label;
-            }
-            if (data.version_number) {
-              return `v${data.version_number}`;
-            }
-            return '';
-          });
+          const derivedVersionLabel =
+            (data.version_label && data.version_label.trim().length > 0 && data.version_label) ||
+            (data.version_number ? `v${data.version_number}` : '');
+          setVersionLabel(derivedVersionLabel);
+          setLatestSavedVersionLabel(derivedVersionLabel.trim());
         }
       } catch (error) {
         if (isMounted) {

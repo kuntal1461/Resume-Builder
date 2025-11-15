@@ -69,27 +69,42 @@ const SAMPLE_LATEX = String.raw`
 \end{document}
 `;
 
-const CHILD_CATEGORY_OPTIONS = [
-  { value: 'ai-specialist', label: 'AI specialist' },
-  { value: 'ats-ready', label: 'ATS ready' },
-  { value: 'campus-hiring', label: 'Campus hiring' },
-  { value: 'leadership', label: 'Leadership' },
-  { value: 'rev-ops', label: 'Revenue operations' },
-  { value: 'global', label: 'Global template' },
-  { value: 'design-system', label: 'Design system' },
-  { value: 'executive-suite', label: 'Executive suite' },
-  { value: 'university', label: 'University recruiting' },
-];
+type ParentCategoryOption = {
+  id: number;
+  name: string;
+  slug: string;
+  sort_order: number;
+};
+type ChildCategoryOption = {
+  id: number;
+  name: string;
+  slug: string;
+  sort_order: number;
+};
 
 export default function LatexUploadPage() {
   const [sidebarProfile, setSidebarProfile] = useState<SidebarProfile>(DEFAULT_SIDEBAR_PROFILE);
   const [latexSource, setLatexSource] = useState<string>(SAMPLE_LATEX.trim());
-  const [childCategories, setChildCategories] = useState<string[]>(['ai-specialist', 'ats-ready']);
+  const [childCategories, setChildCategories] = useState<string[]>([]);
+  const [availableChildCategories, setAvailableChildCategories] = useState<ChildCategoryOption[]>([]);
+  const [parentCategories, setParentCategories] = useState<ParentCategoryOption[]>([]);
+  const [selectedParentCategory, setSelectedParentCategory] = useState('');
+  const [isParentCategoryLoading, setIsParentCategoryLoading] = useState(true);
+  const [parentCategoryError, setParentCategoryError] = useState<string | null>(null);
+  const [isParentDropdownOpen, setIsParentDropdownOpen] = useState(false);
+  const [isChildCategoryLoading, setIsChildCategoryLoading] = useState(false);
+  const [childCategoryError, setChildCategoryError] = useState<string | null>(null);
   const [isRendering, setIsRendering] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [renderError, setRenderError] = useState<string | null>(null);
   const [previewExcerpt, setPreviewExcerpt] = useState('');
   const lineNumbersRef = useRef<HTMLDivElement | null>(null);
+  const parentDropdownRef = useRef<HTMLDivElement | null>(null);
+  const parentTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const childDropdownRef = useRef<HTMLDivElement | null>(null);
+  const childTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const [isChildDropdownOpen, setIsChildDropdownOpen] = useState(false);
+  const [childSearch, setChildSearch] = useState('');
 
   const toggleChildCategory = (value: string) => {
     setChildCategories((previous) =>
@@ -166,8 +181,179 @@ export default function LatexUploadPage() {
   const lineNumberLabels = latexSource.split('\n');
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSidebarProfile(resolveSidebarProfile(DEFAULT_SIDEBAR_PROFILE));
+
+    let isMounted = true;
+
+    const loadParentCategories = async () => {
+      setIsParentCategoryLoading(true);
+      setParentCategoryError(null);
+      try {
+        const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+        const response = await fetch(`${basePath}/api/templates/parent-categories`);
+        if (!response.ok) {
+          throw new Error(`Unable to load parent categories (status ${response.status}).`);
+        }
+        const data = (await response.json()) as {
+          success: boolean;
+          categories: ParentCategoryOption[];
+        };
+
+        if (!data.success) {
+          throw new Error('Parent category request failed.');
+        }
+
+        if (isMounted) {
+          setParentCategories(data.categories);
+          setSelectedParentCategory((previous) => {
+            if (previous && data.categories.some((category) => category.slug === previous)) {
+              return previous;
+            }
+            return data.categories[0]?.slug ?? '';
+          });
+          setIsParentDropdownOpen(false);
+        }
+      } catch (error) {
+        if (isMounted) {
+          const message = error instanceof Error ? error.message : 'Unable to load parent categories.';
+          setParentCategoryError(message);
+        }
+      } finally {
+        if (isMounted) {
+          setIsParentCategoryLoading(false);
+        }
+      }
+    };
+
+    void loadParentCategories();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
+
+  // Load child categories when the selected parent changes
+  useEffect(() => {
+    let isMounted = true;
+    const loadChildCategories = async () => {
+      // Reset when no parent is selected
+      if (!selectedParentCategory) {
+        setAvailableChildCategories([]);
+        setChildCategories([]);
+        return;
+      }
+
+      const parent = parentCategories.find((c) => c.slug === selectedParentCategory);
+      if (!parent) {
+        setAvailableChildCategories([]);
+        setChildCategories([]);
+        return;
+      }
+
+      setIsChildCategoryLoading(true);
+      setChildCategoryError(null);
+      try {
+        const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+        const response = await fetch(`${basePath}/api/templates/child-categories?parentId=${parent.id}`);
+        if (!response.ok) {
+          throw new Error(`Unable to load child categories (status ${response.status}).`);
+        }
+        const data = (await response.json()) as {
+          success: boolean;
+          categories: ChildCategoryOption[];
+        };
+
+        if (!data.success) {
+          throw new Error('Child category request failed.');
+        }
+
+        if (isMounted) {
+          setAvailableChildCategories(data.categories);
+          // Keep only selections that still exist under this parent
+          setChildCategories((prev) => prev.filter((slug) => data.categories.some((c) => c.slug === slug)));
+        }
+      } catch (error) {
+        if (isMounted) {
+          const message = error instanceof Error ? error.message : 'Unable to load child categories.';
+          setChildCategoryError(message);
+          setAvailableChildCategories([]);
+          setChildCategories([]);
+        }
+      } finally {
+        if (isMounted) {
+          setIsChildCategoryLoading(false);
+        }
+      }
+    };
+
+    void loadChildCategories();
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedParentCategory, parentCategories]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (parentDropdownRef.current && !parentDropdownRef.current.contains(event.target as Node)) {
+        setIsParentDropdownOpen(false);
+      }
+      if (childDropdownRef.current && !childDropdownRef.current.contains(event.target as Node)) {
+        setIsChildDropdownOpen(false);
+      }
+    };
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsParentDropdownOpen(false);
+        parentTriggerRef.current?.focus();
+        setIsChildDropdownOpen(false);
+        childTriggerRef.current?.focus();
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isParentCategoryLoading || parentCategoryError) {
+      setIsParentDropdownOpen(false);
+    }
+  }, [isParentCategoryLoading, parentCategoryError]);
+
+  const disableParentSelect = isParentCategoryLoading || !!parentCategoryError;
+  const selectedParentCategoryLabel =
+    parentCategories.find((category) => category.slug === selectedParentCategory)?.name ?? 'Select parent category';
+
+  const toggleParentDropdown = () => {
+    if (disableParentSelect) {
+      return;
+    }
+    setIsParentDropdownOpen((previous) => !previous);
+  };
+
+  const handleParentCategorySelect = (slug: string) => {
+    setSelectedParentCategory(slug);
+    setIsParentDropdownOpen(false);
+    // Return focus to trigger for better UX/a11y
+    window.setTimeout(() => parentTriggerRef.current?.focus(), 0);
+  };
+
+  const toggleChildDropdown = () => {
+    if (isChildCategoryLoading || !!childCategoryError || availableChildCategories.length === 0) {
+      return;
+    }
+    setIsChildDropdownOpen((prev) => {
+      const next = !prev;
+      if (!next) {
+        setChildSearch('');
+      }
+      return next;
+    });
+  };
 
   return (
     <>
@@ -233,28 +419,179 @@ export default function LatexUploadPage() {
                   </label>
                   <label>
                     <span>Parent category</span>
-                    <select defaultValue="resume-ops">
-                      <option value="">Select parent category</option>
-                      <option value="resume-ops">Resume operations</option>
-                      <option value="eng-toolkit">Engineering toolkit</option>
-                      <option value="sales">Go-to-market</option>
-                    </select>
+                    <div
+                      className={`${styles.customSelect} ${disableParentSelect ? styles.customSelectDisabled : ''}`}
+                      ref={parentDropdownRef}
+                    >
+                      <button
+                        type="button"
+                        className={styles.customSelectTrigger}
+                        onClick={toggleParentDropdown}
+                        aria-haspopup="listbox"
+                        aria-expanded={isParentDropdownOpen}
+                        disabled={disableParentSelect}
+                        ref={parentTriggerRef}
+                      >
+                        <span>{selectedParentCategoryLabel}</span>
+                        <span aria-hidden="true" className={styles.customSelectCaret}>
+                          ▾
+                        </span>
+                      </button>
+                      {isParentDropdownOpen ? (
+                        <div className={styles.customSelectOptions} role="listbox" aria-label="Parent categories">
+                          {parentCategories.length === 0 ? (
+                            <p className={styles.customSelectEmpty}>No parent categories found.</p>
+                          ) : null}
+                          {parentCategories.map((category) => (
+                            <button
+                              type="button"
+                              key={category.id}
+                              className={`${styles.customSelectOption} ${
+                                selectedParentCategory === category.slug ? styles.customSelectOptionActive : ''
+                              }`}
+                              role="option"
+                              aria-selected={selectedParentCategory === category.slug}
+                              onMouseDown={() => handleParentCategorySelect(category.slug)}
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                // Fallback close in case onMouseDown is prevented in some browsers
+                                handleParentCategorySelect(category.slug);
+                              }}
+                            >
+                              {category.name}
+                            </button>
+                          ))}
+                        </div>
+                      ) : null}
+                    </div>
+                    {isParentCategoryLoading ? (
+                      <span className={styles.formHelperText}>Loading parent categories…</span>
+                    ) : null}
+                    {parentCategoryError ? (
+                      <p className={styles.renderError} role="alert">
+                        {parentCategoryError}
+                      </p>
+                    ) : null}
                   </label>
                   <div className={styles.categoryField}>
                     <span>Child categories</span>
-                    <div className={styles.categoryChecklist} role="group" aria-label="Child categories">
-                      {CHILD_CATEGORY_OPTIONS.map((option) => (
-                        <label key={option.value} className={styles.categoryChecklistOption}>
-                          <input
-                            type="checkbox"
-                            value={option.value}
-                            checked={childCategories.includes(option.value)}
-                            onChange={() => toggleChildCategory(option.value)}
-                          />
-                          <span>{option.label}</span>
-                        </label>
-                      ))}
+                    <div className={styles.customSelect} ref={childDropdownRef}>
+                      <button
+                        type="button"
+                        className={styles.customSelectTrigger}
+                        onClick={toggleChildDropdown}
+                        aria-haspopup="listbox"
+                        aria-expanded={isChildDropdownOpen}
+                        disabled={isChildCategoryLoading || !!childCategoryError || availableChildCategories.length === 0}
+                        ref={childTriggerRef}
+                      >
+                        {(() => {
+                          if (isChildCategoryLoading) return <span>Loading child categories…</span>;
+                          if (childCategoryError) return <span>Child categories unavailable</span>;
+                          if (availableChildCategories.length === 0) return <span>No child categories</span>;
+                          const selectedNames = childCategories
+                            .map((slug) => availableChildCategories.find((c) => c.slug === slug)?.name)
+                            .filter(Boolean) as string[];
+                          if (selectedNames.length === 0) return <span>Select child categories</span>;
+                          const visible = selectedNames.slice(0, 2);
+                          const extra = selectedNames.length - visible.length;
+                          return (
+                            <span className={styles.selectTriggerContent}>
+                              {visible.map((name) => (
+                                <span key={name} className={styles.selectedBadge}>{name}</span>
+                              ))}
+                              {extra > 0 ? <span className={styles.selectedBadgeMore}>+{extra}</span> : null}
+                            </span>
+                          );
+                        })()}
+                        <span aria-hidden="true" className={styles.customSelectCaret}>▾</span>
+                      </button>
+
+                      {isChildDropdownOpen ? (
+                        <div
+                          className={styles.customSelectOptions}
+                          role="listbox"
+                          aria-label="Child categories"
+                        >
+                          <div className={styles.customSelectHeader}>
+                            <input
+                              type="text"
+                              value={childSearch}
+                              onChange={(e) => setChildSearch(e.target.value)}
+                              placeholder="Search categories…"
+                              className={styles.customSelectSearch}
+                              aria-label="Search child categories"
+                              autoFocus
+                            />
+                          </div>
+
+                          {availableChildCategories.length === 0 ? (
+                            <p className={styles.customSelectEmpty}>No child categories found.</p>
+                          ) : null}
+
+                          {(() => {
+                            const query = childSearch.trim().toLowerCase();
+                            const list = query
+                              ? availableChildCategories.filter((c) => c.name.toLowerCase().includes(query))
+                              : availableChildCategories;
+                            if (list.length === 0) {
+                              return <p className={styles.customSelectEmpty}>No results for “{childSearch}”.</p>;
+                            }
+                            return (
+                              <div className={styles.customSelectGrid}>
+                                {list.map((option) => {
+                                  const checked = childCategories.includes(option.slug);
+                                  return (
+                                    <label
+                                      key={option.id}
+                                      className={styles.customChipOption}
+                                      role="option"
+                                      aria-selected={checked}
+                                    >
+                                      <input
+                                        type="checkbox"
+                                        checked={checked}
+                                        onChange={() => toggleChildCategory(option.slug)}
+                                        aria-label={option.name}
+                                      />
+                                      <span>{option.name}</span>
+                                    </label>
+                                  );
+                                })}
+                              </div>
+                            );
+                          })()}
+
+                          <div className={styles.customSelectActions}>
+                            <button
+                              type="button"
+                              className={styles.secondaryActionButton}
+                              onClick={() => setChildCategories([])}
+                              disabled={childCategories.length === 0}
+                            >
+                              Clear
+                            </button>
+                            <button
+                              type="button"
+                              className={styles.primaryActionButton}
+                              onMouseDown={() => setIsChildDropdownOpen(false)}
+                              onClick={() => {
+                                setIsChildDropdownOpen(false);
+                                childTriggerRef.current?.focus();
+                              }}
+                            >
+                              Done
+                            </button>
+                          </div>
+                        </div>
+                      ) : null}
                     </div>
+                    {isChildCategoryLoading ? (
+                      <span className={styles.formHelperText}>Loading child categories…</span>
+                    ) : null}
+                    {childCategoryError ? (
+                      <p className={styles.renderError} role="alert">{childCategoryError}</p>
+                    ) : null}
                   </div>
                   <label>
                     <span>Version</span>

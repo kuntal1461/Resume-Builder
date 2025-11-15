@@ -1,0 +1,17 @@
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+COPY backend-common/requirements/api.txt ./backend-common/requirements/api.txt
+COPY resume-admin-dashboard/web/requirements.txt ./web/requirements.txt
+RUN pip install --no-cache-dir -r web/requirements.txt
+
+COPY backend-common /app/backend_common
+COPY resume-admin-dashboard /app
+
+ENV PYTHONPATH="/app:/app/backend_common:${PYTHONPATH}"
+
+CMD ["uvicorn", "web.app:app", "--host", "0.0.0.0", "--port", "8100"]

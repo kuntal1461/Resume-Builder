@@ -50,13 +50,17 @@ services:
       NEXT_TELEMETRY_DISABLED: "1"
       PORT: 3000
       NEXT_PUBLIC_RENDER_SERVICE_URL: http://localhost:4100
+      API_BASE_URL: http://resume-admin-api:8100
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8100
     volumes:
       - ./resume-admin-dashboard/frontend:/app:rw,cached
+      - ./frontend-common:/frontend-common:rw,cached
       - resume_admin_frontend_node_modules:/app/node_modules
     working_dir: /app
     restart: unless-stopped
     depends_on:
       - latex-renderer
+      - resume-admin-api
 
   latex-renderer:
     build:
@@ -74,6 +78,26 @@ services:
     restart: unless-stopped
     ports:
       - "4100:4100"
+
+  resume-admin-api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.resume-admin-api
+    image: resume-admin-api:latest
+    env_file: .env
+    environment:
+      RESUME_ADMIN_FRONTEND_ORIGIN: http://resume-admin-frontend:3000
+      DATABASE_URL: ${ADMIN_DASHBOARD_DATABASE_URL:-mysql+pymysql://resume_user:resume_pass@mysql:3306/resumes?charset=utf8mb4}
+    volumes:
+      - ./resume-admin-dashboard:/app/resume-admin-dashboard:rw,cached
+      - ./backend-common:/app/backend_common:rw,cached
+    working_dir: /app/resume-admin-dashboard
+    command: uvicorn web.app:app --host 0.0.0.0 --port 8100 --reload
+    ports:
+      - "8100:8100"
+    depends_on:
+      mysql:
+        condition: service_healthy
 
   mysql:
     image: mysql:8.0

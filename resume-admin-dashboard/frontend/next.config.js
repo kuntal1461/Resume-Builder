@@ -2,10 +2,15 @@ const path = require('node:path');
 
 const workspaceRoot = path.resolve(__dirname, '../..');
 
+const basePath = '/admin';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  basePath: '/admin',
+  basePath,
+  env: {
+    NEXT_PUBLIC_BASE_PATH: basePath,
+  },
   experimental: {
     externalDir: true,
   },
@@ -38,6 +43,10 @@ const nextConfig = {
     };
 
     rules.forEach(visitRule);
+
+    config.resolve = config.resolve || {};
+    config.resolve.alias = config.resolve.alias || {};
+    config.resolve.alias['@frontend-common'] = path.join(workspaceRoot, 'frontend-common');
 
     return config;
   },

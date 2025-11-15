@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends tini && rm -rf 
 RUN useradd -m appuser
 
 WORKDIR /app
+COPY backend-common/requirements/api.txt ./backend-common/requirements/api.txt
 COPY job-recommendation-system/web/requirements.txt ./web/requirements.txt
 RUN pip install --no-cache-dir -r web/requirements.txt
 

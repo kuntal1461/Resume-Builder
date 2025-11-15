@@ -98,6 +98,21 @@ export default function LatexUploadPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [renderError, setRenderError] = useState<string | null>(null);
   const [previewExcerpt, setPreviewExcerpt] = useState('');
+  const handleSave = () => {
+    try {
+      const payload = {
+        latexSource,
+        selectedParentCategory,
+        childCategories,
+        timestamp: new Date().toISOString(),
+      };
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem('latexDraft', JSON.stringify(payload));
+      }
+    } catch (error) {
+      console.error('Failed to save draft', error);
+    }
+  };
   const lineNumbersRef = useRef<HTMLDivElement | null>(null);
   const parentDropdownRef = useRef<HTMLDivElement | null>(null);
   const parentTriggerRef = useRef<HTMLButtonElement | null>(null);
@@ -619,9 +634,6 @@ export default function LatexUploadPage() {
                 </div>
 
                 <div className={styles.editorActions}>
-                  <button type="button" className={styles.secondaryActionButton}>
-                    Save draft
-                  </button>
                   <button
                     type="button"
                     className={styles.primaryActionButton}
@@ -631,6 +643,16 @@ export default function LatexUploadPage() {
                     disabled={isRendering}
                   >
                     {isRendering ? 'Rendering…' : 'Render preview'}
+                  </button>
+                  <button type="button" className={styles.secondaryActionButton}>
+                    Save draft
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.primaryActionButton}
+                    onClick={handleSave}
+                  >
+                    Save
                   </button>
                 </div>
                 {renderError ? (

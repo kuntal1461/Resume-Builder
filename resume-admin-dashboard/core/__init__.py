@@ -13,4 +13,5 @@ __all__ = [
     "responseVO",
     "service",
     "serviceImpl",
+    "enums",
 ]

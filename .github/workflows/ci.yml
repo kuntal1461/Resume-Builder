@@ -75,7 +75,9 @@ jobs:
         with:
           python-version: "3.11"
           cache: "pip"
-          cache-dependency-path: job-recommendation-system/web/requirements.txt
+          cache-dependency-path: |
+            job-recommendation-system/web/requirements.txt
+            backend-common/requirements/api.txt
 
       - name: Install dependencies
         run: |

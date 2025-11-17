@@ -2,7 +2,8 @@ from dataclasses import asdict
 from datetime import datetime
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
+from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel, EmailStr, constr
 from sqlalchemy.orm import Session
 
@@ -17,6 +18,7 @@ from core.exceptions.auth import (
 from core.RequestVo.AuthEmailLoginRequestVO import AuthEmailLoginRequestVO
 from core.RequestVo.AuthRegisterRequestVO import AuthRegisterRequestVO
 from ..database import get_db
+from ..security import create_access_token
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -41,16 +43,24 @@ def get_user_service(db: Session = Depends(get_db)) -> UserService:
     return UserServiceImpl(UserRepository(db))
 
 
+class UserPayload(BaseModel):
+    user_id: int
+    email: Optional[str]
+    username: Optional[str]
+    first_name: Optional[str]
+    last_name: Optional[str]
+    is_admin: bool
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserPayload
+
+
 @router.post("/login/email")
 def login_email(body: EmailLoginBody, service: UserService = Depends(get_user_service)):
-    try:
-        req = AuthEmailLoginRequestVO(email=body.email, password=body.password)
-        resp = service.authenticate_user_email(req)
-        return asdict(resp)
-    except UserNotFoundError:
-        raise HTTPException(404, "Email not registered")
-    except InvalidCredentialsError:
-        raise HTTPException(401, "Invalid email or password")
+    return _issue_token_response(body.email, body.password, service)
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
@@ -88,3 +98,48 @@ def logout_user(response: Response):
     response.delete_cookie("access_token")
 
     return {"success": True, "message": "Logged out"}
+
+
+@router.get("/profile")
+def get_user_profile(
+    email: Optional[EmailStr] = Query(default=None),
+    username: Optional[str] = Query(default=None, min_length=3, max_length=100),
+    service: UserService = Depends(get_user_service),
+):
+    if not email and not username:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Provide an email or username to look up the profile.")
+
+    try:
+        profile = service.get_user_profile(email=email, username=username)
+        return asdict(profile)
+    except UserNotFoundError:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "User not found.")
+
+
+@router.post("/token", response_model=TokenResponse)
+def login_for_access_token(
+    form_data: OAuth2PasswordRequestForm = Depends(), service: UserService = Depends(get_user_service)
+):
+    return _issue_token_response(form_data.username, form_data.password, service)
+
+
+def _issue_token_response(username: str, password: str, service: UserService) -> dict:
+    try:
+        req = AuthEmailLoginRequestVO(email=username, password=password)
+        resp = service.authenticate_user_email(req)
+    except UserNotFoundError:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Email not registered")
+    except InvalidCredentialsError:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid email or password")
+
+    token = create_access_token(subject=str(resp.user_id))
+    payload = UserPayload(
+        user_id=resp.user_id,
+        email=resp.email,
+        username=resp.username,
+        first_name=resp.first_name,
+        last_name=resp.last_name,
+        is_admin=resp.is_admin,
+    )
+    response = TokenResponse(access_token=token, token_type="bearer", user=payload)
+    return response.model_dump()

@@ -1,13 +1,15 @@
-from core.baseEntity.baseEntity import Base
+from core.baseEntity.baseEntity import Base, CommonEntity
 import core.entity.UserEntity  # noqa: F401  # ensure models are registered
+import core.entity.UserResumeEntity  # noqa: F401
+import core.entity.UserResumeVersionEntity  # noqa: F401
 from backend_common.database import (
+    DEFAULT_MYSQL_URL,
     create_engine_from_env,
     create_session_factory,
     get_db_dependency,
+    register_soft_delete_filter,
     session_scope_factory,
 )
-
-DEFAULT_MYSQL_URL = "mysql+pymysql://resume_user:resume_pass@mysql:3306/resumes?charset=utf8mb4"
 
 engine = create_engine_from_env(
     env_vars=("DATABASE_URL",),
@@ -16,6 +18,7 @@ engine = create_engine_from_env(
 )
 
 SessionLocal = create_session_factory(engine)
+register_soft_delete_filter(SessionLocal, CommonEntity)
 
 
 def init_db() -> None:

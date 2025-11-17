@@ -1,3 +1,5 @@
+from typing import Optional
+
 from core.entity.UserEntity import UserEntity
 from core.exceptions.auth import (
     InvalidCredentialsError,
@@ -9,6 +11,7 @@ from core.RequestVo.AuthEmailLoginRequestVO import AuthEmailLoginRequestVO
 from core.RequestVo.AuthRegisterRequestVO import AuthRegisterRequestVO
 from core.responseVO.AuthEmailLoginResponseVO import AuthEmailLoginResponseVO
 from core.responseVO.AuthRegisterResponseVO import AuthRegisterResponseVO
+from core.responseVO.UserProfileResponseVO import UserProfileResponseVO
 from core.service.UserService import UserService
 from core.util import hash_password, verify_password
 
@@ -78,4 +81,32 @@ class UserServiceImpl(UserService):
             phone_number=created_user.phone_number,
             dob=created_user.dob,
             is_admin=created_user.is_admin,
+        )
+
+    def get_user_profile(
+        self,
+        *,
+        email: Optional[str] = None,
+        username: Optional[str] = None,
+    ) -> UserProfileResponseVO:
+        if not email and not username:
+            raise UserNotFoundError("Provide an email or username to look up the user.")
+
+        user: Optional[UserEntity] = None
+
+        if email:
+            user = self.user_repository.get_user_by_email(email)
+
+        if not user and username:
+            user = self.user_repository.get_user_by_username(username)
+
+        if not user:
+            raise UserNotFoundError("User not found.")
+
+        return UserProfileResponseVO(
+            user_id=user.id,
+            email=user.email,
+            username=user.username,
+            first_name=getattr(user, "first_name", None),
+            last_name=getattr(user, "last_name", None),
         )

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { getEnvironmentConfig } from '../../lib/runtimeConfig';
+import { describeNetworkError } from '../../lib/networkErrors';
 
 const normalizeDetail = (detail: unknown, fallback: string) => {
   if (!detail) {
@@ -27,26 +28,6 @@ const normalizeDetail = (detail: unknown, fallback: string) => {
       return String(record.message);
     }
     return JSON.stringify(detail);
-  }
-  return fallback;
-};
-
-const mapNetworkError = (error: unknown, fallback: string, apiBaseUrl?: string) => {
-  if (error && typeof error === 'object' && 'name' in error && error.name === 'TypeError') {
-    const message = String((error as Error).message || '').toLowerCase();
-    if (
-      message.includes('failed to fetch') ||
-      message.includes('load failed') ||
-      message.includes('network request failed')
-    ) {
-      if (apiBaseUrl) {
-        return `Cannot reach API at ${apiBaseUrl}. Ensure the backend is running and accessible.`;
-      }
-      return 'Cannot reach the API. Ensure the backend is running and accessible.';
-    }
-  }
-  if (error instanceof Error) {
-    return error.message;
   }
   return fallback;
 };
@@ -119,9 +100,15 @@ export default function SignupPage() {
       });
     } catch (error) {
       console.error('Registration failed', error);
+      const { message } = describeNetworkError(error, 'Unable to create the account. Please try again later.', {
+        apiBaseUrl,
+        networkMessage: apiBaseUrl
+          ? `Cannot reach API at ${apiBaseUrl}. Ensure the backend is running and accessible.`
+          : 'Cannot reach the API. Ensure the backend is running and accessible.',
+      });
       setFlash({
         type: 'error',
-        message: mapNetworkError(error, 'Unable to create the account. Please try again later.', apiBaseUrl),
+        message,
       });
     } finally {
       setLoading(false);

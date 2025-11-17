@@ -9,6 +9,7 @@ from backend_common import get_server_environment
 from .database import init_db
 from .db_ping import ping_db
 from .RestController.AuthController import router as auth_router
+from .RestController.ResumeDraftController import router as resume_router
 
 app = FastAPI(title="Job Recommendation API")
 
@@ -47,3 +48,4 @@ def health():
 
 
 app.include_router(auth_router)
+app.include_router(resume_router)

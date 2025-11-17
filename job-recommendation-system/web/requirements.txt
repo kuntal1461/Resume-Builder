@@ -1,1 +1,2 @@
 -r ../../backend-common/requirements/api.txt
+python-multipart

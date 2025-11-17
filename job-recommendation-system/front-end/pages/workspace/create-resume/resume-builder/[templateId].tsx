@@ -1,12 +1,14 @@
 import Head from 'next/head';
 import Link from 'next/link';
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import type { GetServerSideProps } from 'next';
 import AppShell from '../../../../components/workspace/AppShell';
 import { APP_MENU_ITEMS, DEFAULT_PROFILE_TASKS } from '../../../../components/workspace/navigation';
 import styles from '../../../../styles/workspace/ResumeBuilder.module.css';
 import { fetchResumeTemplateDetail, type ResumeTemplateDetailResponse } from '../../../../lib/resumeTemplates';
 import { requestLatexPreview } from '../../../../lib/renderPreview';
+import { fetchResumeDraft, saveResumeDraft } from '../../../../lib/resumeDrafts';
+import { loadAccessToken } from '../../../../lib/authTokenStorage';
 
 const PROFILE = {
   name: 'Kuntal Maity',
@@ -59,10 +61,106 @@ export default function TemplateEditorPage({ template }: TemplateEditorProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewExcerpt, setPreviewExcerpt] = useState<string | null>(null);
   const categoryLabel = toTitle(template.child_category_slug ?? template.parent_category_slug);
+  const templateId = template.template_id;
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [loadingDraft, setLoadingDraft] = useState(false);
+  const [savingDraft, setSavingDraft] = useState(false);
 
-  const handleSave = (event: FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    const token = loadAccessToken();
+    setAccessToken(token);
+    if (!token) {
+      setEditorMessage('Sign in to your workspace to save resume progress.');
+    } else {
+      setEditorMessage(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!accessToken) {
+      setLoadingDraft(false);
+      return;
+    }
+
+    let cancelled = false;
+    const loadDraft = async () => {
+      setLoadingDraft(true);
+      try {
+        const draft = await fetchResumeDraft(templateId, accessToken);
+        if (cancelled) {
+          return;
+        }
+
+        if (!draft) {
+          setEditorMessage('No saved draft yet. Start customizing to create one.');
+          setEditorError(null);
+          return;
+        }
+
+        setDraftTitle(draft.title || `${template.title} Resume`);
+        setDraftRole(draft.targetRole || '');
+        setDraftSummary(draft.summary || '');
+        setDraftNotes(draft.notes || '');
+        setLatexDraft(draft.latexSource || template.latex_source || '');
+        setEditorMessage('Restored your last saved draft from your workspace.');
+        setEditorError(null);
+      } catch (error) {
+        if (cancelled) {
+          return;
+        }
+        const message = error instanceof Error ? error.message : 'Unable to load your saved draft.';
+        setEditorError(message);
+      } finally {
+        if (!cancelled) {
+          setLoadingDraft(false);
+        }
+      }
+    };
+
+    loadDraft();
+    return () => {
+      cancelled = true;
+    };
+  }, [accessToken, templateId, template.latex_source, template.title]);
+
+  const handleSave = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setEditorMessage('Changes saved locally. Download or copy the LaTeX when you are ready.');
+    if (!accessToken) {
+      setEditorError('Sign in to your workspace to save changes.');
+      return;
+    }
+
+    setSavingDraft(true);
+    setEditorError(null);
+    try {
+      const response = await saveResumeDraft(
+        {
+          templateId,
+          title: draftTitle,
+          latexSource: latexDraft,
+          targetRole: draftRole,
+          summary: draftSummary,
+          notes: draftNotes,
+          templateVersionId: null,
+          templateVersionLabel: template.version_label ?? null,
+          templateVersionNumber: template.version_number ?? null,
+        },
+        accessToken
+      );
+      const savedTime = response.savedAt
+        ? new Date(response.savedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        : null;
+      setEditorMessage(
+        savedTime
+          ? `Draft saved to your workspace at ${savedTime}. Download or copy the LaTeX when you are ready.`
+          : 'Draft saved to your workspace.'
+      );
+    } catch (saveError) {
+      const message = saveError instanceof Error ? saveError.message : 'Unable to save your changes.';
+      setEditorError(message);
+    } finally {
+      setSavingDraft(false);
+    }
   };
 
   const handleDownloadLatex = () => {
@@ -88,6 +186,7 @@ export default function TemplateEditorPage({ template }: TemplateEditorProps) {
       setEditorMessage('LaTeX copied to clipboard.');
       setEditorError(null);
     } catch (copyError) {
+      console.error('Unable to copy LaTeX source', copyError);
       setEditorError('Unable to copy text. Please copy manually.');
     }
   };
@@ -228,8 +327,12 @@ export default function TemplateEditorPage({ template }: TemplateEditorProps) {
                   />
                 </label>
                 <div className={styles.editorActions}>
-                  <button type="submit" className={styles.primaryAction}>
-                    Save changes
+                  <button
+                    type="submit"
+                    className={styles.primaryAction}
+                    disabled={savingDraft || loadingDraft || !accessToken}
+                  >
+                    {savingDraft ? 'Saving…' : 'Save changes'}
                   </button>
                   <button type="button" className={styles.editorButton} onClick={handleDownloadLatex}>
                     Download .tex

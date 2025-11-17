@@ -1,6 +1,7 @@
 const WORKSPACE_PROFILE_STORAGE_KEY = 'jobmatch.workspaceProfile';
 
 export type WorkspaceProfileSnapshot = {
+  userId?: number | null;
   firstName?: string | null;
   lastName?: string | null;
   username?: string | null;
@@ -56,7 +57,13 @@ export function persistWorkspaceProfile(snapshot: WorkspaceProfileSnapshot): voi
   }
 
   try {
-    window.localStorage.setItem(WORKSPACE_PROFILE_STORAGE_KEY, JSON.stringify(snapshot ?? {}));
+    window.localStorage.setItem(
+      WORKSPACE_PROFILE_STORAGE_KEY,
+      JSON.stringify({
+        ...snapshot,
+        userId: typeof snapshot.userId === 'number' ? snapshot.userId : snapshot.userId ?? null,
+      })
+    );
   } catch (error) {
     console.warn('Unable to persist workspace profile snapshot', error);
   }
@@ -113,4 +120,14 @@ export function buildWorkspaceIdentity<T extends { name: string; initials: strin
 
 export function getWorkspaceFirstName(snapshot?: WorkspaceProfileSnapshot | null, fallback?: string): string {
   return safeTrim(snapshot?.firstName) || fallback || '';
+}
+
+export function getWorkspaceUserId(snapshot?: WorkspaceProfileSnapshot | null): number | null {
+  if (!snapshot) {
+    return null;
+  }
+  if (typeof snapshot.userId === 'number' && Number.isFinite(snapshot.userId)) {
+    return snapshot.userId;
+  }
+  return null;
 }

@@ -2,7 +2,9 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { getEnvironmentConfig } from '../../lib/runtimeConfig';
+import { describeNetworkError } from '../../lib/networkErrors';
 import { persistWorkspaceProfile } from '../../lib/workspaceProfileStorage';
+import { persistAccessToken } from '../../lib/authTokenStorage';
 
 const normalizeDetail = (detail: unknown, fallback: string) => {
   if (!detail) {
@@ -34,35 +36,17 @@ const normalizeDetail = (detail: unknown, fallback: string) => {
 };
 
 type LoginResponsePayload = {
-  success?: boolean;
-  message?: string;
-  user_id?: number;
+  access_token?: string;
+  token_type?: string;
   detail?: unknown;
-  email?: string;
-  username?: string;
-  first_name?: string;
-  last_name?: string;
-  is_admin?: boolean;
-};
-
-const mapNetworkError = (error: unknown, fallback: string, apiBaseUrl?: string) => {
-  if (error && typeof error === 'object' && 'name' in error && error.name === 'TypeError') {
-    const message = String((error as Error).message || '').toLowerCase();
-    if (
-      message.includes('failed to fetch') ||
-      message.includes('load failed') ||
-      message.includes('network request failed')
-    ) {
-      if (apiBaseUrl) {
-        return `Cannot reach API at ${apiBaseUrl}. Ensure the backend is running and accessible.`;
-      }
-      return 'Cannot reach the API. Ensure the backend is running and accessible.';
-    }
-  }
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return fallback;
+  user?: {
+    user_id?: number;
+    email?: string | null;
+    username?: string | null;
+    first_name?: string | null;
+    last_name?: string | null;
+    is_admin?: boolean;
+  };
 };
 
 export default function LoginPage() {
@@ -92,41 +76,52 @@ export default function LoginPage() {
       const config = await getEnvironmentConfig();
       apiBaseUrl = config.apiBaseUrl;
 
-      const response = await fetch(`${apiBaseUrl}/auth/login/email`, {
+      const response = await fetch(`${apiBaseUrl}/auth/token`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          username: form.email,
+          password: form.password,
+        }).toString(),
       });
 
       const payload: LoginResponsePayload = await response.json().catch(() => ({} as LoginResponsePayload));
 
-      if (!response.ok) {
+      if (!response.ok || !payload?.access_token || !payload.user) {
         const message = normalizeDetail(
-          payload.detail,
+          payload?.detail,
           'Unable to log in. Please check your credentials and try again.'
         );
         throw new Error(message);
       }
 
+      persistAccessToken(payload.access_token);
       persistWorkspaceProfile({
-        firstName: payload.first_name ?? null,
-        lastName: payload.last_name ?? null,
-        username: payload.username ?? null,
-        email: payload.email ?? null,
+        userId: payload.user.user_id ?? null,
+        firstName: payload.user.first_name ?? null,
+        lastName: payload.user.last_name ?? null,
+        username: payload.user.username ?? null,
+        email: payload.user.email ?? null,
       });
 
       setFlash({
         type: 'success',
-        message: `Welcome back, ${payload.username ?? payload.email ?? 'candidate'}!`,
+        message: `Welcome back, ${payload.user.username ?? payload.user.email ?? 'candidate'}!`,
       });
 
       // Navigate to the authenticated home after successful login
       router.push('/workspace/overview');
     } catch (error) {
       console.error('Login failed', error);
+      const { message } = describeNetworkError(error, 'Unable to log in. Please try again later.', {
+        apiBaseUrl,
+        networkMessage: apiBaseUrl
+          ? `Cannot reach API at ${apiBaseUrl}. Ensure the backend is running and accessible.`
+          : 'Cannot reach the API. Ensure the backend is running and accessible.',
+      });
       setFlash({
         type: 'error',
-        message: mapNetworkError(error, 'Unable to log in. Please try again later.', apiBaseUrl),
+        message,
       });
     } finally {
       setLoading(false);

@@ -1,3 +1,6 @@
+SET @OLD_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS;
+SET FOREIGN_KEY_CHECKS = 0;
+
 DROP TABLE IF EXISTS resume_template_parent_category_master;
 
 CREATE TABLE IF NOT EXISTS resume_template_parent_category_master (
@@ -102,3 +105,61 @@ CREATE TABLE IF NOT EXISTS resume_template_version (
   AUTO_INCREMENT=1000
   DEFAULT CHARSET=utf8mb4
   COLLATE=utf8mb4_unicode_ci;
+
+
+
+DROP TABLE IF EXISTS user_resume_version;
+DROP TABLE IF EXISTS user_resume;
+
+CREATE TABLE IF NOT EXISTS user_resume (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  user_id                     BIGINT UNSIGNED NOT NULL,
+  template_id                 BIGINT UNSIGNED NOT NULL,
+  user_template_version_no    BIGINT UNSIGNED NULL,
+  title                       VARCHAR(200) NOT NULL,
+  current_template_version_id BIGINT UNSIGNED NULL,
+  -- CommonEntity fields
+  rowstate        INT NOT NULL DEFAULT 1,
+  field1          VARCHAR(200) NULL,
+  field2          VARCHAR(200) NULL,
+  field3          BIGINT NULL,
+  field4          BIGINT NULL,
+  loggedBy        BIGINT NOT NULL DEFAULT 0,
+  lastUpdatedBy   BIGINT NOT NULL DEFAULT 0,
+  loggedInTime    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  lastUpdateTime  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_user_resume_user
+    FOREIGN KEY (user_id) REFERENCES users (id),
+  CONSTRAINT fk_user_resume_template
+    FOREIGN KEY (template_id) REFERENCES resume_template (id),
+  CONSTRAINT fk_user_resume_template_version
+    FOREIGN KEY (current_template_version_id) REFERENCES resume_template_version (id)
+) ENGINE=InnoDB
+  AUTO_INCREMENT=1000
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS user_resume_version (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  user_resume_id        BIGINT UNSIGNED NOT NULL,
+  latex_source_snapshot LONGTEXT NULL,
+  structured_data_json  JSON NULL,
+  render_artifacts_json JSON NULL,
+  -- CommonEntity fields
+  rowstate        INT NOT NULL DEFAULT 1,
+  field1          VARCHAR(200) NULL,
+  field2          VARCHAR(200) NULL,
+  field3          BIGINT NULL,
+  field4          BIGINT NULL,
+  loggedBy        BIGINT NOT NULL DEFAULT 0,
+  lastUpdatedBy   BIGINT NOT NULL DEFAULT 0,
+  loggedInTime    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  lastUpdateTime  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_user_resume_version_parent
+    FOREIGN KEY (user_resume_id) REFERENCES user_resume (id)
+) ENGINE=InnoDB
+  AUTO_INCREMENT=1000
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;
+
+SET FOREIGN_KEY_CHECKS = @OLD_FOREIGN_KEY_CHECKS;

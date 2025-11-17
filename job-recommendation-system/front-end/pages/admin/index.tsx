@@ -5,6 +5,7 @@ import SiteHeader from '../../components/layout/SiteHeader';
 import SiteFooter from '../../components/layout/SiteFooter';
 import { getEnvironmentConfig } from '../../lib/runtimeConfig';
 import { persistAdminProfile } from '../../lib/adminProfileStorage';
+import { describeNetworkError } from '../../lib/networkErrors';
 import styles from '../../styles/admin/Admin.module.css';
 
 type AuthMode = 'login' | 'signup';
@@ -41,28 +42,6 @@ const ADMIN_STATS = [
   { label: 'Profiles reviewed / week', value: '1.2k' },
   { label: 'Avg. approval time', value: '4h' },
 ];
-
-const describeNetworkError = (error: unknown, fallback: string, apiBaseUrl?: string) => {
-  if (error && typeof error === 'object' && 'name' in error && (error as Error).name === 'TypeError') {
-    const message = String((error as Error).message || '').toLowerCase();
-    if (
-      message.includes('failed to fetch') ||
-      message.includes('load failed') ||
-      message.includes('network request failed')
-    ) {
-      if (apiBaseUrl) {
-        return `Cannot reach API at ${apiBaseUrl}. Ensure the backend is reachable.`;
-      }
-      return 'Cannot reach the API. Ensure the backend is running and accessible.';
-    }
-  }
-
-  if (error instanceof Error && error.message) {
-    return error.message;
-  }
-
-  return fallback;
-};
 
 const extractDetailMessage = (payload: unknown, fallback: string) => {
   if (!payload) {
@@ -160,9 +139,15 @@ export default function AdminAccessPage() {
 
       await router.push('/admin/view');
     } catch (error) {
+      const { message } = describeNetworkError(error, fallbackMessage, {
+        apiBaseUrl,
+        networkMessage: apiBaseUrl
+          ? `Cannot reach API at ${apiBaseUrl}. Ensure the backend is reachable.`
+          : 'Cannot reach the API. Ensure the backend is running and accessible.',
+      });
       setAdminBanner({
         type: 'error',
-        message: describeNetworkError(error, fallbackMessage, apiBaseUrl),
+        message,
       });
     } finally {
       setAdminLoading(false);

@@ -3,6 +3,8 @@ import { useRouter } from 'next/router';
 import { getEnvironmentConfig } from '../runtimeConfig';
 import { clearAdminProfile } from '../adminProfileStorage';
 import { clearWorkspaceProfile } from '../workspaceProfileStorage';
+import { clearAccessToken } from '../authTokenStorage';
+import { describeNetworkError } from '../networkErrors';
 
 type UseLogoutOptions = {
   redirectTo?: string;
@@ -35,8 +37,18 @@ export function useLogout(options: UseLogoutOptions = {}): UseLogoutResult {
     setIsLoggingOut(true);
     setError(null);
 
+    let apiBaseUrl = '';
+
+    const performClientLogout = async () => {
+      clearAdminProfile();
+      clearWorkspaceProfile();
+      clearAccessToken();
+      await router.push(redirectTo);
+    };
+
     try {
-      const { apiBaseUrl } = await getEnvironmentConfig();
+      const config = await getEnvironmentConfig();
+      apiBaseUrl = config.apiBaseUrl;
       const response = await fetch(`${apiBaseUrl}/auth/logout`, {
         method: 'POST',
         credentials: 'include',
@@ -46,9 +58,7 @@ export function useLogout(options: UseLogoutOptions = {}): UseLogoutResult {
 
       if (!response.ok) {
         if ([401, 403, 404].includes(response.status)) {
-          clearAdminProfile();
-          clearWorkspaceProfile();
-          await router.push(redirectTo);
+          await performClientLogout();
           return true;
         }
 
@@ -64,13 +74,18 @@ export function useLogout(options: UseLogoutOptions = {}): UseLogoutResult {
         return false;
       }
 
-      clearAdminProfile();
-      clearWorkspaceProfile();
-      await router.push(redirectTo);
+      await performClientLogout();
       return true;
     } catch (caughtError) {
       console.error('Logout failed', caughtError);
-      setError(caughtError instanceof Error ? caughtError.message : DEFAULT_ERROR_MESSAGE);
+      const description = describeNetworkError(caughtError, DEFAULT_ERROR_MESSAGE, { apiBaseUrl });
+      if (description.isNetworkError) {
+        console.warn('API unreachable during logout, clearing local session.', caughtError);
+        await performClientLogout();
+        return true;
+      }
+
+      setError(description.message);
       return false;
     } finally {
       setIsLoggingOut(false);

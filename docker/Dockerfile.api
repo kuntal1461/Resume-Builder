@@ -1,13 +1,16 @@
 FROM python:3.9-slim
 
 # tini for signal handling; create non-root user
-RUN apt-get update && apt-get install -y --no-install-recommends tini && rm -rf /var/lib/apt/lists/*
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends tini bash \
+ && rm -rf /var/lib/apt/lists/*
 RUN useradd -m appuser
 
 WORKDIR /app
 COPY backend-common/requirements/api.txt ./backend-common/requirements/api.txt
 COPY job-recommendation-system/web/requirements.txt ./job-recommendation-system/web/requirements.txt
-RUN pip install --no-cache-dir -r job-recommendation-system/web/requirements.txt
+RUN pip install --no-cache-dir -r backend-common/requirements/api.txt \
+ && pip install --no-cache-dir -r job-recommendation-system/web/requirements.txt
 
 COPY job-recommendation-system/ /app/
 COPY backend-common/ /app/backend_common/

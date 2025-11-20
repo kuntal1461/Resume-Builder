@@ -17,6 +17,7 @@ services:
     volumes:
       - ./job-recommendation-system:/app:rw,cached
       - ./backend-common:/backend_common:rw,cached
+      - ./backend-common:/backend-common:rw,cached
     working_dir: /app
     user: "1000:1000"  # non-root runtime
   frontend:

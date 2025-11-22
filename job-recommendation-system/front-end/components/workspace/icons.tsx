@@ -201,6 +201,60 @@ export function ArrowIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function LocationMiniIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <path d="M12 3.5a6 6 0 016 6c0 4.5-6 11-6 11s-6-6.5-6-11a6 6 0 016-6z" stroke="currentColor" strokeWidth="1.2" />
+      <circle cx="12" cy="9.5" r="2" stroke="currentColor" strokeWidth="1.2" />
+    </svg>
+  );
+}
+
+export function WorkTypeIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <rect x="4" y="6" width="16" height="12" rx="3" stroke="currentColor" strokeWidth="1.2" />
+      <path d="M9 6V4h6v2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function CompensationIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <path d="M6 8h12M6 12h8M6 16h6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+      <rect x="3" y="4" width="18" height="16" rx="2.5" stroke="currentColor" strokeWidth="1.2" />
+    </svg>
+  );
+}
+
+export function RemoteModeIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <rect x="3" y="7" width="18" height="11" rx="3" stroke="currentColor" strokeWidth="1.2" />
+      <path d="M9 18l3 3 3-3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function SeniorityIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <circle cx="12" cy="7" r="3" stroke="currentColor" strokeWidth="1.2" />
+      <path d="M5 21v-2c0-2.8 2.2-5 5-5h4c2.8 0 5 2.2 5 5v2" stroke="currentColor" strokeWidth="1.2" />
+    </svg>
+  );
+}
+
+export function ExperienceIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <path d="M12 8v4l3 2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.2" />
+    </svg>
+  );
+}
+
 export function RemoteIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>

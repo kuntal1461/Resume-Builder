@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { ChangeEvent, FormEvent, ReactElement, SVGProps } from 'react';
 import AppShell from '../../../components/workspace/AppShell';
 import {
@@ -7,6 +7,12 @@ import {
   FullTimeIcon,
   HybridIcon,
   InternshipIcon,
+  LocationMiniIcon,
+  WorkTypeIcon,
+  CompensationIcon,
+  RemoteModeIcon,
+  SeniorityIcon,
+  ExperienceIcon,
   OnsiteIcon,
   RemoteIcon,
 } from '../../../components/workspace/icons';
@@ -28,6 +34,58 @@ const PROFILE = {
   progressLabel: '12%',
 };
 
+const MATCH_STORAGE_KEY = 'jobSearchMatchState';
+type StoredMatchState = { mode: 'results' | 'empty'; preferences?: PreferenceState };
+
+type CuratedJobTemplate = {
+  id: string;
+  baseTitle: string;
+  company: string;
+  posted: string;
+  companyType: string;
+  location: string;
+  workType: string;
+  salary: string;
+  remoteLabel: string;
+  seniority: string;
+  experience: string;
+  matchScore: number;
+  matchBadge: string;
+  jobTags: string[];
+  highlightTemplate: string;
+  chip: string;
+  logoText: string;
+};
+
+type CuratedJob = Omit<CuratedJobTemplate, 'baseTitle' | 'highlightTemplate'> & { title: string; highlight: string };
+
+const persistMatchState = (payload: StoredMatchState | null) => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  if (!payload) {
+    window.localStorage.removeItem(MATCH_STORAGE_KEY);
+  } else {
+    window.localStorage.setItem(MATCH_STORAGE_KEY, JSON.stringify(payload));
+  }
+};
+
+const loadMatchState = (): StoredMatchState | null => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+  const raw = window.localStorage.getItem(MATCH_STORAGE_KEY);
+  if (!raw) {
+    return null;
+  }
+  try {
+    return JSON.parse(raw) as StoredMatchState;
+  } catch {
+    window.localStorage.removeItem(MATCH_STORAGE_KEY);
+    return null;
+  }
+};
+
 const EXPERIENCE_OPTIONS: { label: string; value: PreferenceState['experience']; helper: string }[] = [
   { label: 'Fresher / Entry', value: 'Fresher', helper: '0-1 year, ready to learn fast' },
   { label: 'Junior', value: 'Junior', helper: '2-3 years, building depth' },
@@ -47,27 +105,66 @@ const JOB_NATURE_OPTIONS: { label: PreferenceState['jobNature']; Icon: (props: S
   { label: 'Internship', Icon: InternshipIcon },
 ];
 
-const curatedBase = [
+const curatedBase: CuratedJobTemplate[] = [
   {
     id: 'card-1',
-    title: 'Junior Product Strategist',
-    company: 'Nova Labs',
-    meta: 'Remote · Entry level',
+    baseTitle: 'Backend Software Engineer',
+    company: 'Atlassian',
+    posted: '10 hours ago',
+    companyType: 'Collaboration · Enterprise Software · Public Company',
+    location: 'Seattle, WA',
+    workType: 'Full-time',
+    salary: '$123K/yr - $193K/yr',
+    remoteLabel: 'Remote',
+    seniority: 'Entry · Mid level',
+    experience: '2+ years exp',
+    matchScore: 89,
+    matchBadge: 'Strong match',
+    jobTags: ['Comp. & Benefits', 'H1B Sponsor Likely'],
+    highlightTemplate:
+      'Atlassian teams are looking for {ROLE} to ship creative improvements and mentor peers inside their engineering pods.',
     chip: 'Design + PM pairing',
+    logoText: 'AT',
   },
   {
     id: 'card-2',
-    title: 'Associate Growth Analyst',
+    baseTitle: 'Associate Growth Analyst',
     company: 'Pulse Analytics',
-    meta: 'Hybrid · Training budget',
+    posted: '1 day ago',
+    companyType: 'Analytics · YC W19 · Series B',
+    location: 'Austin, TX',
+    workType: 'Full-time',
+    salary: '$98K/yr - $142K/yr',
+    remoteLabel: 'Hybrid',
+    seniority: 'Entry · Mid level',
+    experience: '1-3 years exp',
+    matchScore: 82,
+    matchBadge: 'Great fit',
+    jobTags: ['Training budget', 'Coaching pod'],
+    highlightTemplate:
+      'Pulse Analytics spins up micro teams so {ROLE} can own experiments, work cross-functionally, and get weekly product coaching.',
     chip: 'Coaching included',
+    logoText: 'PA',
   },
   {
     id: 'card-3',
-    title: 'Product Trainee (AI)',
+    baseTitle: 'Product Trainee (AI)',
     company: 'Orbit Systems',
-    meta: 'On-site · Rotational',
+    posted: '2 days ago',
+    companyType: 'AI Research · Private',
+    location: 'New York, NY',
+    workType: 'Internship',
+    salary: '$35/hr - $45/hr',
+    remoteLabel: 'On-site',
+    seniority: 'Fresher',
+    experience: 'Final year or recent grad',
+    matchScore: 75,
+    matchBadge: 'Solid match',
+    jobTags: ['Mentor pod', 'Portfolio boost'],
+    highlightTemplate:
+      'Orbit pairs every {ROLE} with a rotating mentor pod and a quarterly showcase so your work is visible.',
     chip: 'Mentorship pod',
+    logoText: 'OS',
   },
 ];
 
@@ -82,6 +179,8 @@ export default function WorkspaceJobSearchPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [isFormVisible, setIsFormVisible] = useState(true);
+  const [generatedJobs, setGeneratedJobs] = useState<CuratedJob[]>([]);
+  const [expandedJobId, setExpandedJobId] = useState<string | null>(null);
 
   const matchScore = useMemo(() => {
     let score = 64;
@@ -123,20 +222,25 @@ export default function WorkspaceJobSearchPage() {
     return chips.slice(0, 3);
   }, [preferences]);
 
-  const curatedJobs = useMemo(() => {
-    return curatedBase.map((item, index) => {
-      const copy = { ...item };
-      if (preferences.jobNature === 'Internship' && index === 0) {
-        copy.title = 'Graduate Intern - Product Discovery';
-        copy.meta = 'Remote · Mentorship ready';
-        copy.chip = 'Portfolio spotlight';
-      }
-      if (preferences.role) {
-        copy.title = copy.title.replace('Product', preferences.role);
-      }
-      return copy;
-    });
-  }, [preferences.jobNature, preferences.role]);
+const buildCuratedJobs = (target: PreferenceState): CuratedJob[] => {
+  return curatedBase.map((template, index) => {
+    const title = target.role?.trim() ? target.role.trim() : template.baseTitle;
+    const highlight = template.highlightTemplate.replace('{ROLE}', title);
+    const chip = template.chip;
+    let adjustedChip = chip;
+    if (target.jobNature === 'Internship' && index === 0) {
+      adjustedChip = 'Portfolio spotlight';
+    }
+    return {
+      ...template,
+      title,
+      highlight,
+      chip: adjustedChip,
+    };
+  });
+};
+
+const curatedJobs = useMemo(() => buildCuratedJobs(preferences), [preferences.jobNature, preferences.role]);
 
   const handleTextChange =
     (key: 'role' | 'location') =>
@@ -153,21 +257,47 @@ export default function WorkspaceJobSearchPage() {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const snapshot = { ...preferences };
     setIsSubmitting(true);
     window.setTimeout(() => {
       setIsSubmitting(false);
       setSubmitted(true);
+      setIsFormVisible(false);
+      const matches = buildCuratedJobs(snapshot);
+      setGeneratedJobs(matches);
+      persistMatchState({ mode: 'results', preferences: snapshot });
     }, 900);
   };
 
   const handleSkip = () => {
     setIsFormVisible(false);
     setSubmitted(false);
+    setGeneratedJobs([]);
+    persistMatchState({ mode: 'empty' });
   };
 
   const handleRestart = () => {
     setIsFormVisible(true);
+    setSubmitted(false);
+    setGeneratedJobs([]);
+    persistMatchState(null);
   };
+
+  useEffect(() => {
+    const parsed = loadMatchState();
+    if (!parsed) {
+      return;
+    }
+    if (parsed.mode === 'results' && parsed.preferences) {
+      setPreferences(parsed.preferences);
+      setGeneratedJobs(buildCuratedJobs(parsed.preferences));
+      setIsFormVisible(false);
+      setSubmitted(true);
+    } else if (parsed.mode === 'empty') {
+      setIsFormVisible(false);
+      setGeneratedJobs([]);
+    }
+  }, []);
 
   return (
     <>
@@ -341,6 +471,93 @@ export default function WorkspaceJobSearchPage() {
                   </p>
                 ) : null}
               </form>
+            ) : generatedJobs.length ? (
+              <div className={styles.jobSearchResults}>
+                <div className={styles.jobSearchResultsHeader}>
+                  <div>
+                    <p className={styles.jobSearchEyebrow}>Matches ready</p>
+                    <h2>Curated roles dialed to your targets</h2>
+                    <p>These hot jobs blend your role, location, and work-style preferences for a perfect-fit short list.</p>
+                  </div>
+                  <button className={styles.jobSearchPrimaryButton} type="button" onClick={handleRestart}>
+                    Start again
+                  </button>
+                </div>
+                <div className={styles.jobSearchJobList}>
+                  {generatedJobs.map((job) => (
+                    <article key={job.id} className={styles.jobSearchJobCard}>
+                      <div className={styles.jobSearchJobCardTop}>
+                        <div className={styles.jobSearchCompanyLogo} aria-hidden="true">
+                          {job.logoText}
+                        </div>
+                        <div className={styles.jobSearchJobDesc}>
+                          <span className={styles.jobSearchPublishTag}>{job.posted}</span>
+                          <h3>{job.title}</h3>
+                          <div className={styles.jobSearchCompanyRow}>
+                            <span>{job.company}</span>
+                            <span>/</span>
+                            <span>{job.companyType}</span>
+                          </div>
+                        </div>
+                        <div className={styles.jobSearchMatchWidget} aria-label={`Match score ${job.matchScore}%`}>
+                          <span className={styles.jobSearchMatchScore}>{job.matchScore}%</span>
+                          <span className={styles.jobSearchMatchLabel}>{job.matchBadge}</span>
+                        </div>
+                      </div>
+                      <div className={styles.jobSearchJobMetaGrid}>
+                        {[
+                          { label: 'Location', value: job.location, Icon: LocationMiniIcon },
+                          { label: 'Work type', value: job.workType, Icon: WorkTypeIcon },
+                          { label: 'Compensation', value: job.salary, Icon: CompensationIcon },
+                          { label: 'Remote mode', value: job.remoteLabel, Icon: RemoteModeIcon },
+                          { label: 'Seniority', value: job.seniority, Icon: SeniorityIcon },
+                          { label: 'Experience', value: job.experience, Icon: ExperienceIcon },
+                        ].map((item) => (
+                          <div key={`${job.id}-${item.label}`} className={styles.jobSearchMetaItem}>
+                            <item.Icon />
+                            <div>
+                              <strong>{item.value}</strong>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <p className={styles.jobSearchJobHighlight}>{job.highlight}</p>
+                      <div className={styles.jobSearchJobTags}>
+                        {job.jobTags.map((tag) => (
+                          <span key={`${job.id}-${tag}`}>{tag}</span>
+                        ))}
+                      </div>
+                      <div className={styles.jobSearchJobActions}>
+                        <button
+                          className={styles.jobSearchAskButton}
+                          type="button"
+                          onClick={() => setExpandedJobId((current) => (current === job.id ? null : job.id))}
+                          aria-expanded={expandedJobId === job.id}
+                        >
+                          Ask your AI
+                        </button>
+                        <button className={styles.jobSearchApplyButton} type="button">
+                          Apply now
+                        </button>
+                      </div>
+                      {expandedJobId === job.id ? (
+                        <div className={styles.jobSearchJobDetails}>
+                          <p>
+                            Recommended because you prefer <strong>{preferences.workModel}</strong> roles with a{' '}
+                            <strong>{preferences.jobNature}</strong> focus. We also looked at your interest in{' '}
+                            <strong>{preferences.role || 'your target discipline'}</strong>.
+                          </p>
+                          <ul>
+                            <li>Team mentors fresh talent every quarter.</li>
+                            <li>Includes a structured ramp plan and async collaboration rituals.</li>
+                            <li>Apply soon to unlock interview prep tips tailored to this role.</li>
+                          </ul>
+                        </div>
+                      ) : null}
+                    </article>
+                  ))}
+                </div>
+              </div>
             ) : (
               <div className={styles.jobSearchEmptyState}>
                 <div className={styles.jobSearchEmptyTop}>
@@ -362,7 +579,7 @@ export default function WorkspaceJobSearchPage() {
                   <li>Choose work style and job type to unlock fresher-friendly tracks.</li>
                 </ul>
                 <div className={styles.jobSearchEmptyActions}>
-                  <button className={styles.jobSearchEmptyPrimary} type="button" onClick={handleRestart}>
+                  <button className={styles.jobSearchPrimaryButton} type="button" onClick={handleRestart}>
                     Start again
                   </button>
                 </div>
@@ -430,15 +647,6 @@ function BadgeIcon() {
         stroke="currentColor"
         strokeWidth="1.3"
       />
-    </svg>
-  );
-}
-
-function ClockIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.4" />
-      <path d="M12 8v4l3 2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
     </svg>
   );
 }

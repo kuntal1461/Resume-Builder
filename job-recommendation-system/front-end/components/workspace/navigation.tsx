@@ -65,7 +65,7 @@ export const APP_MENU_ITEMS: AppMenuItem[] = [
   },
   {
     label: 'Jobs',
-    href: '/workspace/job-search?view=recommendation',
+    href: '/workspace/job-search',
     icon: <JobsIcon />,
   },
   {

@@ -201,6 +201,74 @@ export function ArrowIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function RemoteIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <rect x="3" y="6" width="18" height="12" rx="3" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M8 16l4 3 4-3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function HybridIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <path
+        d="M4 5h9v6H4a2 2 0 01-2-2V7a2 2 0 012-2zm7 0l3.5-2.5V9L11 11V5zM13 13h7v6h-7z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function OnsiteIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <path
+        d="M4 21V9l8-5 8 5v12h-5v-7h-6v7H4z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function FullTimeIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <rect x="3" y="5" width="18" height="14" rx="3" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M7 5V3h10v2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function ContractIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <path
+        d="M7 3h8l4 4v14H7a2 2 0 01-2-2V5a2 2 0 012-2z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
+      <path d="M9 11h6M9 15h4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function InternshipIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <circle cx="8" cy="8" r="3" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M3 21v-1c0-3 2.5-5.5 5.5-5.5H9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      <path d="M13 10h6v10h-6z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export function AccountSettingsIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg width="32" height="32" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" {...props}>

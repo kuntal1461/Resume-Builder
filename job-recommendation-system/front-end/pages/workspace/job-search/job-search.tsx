@@ -21,6 +21,7 @@ import {
   RemoteIcon,
 } from '../../../components/workspace/icons';
 import { APP_MENU_ITEMS, DEFAULT_PROFILE_TASKS } from '../../../components/workspace/navigation';
+import type { LikedJobSnapshot } from '../../../components/workspace/job-tracking/types';
 import styles from '../../../styles/workspace/JobSearch.module.css';
 
 type PreferenceState = {
@@ -39,6 +40,7 @@ const PROFILE = {
 };
 
 const MATCH_STORAGE_KEY = 'jobSearchMatchState';
+const LIKED_JOBS_STORAGE_KEY = 'jobTrackerLikedJobs';
 type StoredMatchState = { mode: 'results' | 'empty'; preferences?: PreferenceState };
 
 type CuratedJobTemplate = {
@@ -62,6 +64,46 @@ type CuratedJobTemplate = {
 };
 
 type CuratedJob = Omit<CuratedJobTemplate, 'baseTitle' | 'highlightTemplate'> & { title: string; highlight: string };
+
+const readLikedJobsStorage = (): LikedJobSnapshot[] => {
+  if (typeof window === 'undefined') {
+    return [];
+  }
+  const raw = window.localStorage.getItem(LIKED_JOBS_STORAGE_KEY);
+  if (!raw) {
+    return [];
+  }
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as LikedJobSnapshot[]) : [];
+  } catch {
+    window.localStorage.removeItem(LIKED_JOBS_STORAGE_KEY);
+    return [];
+  }
+};
+
+const writeLikedJobsStorage = (payload: LikedJobSnapshot[]) => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  if (!payload.length) {
+    window.localStorage.removeItem(LIKED_JOBS_STORAGE_KEY);
+  } else {
+    window.localStorage.setItem(LIKED_JOBS_STORAGE_KEY, JSON.stringify(payload));
+  }
+};
+
+const loadLikedJobSnapshots = (): LikedJobSnapshot[] => readLikedJobsStorage();
+
+const upsertLikedJobSnapshot = (snapshot: LikedJobSnapshot) => {
+  const existing = readLikedJobsStorage().filter((job) => job.id !== snapshot.id);
+  writeLikedJobsStorage([...existing, snapshot]);
+};
+
+const removeLikedJobSnapshot = (jobId: string) => {
+  const existing = readLikedJobsStorage().filter((job) => job.id !== jobId);
+  writeLikedJobsStorage(existing);
+};
 
 const persistMatchState = (payload: StoredMatchState | null) => {
   if (typeof window === 'undefined') {
@@ -287,12 +329,36 @@ const curatedJobs = useMemo(() => buildCuratedJobs(preferences), [preferences.jo
     setSubmitted(false);
     setGeneratedJobs([]);
     persistMatchState(null);
-    setSavedJobIds([]);
     setActiveActionMenu(null);
   };
 
   const handleToggleSave = (jobId: string) => {
-    setSavedJobIds((current) => (current.includes(jobId) ? current.filter((id) => id !== jobId) : [...current, jobId]));
+    setSavedJobIds((current) => {
+      const isSaved = current.includes(jobId);
+      if (isSaved) {
+        removeLikedJobSnapshot(jobId);
+        return current.filter((id) => id !== jobId);
+      }
+
+      const job = generatedJobs.find((match) => match.id === jobId);
+      if (!job) {
+        return current;
+      }
+
+      const snapshot: LikedJobSnapshot = {
+        id: job.id,
+        title: job.title,
+        company: job.company,
+        location: job.location,
+        salary: job.salary,
+        tags: job.jobTags,
+        matchScore: job.matchScore,
+        matchBadge: job.matchBadge,
+        savedAt: Date.now(),
+      };
+      upsertLikedJobSnapshot(snapshot);
+      return [...current, jobId];
+    });
   };
 
   useEffect(() => {
@@ -309,6 +375,10 @@ const curatedJobs = useMemo(() => buildCuratedJobs(preferences), [preferences.jo
       setIsFormVisible(false);
       setGeneratedJobs([]);
     }
+  }, []);
+
+  useEffect(() => {
+    setSavedJobIds(loadLikedJobSnapshots().map((job) => job.id));
   }, []);
 
   useEffect(() => {

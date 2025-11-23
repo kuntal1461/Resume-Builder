@@ -474,6 +474,9 @@
   flex-direction: column;
   padding: 48px 56px;
   gap: 24px;
+  min-height: 0;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .dashboardHeader {
@@ -915,6 +918,13 @@
   line-height: 1.5;
 }
 
+@media (max-width: 1024px) {
+  .appContent {
+    overflow: visible;
+    min-height: auto;
+  }
+}
+
 @media (max-width: 960px) {
   .appShell {
     flex-direction: column;
@@ -940,6 +950,8 @@
 
   .appContent {
     padding: 32px 20px;
+    overflow: visible;
+    min-height: auto;
   }
 
   .accountMenu {

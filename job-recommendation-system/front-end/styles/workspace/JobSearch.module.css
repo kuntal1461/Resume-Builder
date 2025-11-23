@@ -749,12 +749,12 @@
   color: #d83c68;
 }
 
-.jobSearchSaveButton {
+.jobSearchIconButton.jobSearchSaveButton {
   color: #00c896;
 }
 
-.jobSearchSaveButton:hover,
-.jobSearchSaveButton:focus-visible {
+.jobSearchIconButton.jobSearchSaveButton:hover,
+.jobSearchIconButton.jobSearchSaveButton:focus-visible {
   color: #00a67a;
 }
 
@@ -781,6 +781,12 @@
 .jobSearchIconButton:hover,
 .jobSearchIconButton:focus-visible {
   transform: scale(1.08);
+}
+
+.jobSearchSaveButtonActive,
+.jobSearchSaveButtonActive:hover,
+.jobSearchSaveButtonActive:focus-visible {
+  color: #00c896;
 }
 
 .jobSearchSaveButtonActive svg path {

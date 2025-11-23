@@ -183,6 +183,46 @@ export function AutoApplyIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function SyncIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" {...props}>
+      <path d="M5 5.5l2.5-2.5L10 5.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M15 14.5l-2.5 2.5L10 14.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M6.5 4.5h4a4 4 0 013.9 4.6l-.2 1M13.5 15.5h-4A4 4 0 015.6 10.9L5.8 10"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+export function ReminderIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" {...props}>
+      <path
+        d="M5 8a5 5 0 0110 0v4.2l1.6 2a.8.8 0 01-.6 1.3H4a.8.8 0 01-.6-1.3l1.6-2V8z"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+      <path d="M8 17a2 2 0 004 0" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="M10 5v4l2 1" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function ShareBoardIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" {...props}>
+      <rect x="2.5" y="4" width="15" height="12" rx="2" stroke="currentColor" strokeWidth="1.2" />
+      <path d="M6.5 8l3.5-2 3.5 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M6.5 12l3.5 2 3.5-2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export const CARET_ICON = <CaretIcon />;
 
 export function SparkIcon(props: SVGProps<SVGSVGElement>) {
@@ -452,6 +492,42 @@ export function LogoutIcon(props: SVGProps<SVGSVGElement>) {
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
       <path d="M13 5h-6a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
       <path d="M10 12h9M16 8l3.5 4L16 16" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function ConversationIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <path
+        d="M6 5h12a3 3 0 013 3v4a3 3 0 01-3 3h-3.5l-3.5 3-3.5-3H6a3 3 0 01-3-3V8a3 3 0 013-3z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        fill="rgba(255, 255, 255, 0.8)"
+      />
+      <circle cx="9" cy="10" r="1" fill="currentColor" />
+      <circle cx="12" cy="10" r="1" fill="currentColor" />
+      <circle cx="15" cy="10" r="1" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function RejectedIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <path
+        d="M12 3.5a8.5 8.5 0 110 17 8.5 8.5 0 010-17z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        fill="rgba(255, 255, 255, 0.88)"
+      />
+      <path
+        d="M9 9l6 6M15 9l-6 6"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }

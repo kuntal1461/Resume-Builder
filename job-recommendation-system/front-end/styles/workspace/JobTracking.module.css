@@ -6,6 +6,201 @@
   isolation: isolate;
 }
 
+.jobTrackingHero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+  gap: 28px;
+  margin: 24px auto 18px;
+  padding: 26px 28px;
+  width: min(959px, calc(100% - 32px));
+  height: 308px;
+  border-radius: 28px;
+  background: linear-gradient(140deg, #061344 0%, #1c2fb0 45%, #5c4cfd 100%);
+  color: #f7f9ff;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 28px 64px rgba(9, 17, 61, 0.45);
+  position: relative;
+  overflow: hidden;
+  align-items: center;
+}
+
+.jobTrackingHero::before,
+.jobTrackingHero::after {
+  content: '';
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.jobTrackingHero::after {
+  content: none;
+}
+
+.jobTrackingHeroContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  height: 100%;
+  justify-content: space-between;
+}
+
+.heroEyebrow {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(243, 244, 255, 0.7);
+}
+
+.jobTrackingHeroContent h1 {
+  margin: 12px 0 16px;
+  font-size: 20px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.jobTrackingHeroContent p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(247, 249, 255, 0.78);
+}
+
+.jobTrackingHighlights {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.jobTrackingHighlights span {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(247, 249, 255, 0.86);
+  backdrop-filter: blur(6px);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.jobTrackingHighlights span svg {
+  width: 16px;
+  height: 16px;
+}
+
+
+.jobTrackingStatsCard {
+  position: relative;
+  z-index: 1;
+  border-radius: 26px;
+  background: rgba(6, 12, 40, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 28px 46px rgba(5, 8, 30, 0.55);
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  backdrop-filter: blur(16px);
+  align-self: stretch;
+  justify-self: center;
+  width: 100%;
+  max-width: 320px;
+  height: 193px;
+  justify-content: flex-start;
+  box-sizing: border-box;
+}
+
+.jobTrackingStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.heroStat {
+  border-radius: 18px;
+  padding: 12px 14px;
+  background: transparent;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.heroStatInfo {
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: transparent;
+  color: #fff;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.heroStatInfo {
+  position: relative;
+  min-width: 22px;
+  justify-content: center;
+}
+
+.heroStatInfo:hover,
+.heroStatInfo:focus-visible {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.heroStatTooltip {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 6px);
+  bottom: -100%;
+  white-space: nowrap;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(5, 8, 30, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 11px;
+  color: rgba(247, 249, 255, 0.85);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.heroStatInfo:hover .heroStatTooltip,
+.heroStatInfo:focus-visible .heroStatTooltip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.heroStatIcon {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #6fffe9;
+}
+
+.heroStatNumber {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+  color: #fefae0;
+}
+
 .pageHeader {
   display: flex;
   justify-content: space-between;
@@ -71,10 +266,30 @@
 
 .filtersBar {
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
-  gap: 18px;
-  padding: 0 32px 18px;
+  padding: 14px 32px;
+  margin: 0 0 24px;
+  border-radius: 32px;
+  border: 1px solid rgba(15, 26, 51, 0.12);
+  background:
+    radial-gradient(circle at 10% 20%, rgba(88, 197, 255, 0.12), transparent 45%),
+    radial-gradient(circle at 90% 0%, rgba(255, 214, 140, 0.16), transparent 40%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(240, 243, 255, 0.92));
+  box-shadow: 0 24px 52px rgba(11, 24, 64, 0.12);
+  flex-wrap: wrap;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.filtersBar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  pointer-events: none;
 }
 
 .filterGroup {
@@ -82,6 +297,17 @@
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+.filtersBarActions {
+  display: inline-flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  position: relative;
+  z-index: 1;
 }
 
 .filterLabel {
@@ -99,15 +325,16 @@
 }
 
 .filterPill {
-  background: rgba(245, 247, 255, 0.92);
+  background: rgba(255, 255, 255, 0.68);
   border: 1px solid rgba(17, 36, 68, 0.12);
   border-radius: 999px;
-  padding: 6px 16px;
+  padding: 6px 18px;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   color: rgba(17, 36, 68, 0.78);
   cursor: pointer;
-  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 10px 20px rgba(15, 23, 42, 0.08);
 }
 
 .filterPill:hover,
@@ -117,9 +344,10 @@
 }
 
 .filterPillActive {
-  background: rgba(108, 99, 255, 0.14);
+  background: linear-gradient(120deg, rgba(108, 99, 255, 0.92), rgba(88, 197, 255, 0.92));
   border-color: rgba(108, 99, 255, 0.38);
-  color: #2a237a;
+  color: #fff;
+  box-shadow: 0 12px 22px rgba(96, 118, 255, 0.3);
 }
 
 .board {
@@ -730,10 +958,18 @@
 }
 
 @media (max-width: 960px) {
-  .pageHeader {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 26px 24px 16px;
+  .jobTrackingHero {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 28px;
+    gap: 24px;
+    width: calc(100% - 48px);
+    height: auto;
+  }
+
+  .heroStatsCard {
+    width: 100%;
+    height: auto;
+    justify-content: flex-start;
   }
 
   .filtersBar {
@@ -746,8 +982,9 @@
 }
 
 @media (max-width: 640px) {
-  .pageHeader {
-    padding: 22px 18px 14px;
+  .jobTrackingHero {
+    padding: 24px;
+    width: calc(100% - 24px);
   }
 
   .filtersBar {

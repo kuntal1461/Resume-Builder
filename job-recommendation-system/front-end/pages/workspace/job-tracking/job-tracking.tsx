@@ -1,15 +1,24 @@
 import Head from 'next/head';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import AppShell from '../../../components/workspace/AppShell';
 import {
   AutoApplyIcon,
   DocumentsIcon,
+  InterviewIcon,
+  JobsIcon,
+  LikeIcon,
   OfferAnalyzerIcon,
   SparkIcon,
+  ConversationIcon,
+  RejectedIcon,
+  SyncIcon,
+  ReminderIcon,
+  ShareBoardIcon,
 } from '../../../components/workspace/icons';
 import AddJobModal from '../../../components/workspace/job-tracking/AddJobModal';
-import type { AddJobSubmission, StageKey } from '../../../components/workspace/job-tracking/types';
+import type { AddJobSubmission, LikedJobSnapshot, StageKey } from '../../../components/workspace/job-tracking/types';
+
 import { APP_MENU_ITEMS, DEFAULT_PROFILE_TASKS } from '../../../components/workspace/navigation';
 import styles from '../../../styles/workspace/JobTracking.module.css';
 
@@ -42,6 +51,15 @@ type StageConfig = {
 };
 
 const STAGE_CONFIG: Record<StageKey, StageConfig> = {
+  'Job Liked': {
+    icon: () => <LikeIcon aria-hidden="true" />,
+    accent: '#EC4899',
+    accentStrong: '#F472B6',
+    accentSoft: 'rgba(236, 72, 153, 0.16)',
+    border: 'rgba(236, 72, 153, 0.28)',
+    shadow: '0 12px 28px rgba(236, 72, 153, 0.26)',
+    description: 'Jobs you saved from the search experience.',
+  },
   Shortlist: {
     icon: () => <SparkIcon aria-hidden="true" />,
     accent: '#FF6B93',
@@ -110,14 +128,8 @@ const STAGE_CONFIG: Record<StageKey, StageConfig> = {
   },
 };
 
-const STAGE_ORDER: StageKey[] = [
-  'Shortlist',
-  'Auto Apply',
-  'Applied',
-  'Interview',
-  'Offer',
-  'Rejected',
-];
+const STAGE_ORDER: StageKey[] = ['Job Liked', 'Shortlist', 'Auto Apply', 'Applied', 'Interview', 'Offer', 'Rejected'];
+const ADDABLE_STAGES: StageKey[] = STAGE_ORDER.filter((stage) => stage !== 'Job Liked');
 
 type PipelineColumn = {
   key: StageKey;
@@ -126,17 +138,76 @@ type PipelineColumn = {
 };
 
 const DATE_FORMATTER = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
+const LIKED_JOBS_STORAGE_KEY = 'jobTrackerLikedJobs';
+const LIKED_STAGE_NEXT_STEP = 'Review this match and plan outreach';
+const HERO_HIGHLIGHTS: { label: string; Icon: (props: SVGProps<SVGSVGElement>) => ReactElement }[] = [
+  { label: 'Auto-sync liked jobs', Icon: SyncIcon },
+  { label: 'Collaborative reminders', Icon: ReminderIcon },
+  { label: 'Share boards instantly', Icon: ShareBoardIcon },
+];
+
+const buildLikedPipelineJobs = (snapshots: LikedJobSnapshot[]): PipelineJob[] =>
+  snapshots.map((snapshot) => {
+    const savedDate = snapshot.savedAt ? new Date(snapshot.savedAt) : new Date();
+    const tags =
+      snapshot.tags && snapshot.tags.length
+        ? snapshot.tags
+        : snapshot.matchBadge
+        ? [snapshot.matchBadge]
+        : undefined;
+
+    return {
+      id: `liked-${snapshot.id}`,
+      title: snapshot.title,
+      company: snapshot.company,
+      location: snapshot.location,
+      salary: snapshot.salary,
+      updated: DATE_FORMATTER.format(savedDate),
+      nextStep: LIKED_STAGE_NEXT_STEP,
+      tags,
+      fit: `${snapshot.matchScore}% match`,
+    };
+  });
 
 export default function WorkspaceJobTrackingPage() {
   const [trackedJobsByStage, setTrackedJobsByStage] = useState<Partial<Record<StageKey, PipelineJob[]>>>({});
   const [isAddJobOpen, setIsAddJobOpen] = useState(false);
   const [pendingStage, setPendingStage] = useState<StageKey>('Shortlist');
 
+  useEffect(() => {
+    const syncLikedJobs = () => {
+      const likedSnapshots = loadLikedJobSnapshots();
+      setTrackedJobsByStage((previous) => ({
+        ...previous,
+        'Job Liked': buildLikedPipelineJobs(likedSnapshots),
+      }));
+    };
+
+    syncLikedJobs();
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === LIKED_JOBS_STORAGE_KEY) {
+        syncLikedJobs();
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
   const pipeline: PipelineColumn[] = STAGE_ORDER.map((key) => ({
     key,
     description: STAGE_CONFIG[key].description,
     jobs: trackedJobsByStage[key] ?? [],
   }));
+  const totalTracked = pipeline.reduce((sum, column) => sum + column.jobs.length, 0);
+  const interviewsScheduled = trackedJobsByStage.Interview?.length ?? 0;
+  const offersInReview = trackedJobsByStage.Offer?.length ?? 0;
+  const likedJobsCount = trackedJobsByStage['Job Liked']?.length ?? 0;
+  const heroStats = [
+    { label: 'Tracked roles', value: totalTracked, Icon: JobsIcon },
+    { label: 'Interviews', value: interviewsScheduled, Icon: InterviewIcon },
+    { label: 'Offers', value: offersInReview, Icon: OfferAnalyzerIcon },
+    { label: 'Liked leads', value: likedJobsCount, Icon: LikeIcon },
+  ];
 
   const handleOpenAddModal = (stage: StageKey) => {
     setPendingStage(stage);
@@ -236,28 +307,42 @@ export default function WorkspaceJobTrackingPage() {
         }}
       >
         <div className={styles.pageWrapper}>
-          <header className={styles.pageHeader}>
-            <div>
-              <h1>Job tracker</h1>
+          <section className={styles.jobTrackingHero}>
+            <div className={styles.jobTrackingHeroContent}>
+              <p className={styles.heroEyebrow}>Pipeline intelligence</p>
+              <h1>Command your job search pipeline</h1>
               <p>
-                Monitor every opportunity from shortlist to offer. Use quick filters to stay focused and keep the next
-                step visible for each role.
+                Keep every opportunity visible, get proactive reminders, and rally your job search rituals from a single
+                control room.
               </p>
+              <div className={styles.jobTrackingHighlights} aria-label="Workflow highlights">
+                {HERO_HIGHLIGHTS.map((feature) => (
+                  <span key={feature.label}>
+                    <feature.Icon aria-hidden="true" />
+                    {feature.label}
+                  </span>
+                ))}
+              </div>
             </div>
-            <div className={styles.headerActions}>
-              <button type="button" className={styles.ghostButton} aria-label="Export tracker as CSV">
-                Export tracker
-              </button>
-              <button
-                type="button"
-                className={styles.primaryButton}
-                aria-label="Add a new opportunity to the pipeline"
-                onClick={() => handleOpenAddModal('Shortlist')}
-              >
-                Add opportunity
-              </button>
+            <div className={styles.jobTrackingStatsCard} aria-live="polite">
+              <div className={styles.jobTrackingStatsGrid}>
+                {heroStats.map((stat) => (
+                  <div key={stat.label} className={styles.heroStat} aria-label={stat.label}>
+                    <button type="button" className={styles.heroStatInfo} aria-label={stat.label}>
+                      i
+                      <span className={styles.heroStatTooltip} role="tooltip">
+                        {stat.label}
+                      </span>
+                    </button>
+                    <span className={styles.heroStatIcon} aria-hidden="true">
+                      <stat.Icon />
+                    </span>
+                    <span className={styles.heroStatNumber}>{stat.value}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </header>
+          </section>
 
           <section className={styles.filtersBar} aria-label="Pipeline filters">
             <div className={styles.filterGroup}>
@@ -277,6 +362,19 @@ export default function WorkspaceJobTrackingPage() {
               </button>
               <button type="button" className={styles.filterPill}>
                 Fit score
+              </button>
+            </div>
+            <div className={styles.filtersBarActions}>
+              <button
+                type="button"
+                className={styles.primaryButton}
+                aria-label="Add a new opportunity to the pipeline"
+                onClick={() => handleOpenAddModal('Shortlist')}
+              >
+                Add opportunity
+              </button>
+              <button type="button" className={styles.ghostButton} aria-label="Export tracker as CSV">
+                Export tracker
               </button>
             </div>
           </section>
@@ -390,7 +488,7 @@ export default function WorkspaceJobTrackingPage() {
           <AddJobModal
             open={isAddJobOpen}
             stage={pendingStage}
-            stages={STAGE_ORDER}
+            stages={ADDABLE_STAGES}
             onClose={handleCloseAddModal}
             onSubmit={handleAddJob}
           />
@@ -399,39 +497,19 @@ export default function WorkspaceJobTrackingPage() {
     </>
   );
 }
-
-function ConversationIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M6 5h12a3 3 0 013 3v4a3 3 0 01-3 3h-3.5l-3.5 3-3.5-3H6a3 3 0 01-3-3V8a3 3 0 013-3z"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        fill="rgba(255, 255, 255, 0.8)"
-      />
-      <circle cx="9" cy="10" r="1" fill="currentColor" />
-      <circle cx="12" cy="10" r="1" fill="currentColor" />
-      <circle cx="15" cy="10" r="1" fill="currentColor" />
-    </svg>
-  );
-}
-
-function RejectedIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M12 3.5a8.5 8.5 0 110 17 8.5 8.5 0 010-17z"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        fill="rgba(255, 255, 255, 0.88)"
-      />
-      <path
-        d="M9 9l6 6M15 9l-6 6"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
+const loadLikedJobSnapshots = (): LikedJobSnapshot[] => {
+  if (typeof window === 'undefined') {
+    return [];
+  }
+  const raw = window.localStorage.getItem(LIKED_JOBS_STORAGE_KEY);
+  if (!raw) {
+    return [];
+  }
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as LikedJobSnapshot[]) : [];
+  } catch {
+    window.localStorage.removeItem(LIKED_JOBS_STORAGE_KEY);
+    return [];
+  }
+};

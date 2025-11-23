@@ -108,7 +108,7 @@ export default function AppShell({
               }`;
               const commonLinkProps = {
                 className: linkClasses,
-                'aria-haspopup': hasSubmenu ? 'true' : undefined,
+                'aria-haspopup': hasSubmenu ? true : undefined,
                 'aria-expanded': hasSubmenu ? isExpanded : undefined,
                 onFocus: () => (hasSubmenu ? setActiveMenu(item.label) : undefined),
               };

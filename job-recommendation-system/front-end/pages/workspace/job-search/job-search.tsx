@@ -364,18 +364,10 @@ const curatedJobs = useMemo(() => buildCuratedJobs(preferences), [preferences.jo
 
   useEffect(() => {
     const parsed = loadMatchState();
-    if (!parsed) {
+    if (!parsed || !parsed.preferences) {
       return;
     }
-    if (parsed.mode === 'results' && parsed.preferences) {
-      setPreferences(parsed.preferences);
-      setGeneratedJobs(buildCuratedJobs(parsed.preferences));
-      setIsFormVisible(false);
-      setSubmitted(true);
-    } else if (parsed.mode === 'empty') {
-      setIsFormVisible(false);
-      setGeneratedJobs([]);
-    }
+    setPreferences(parsed.preferences);
   }, []);
 
   useEffect(() => {

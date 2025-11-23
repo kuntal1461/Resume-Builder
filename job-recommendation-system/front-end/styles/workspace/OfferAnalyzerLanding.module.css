@@ -5,7 +5,7 @@
   padding-bottom: 12px;
 }
 
-.hero {
+.offerHeroSection {
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
@@ -19,14 +19,14 @@
   border: 1px solid rgba(255, 255, 255, 0.18);
   isolation: isolate;
   z-index: 0;
-  width: min(100%, 959px);
-  min-height: 308px;
+  width: 959px;
+  height: 308px;
   align-items: center;
   overflow: visible;
 }
 
-.hero::before,
-.hero::after {
+.offerHeroSection::before,
+.offerHeroSection::after {
   content: '';
   position: absolute;
   border-radius: 50%;
@@ -34,7 +34,7 @@
   z-index: 0;
 }
 
-.hero::before {
+.offerHeroSection::before {
   width: 220px;
   height: 220px;
   top: -60px;
@@ -42,7 +42,7 @@
   background: radial-gradient(circle at center, rgba(255, 198, 105, 0.3) 0%, rgba(255, 198, 105, 0) 70%);
 }
 
-.hero::after {
+.offerHeroSection::after {
   width: 220px;
   height: 220px;
   border-radius: 50%;
@@ -51,24 +51,30 @@
   background: radial-gradient(circle at center, rgba(96, 255, 218, 0.26) 0%, rgba(96, 255, 218, 0) 68%);
 }
 
-.hero > * {
+.offerHeroSection > * {
   position: relative;
   z-index: 1;
 }
 
-.heroContent h1 {
+.offerHeroContent h1 {
   margin: 12px 0 18px;
-  font-size: 30px;
+  font-size: 20px;
   line-height: 1.2;
+  color: #f7f9ff;
 }
 
-.heroContent p {
+.offerHeroContent p {
   margin: 0;
   color: rgba(246, 248, 255, 0.84);
   line-height: 1.5;
 }
 
-.heroEyebrow {
+.offerHeroHighlightText {
+  color: #8df0ff;
+  font-weight: 600;
+}
+
+.offerHeroEyebrow {
   text-transform: uppercase;
   letter-spacing: 0.24em;
   font-size: 12px;
@@ -76,7 +82,7 @@
   margin: 0;
 }
 
-.heroHighlights {
+.offerHeroHighlights {
   list-style: none;
   padding: 0;
   margin: 26px 0 0;
@@ -85,7 +91,7 @@
   gap: 10px;
 }
 
-.heroHighlights li {
+.offerHeroHighlights li {
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -97,7 +103,14 @@
   backdrop-filter: blur(6px);
 }
 
-.heroCard {
+.offerHeroHighlightIcon {
+  width: 20px;
+  height: 20px;
+  color: #8df0ff;
+  flex-shrink: 0;
+}
+
+.offerHeroCard {
   background: rgba(255, 255, 255, 0.16);
   border-radius: 24px;
   padding: 22px;
@@ -109,7 +122,7 @@
   gap: 14px;
 }
 
-.heroBadge {
+.offerHeroBadge {
   align-self: flex-start;
   padding: 4px 12px;
   border-radius: 999px;
@@ -121,21 +134,21 @@
   color: rgba(247, 249, 255, 0.78);
 }
 
-.heroCardLead {
+.offerHeroLead {
   margin: 0;
   font-size: 15px;
   color: rgba(247, 249, 255, 0.92);
   line-height: 1.4;
 }
 
-.heroCardStats {
+.offerHeroStats {
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin: 0;
 }
 
-.heroCardStats div {
+.offerHeroStats div {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
@@ -144,19 +157,19 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-.heroCardStats div:last-child {
+.offerHeroStats div:last-child {
   border-bottom: none;
   padding-bottom: 0;
 }
 
-.heroCardStats dt {
+.offerHeroStats dt {
   font-size: 13px;
   color: rgba(247, 249, 255, 0.62);
   text-transform: uppercase;
   letter-spacing: 0.15em;
 }
 
-.heroCardStats dd {
+.offerHeroStats dd {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
@@ -199,7 +212,7 @@
 }
 
 @media (max-width: 960px) {
-  .hero {
+  .offerHeroSection {
     grid-template-columns: 1fr;
     padding: 24px;
     width: 100%;

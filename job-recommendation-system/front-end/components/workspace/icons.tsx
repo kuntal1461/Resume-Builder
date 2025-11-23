@@ -203,54 +203,146 @@ export function ArrowIcon(props: SVGProps<SVGSVGElement>) {
 
 export function LocationMiniIcon(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
-      <path d="M12 3.5a6 6 0 016 6c0 4.5-6 11-6 11s-6-6.5-6-11a6 6 0 016-6z" stroke="currentColor" strokeWidth="1.2" />
-      <circle cx="12" cy="9.5" r="2" stroke="currentColor" strokeWidth="1.2" />
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <defs>
+        <linearGradient id="locationGradient" x1="4" y1="4" x2="20" y2="20" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#6c63ff" />
+          <stop offset="1" stopColor="#58c5ff" />
+        </linearGradient>
+      </defs>
+      <path
+        d="M12 3.5a6 6 0 016 6c0 4.5-6 11-6 11s-6-6.5-6-11a6 6 0 016-6z"
+        stroke="url(#locationGradient)"
+        strokeWidth="1.5"
+      />
+      <circle cx="12" cy="9.5" r="2.4" stroke="url(#locationGradient)" strokeWidth="1.5" />
     </svg>
   );
 }
 
 export function WorkTypeIcon(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
-      <rect x="4" y="6" width="16" height="12" rx="3" stroke="currentColor" strokeWidth="1.2" />
-      <path d="M9 6V4h6v2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <defs>
+        <linearGradient id="workTypeGradient" x1="4" y1="6" x2="20" y2="18" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#ffb347" />
+          <stop offset="1" stopColor="#ff6b93" />
+        </linearGradient>
+      </defs>
+      <rect x="4" y="6" width="16" height="12" rx="3" stroke="url(#workTypeGradient)" strokeWidth="1.4" />
+      <path d="M9 6V4h6v2" stroke="url(#workTypeGradient)" strokeWidth="1.4" strokeLinecap="round" />
     </svg>
   );
 }
 
 export function CompensationIcon(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
-      <path d="M6 8h12M6 12h8M6 16h6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-      <rect x="3" y="4" width="18" height="16" rx="2.5" stroke="currentColor" strokeWidth="1.2" />
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <defs>
+        <linearGradient id="compensationGradient" x1="3" y1="4" x2="21" y2="20" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#00c896" />
+          <stop offset="1" stopColor="#17baff" />
+        </linearGradient>
+      </defs>
+      <rect x="3" y="4" width="18" height="16" rx="2.5" stroke="url(#compensationGradient)" strokeWidth="1.4" />
+      <path
+        d="M6.5 8h11M6.5 12h8.5M6.5 16h6"
+        stroke="url(#compensationGradient)"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
 
 export function RemoteModeIcon(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
-      <rect x="3" y="7" width="18" height="11" rx="3" stroke="currentColor" strokeWidth="1.2" />
-      <path d="M9 18l3 3 3-3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <defs>
+        <linearGradient id="remoteGradient" x1="3" y1="7" x2="21" y2="18" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#5c4cfd" />
+          <stop offset="1" stopColor="#8df0ff" />
+        </linearGradient>
+      </defs>
+      <rect x="3" y="7" width="18" height="11" rx="3" stroke="url(#remoteGradient)" strokeWidth="1.3" />
+      <path d="M8.5 18.5l3.5 2 3.5-2" stroke="url(#remoteGradient)" strokeWidth="1.3" strokeLinecap="round" />
     </svg>
   );
 }
 
 export function SeniorityIcon(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
-      <circle cx="12" cy="7" r="3" stroke="currentColor" strokeWidth="1.2" />
-      <path d="M5 21v-2c0-2.8 2.2-5 5-5h4c2.8 0 5 2.2 5 5v2" stroke="currentColor" strokeWidth="1.2" />
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <defs>
+        <linearGradient id="seniorityGradient" x1="5" y1="3" x2="19" y2="21" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#fdd65c" />
+          <stop offset="1" stopColor="#ff8a5c" />
+        </linearGradient>
+      </defs>
+      <circle cx="12" cy="7" r="3.2" stroke="url(#seniorityGradient)" strokeWidth="1.3" />
+      <path
+        d="M5 21v-2.2C5 15.2 7.2 13 10 13h4c2.8 0 5 2.2 5 5v2.2"
+        stroke="url(#seniorityGradient)"
+        strokeWidth="1.3"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
 
 export function ExperienceIcon(props: SVGProps<SVGSVGElement>) {
   return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <defs>
+        <linearGradient id="experienceGradient" x1="4" y1="4" x2="20" y2="20" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#ff7dc3" />
+          <stop offset="1" stopColor="#6c63ff" />
+        </linearGradient>
+      </defs>
+      <circle cx="12" cy="12" r="8" stroke="url(#experienceGradient)" strokeWidth="1.3" />
+      <path d="M12 7.5V12l3 1.8" stroke="url(#experienceGradient)" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function DislikeIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="25" height="25" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.4" opacity="0.6" />
+      <path d="M9 9l6 6M15 9l-6 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function LikeIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="25" height="25" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <path
+        d="M12 19.5s-6-3.3-6-8.1C6 8.8 8 7 10.4 7c1.1 0 2.1.4 2.8 1.2A3.8 3.8 0 0116 7c2.5 0 4.5 1.8 4.5 4.4 0 4.8-6.5 8.1-6.5 8.1z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        fill="none"
+      />
+    </svg>
+  );
+}
+
+export function AppliedIcon(props: SVGProps<SVGSVGElement>) {
+  return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
-      <path d="M12 8v4l3 2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-      <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.2" />
+      <path d="M5 12l4 4 10-10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <rect x="3" y="4" width="18" height="16" rx="3" stroke="currentColor" strokeWidth="1.2" />
+    </svg>
+  );
+}
+
+export function ReportIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <path d="M12 3L4 9v12h16V9l-8-6z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
+      <path d="M12 8v4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      <circle cx="12" cy="16" r="1" fill="currentColor" />
     </svg>
   );
 }

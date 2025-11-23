@@ -707,12 +707,6 @@
   color: #5c4cfd;
 }
 
-.jobSearchJobHighlight {
-  margin: 0;
-  color: rgba(19, 26, 58, 0.78);
-  line-height: 1.4;
-}
-
 .jobSearchJobTags {
   display: flex;
   flex-wrap: wrap;
@@ -735,6 +729,76 @@
   justify-content: flex-end;
 }
 
+.jobSearchActionGroup {
+  display: inline-flex;
+  gap: 8px;
+  position: relative;
+}
+.jobSearchActionGroupActive .jobSearchActionMenu {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.jobSearchDangerButton {
+  color: #ff5b86;
+}
+.jobSearchDangerButton:hover,
+.jobSearchDangerButton:focus-visible,
+.jobSearchIconActive.jobSearchDangerButton {
+  color: #d83c68;
+}
+
+.jobSearchSaveButton {
+  color: #00c896;
+}
+
+.jobSearchSaveButton:hover,
+.jobSearchSaveButton:focus-visible {
+  color: #00a67a;
+}
+
+.jobSearchDangerButton svg,
+.jobSearchSaveButton svg {
+  width: 24px;
+  height: 24px;
+}
+
+.jobSearchIconButton {
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #0f1228;
+  transition: transform 0.2s ease;
+  padding: 0;
+  width: 42px;
+  height: 42px;
+}
+
+.jobSearchIconButton:hover,
+.jobSearchIconButton:focus-visible {
+  transform: scale(1.08);
+}
+
+.jobSearchSaveButtonActive svg path {
+  fill: currentColor;
+}
+
+@keyframes pulseIcon {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 .jobSearchApplyButton,
 .jobSearchAskButton {
   border-radius: 999px;
@@ -755,6 +819,54 @@
 .jobSearchApplyButton:hover,
 .jobSearchApplyButton:focus-visible {
   transform: translateY(-1px);
+}
+
+.jobSearchActionMenu {
+  position: absolute;
+  top: 48px;
+  left: 0;
+  background: linear-gradient(145deg, #ffffff, #f4f6ff);
+  border: 1px solid rgba(108, 99, 255, 0.2);
+  border-radius: 16px;
+  min-width: 200px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 5;
+  box-shadow: 0 22px 34px rgba(15, 23, 42, 0.14);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.jobSearchActionMenuItem {
+  border: none;
+  background: rgba(92, 76, 253, 0.08);
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #14203c;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.jobSearchActionMenuItem svg {
+  width: 18px;
+  height: 18px;
+  color: #5c4cfd;
+}
+
+.jobSearchActionMenuItem:hover,
+.jobSearchActionMenuItem:focus-visible {
+  background: rgba(92, 76, 253, 0.15);
+  transform: translateX(4px);
 }
 
 .jobSearchAskButton {

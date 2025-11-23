@@ -7,6 +7,10 @@ import {
   FullTimeIcon,
   HybridIcon,
   InternshipIcon,
+  AppliedIcon,
+  ReportIcon,
+  DislikeIcon,
+  LikeIcon,
   LocationMiniIcon,
   WorkTypeIcon,
   CompensationIcon,
@@ -181,6 +185,8 @@ export default function WorkspaceJobSearchPage() {
   const [isFormVisible, setIsFormVisible] = useState(true);
   const [generatedJobs, setGeneratedJobs] = useState<CuratedJob[]>([]);
   const [expandedJobId, setExpandedJobId] = useState<string | null>(null);
+  const [savedJobIds, setSavedJobIds] = useState<string[]>([]);
+  const [activeActionMenu, setActiveActionMenu] = useState<string | null>(null);
 
   const matchScore = useMemo(() => {
     let score = 64;
@@ -281,6 +287,12 @@ const curatedJobs = useMemo(() => buildCuratedJobs(preferences), [preferences.jo
     setSubmitted(false);
     setGeneratedJobs([]);
     persistMatchState(null);
+    setSavedJobIds([]);
+    setActiveActionMenu(null);
+  };
+
+  const handleToggleSave = (jobId: string) => {
+    setSavedJobIds((current) => (current.includes(jobId) ? current.filter((id) => id !== jobId) : [...current, jobId]));
   };
 
   useEffect(() => {
@@ -297,6 +309,21 @@ const curatedJobs = useMemo(() => buildCuratedJobs(preferences), [preferences.jo
       setIsFormVisible(false);
       setGeneratedJobs([]);
     }
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target;
+      if (!(target instanceof Element)) {
+        return;
+      }
+      if (target.closest('[data-job-action-area="true"]')) {
+        return;
+      }
+      setActiveActionMenu(null);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   return (
@@ -521,13 +548,63 @@ const curatedJobs = useMemo(() => buildCuratedJobs(preferences), [preferences.jo
                           </div>
                         ))}
                       </div>
-                      <p className={styles.jobSearchJobHighlight}>{job.highlight}</p>
                       <div className={styles.jobSearchJobTags}>
                         {job.jobTags.map((tag) => (
                           <span key={`${job.id}-${tag}`}>{tag}</span>
                         ))}
                       </div>
                       <div className={styles.jobSearchJobActions}>
+                        <div className={styles.jobSearchActionGroup}>
+                          <div
+                            className={`${styles.jobSearchDangerWrapper} ${
+                              activeActionMenu === job.id ? styles.jobSearchActionGroupActive : ''
+                            }`}
+                            data-job-action-area="true"
+                            onMouseEnter={() => setActiveActionMenu(job.id)}
+                            onMouseLeave={() => setActiveActionMenu(null)}
+                          >
+                            <button
+                              className={`${styles.jobSearchIconButton} ${styles.jobSearchDangerButton}`}
+                              type="button"
+                              aria-label="Not interested"
+                              aria-expanded={activeActionMenu === job.id}
+                              onClick={() => setActiveActionMenu((current) => (current === job.id ? null : job.id))}
+                            >
+                              <DislikeIcon />
+                            </button>
+                            {activeActionMenu === job.id ? (
+                              <div className={styles.jobSearchActionMenu} role="menu">
+                                {[
+                                  { label: 'Already applied', Icon: AppliedIcon },
+                                  { label: 'Not interested', Icon: DislikeIcon },
+                                  { label: 'Report issue', Icon: ReportIcon },
+                                ].map((option) => (
+                                  <button
+                                    key={`${job.id}-${option.label}`}
+                                    type="button"
+                                    className={styles.jobSearchActionMenuItem}
+                                    onClick={() => setActiveActionMenu(null)}
+                                    aria-label={option.label}
+                                  >
+                                    <option.Icon />
+                                    <span>{option.label}</span>
+                                  </button>
+                                ))}
+                              </div>
+                            ) : null}
+                          </div>
+                          <button
+                            className={`${styles.jobSearchIconButton} ${styles.jobSearchSaveButton} ${
+                              savedJobIds.includes(job.id) ? styles.jobSearchSaveButtonActive : ''
+                            }`}
+                            type="button"
+                            aria-label="Save this job"
+                            aria-pressed={savedJobIds.includes(job.id)}
+                            onClick={() => handleToggleSave(job.id)}
+                          >
+                            <LikeIcon />
+                          </button>
+                        </div>
                         <button
                           className={styles.jobSearchAskButton}
                           type="button"

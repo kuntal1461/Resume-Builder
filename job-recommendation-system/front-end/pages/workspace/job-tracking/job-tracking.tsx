@@ -21,6 +21,8 @@ import type { AddJobSubmission, LikedJobSnapshot, StageKey } from '../../../comp
 
 import { APP_MENU_ITEMS, DEFAULT_PROFILE_TASKS } from '../../../components/workspace/navigation';
 import styles from '../../../styles/workspace/JobTracking.module.css';
+import { createGuestWorkspaceProfile } from '../../../components/workspace/profileFallback';
+import { useWorkspaceShellProfile } from '../../../components/workspace/useWorkspaceShellProfile';
 
 type PipelineJob = {
   id: string;
@@ -146,6 +148,11 @@ const HERO_HIGHLIGHTS: { label: string; Icon: (props: SVGProps<SVGSVGElement>) =
   { label: 'Share boards instantly', Icon: ShareBoardIcon },
 ];
 
+const PROFILE = createGuestWorkspaceProfile({
+  tagline: 'Set your target role',
+  progressLabel: '5%',
+});
+
 const buildLikedPipelineJobs = (snapshots: LikedJobSnapshot[]): PipelineJob[] =>
   snapshots.map((snapshot) => {
     const savedDate = snapshot.savedAt ? new Date(snapshot.savedAt) : new Date();
@@ -170,6 +177,7 @@ const buildLikedPipelineJobs = (snapshots: LikedJobSnapshot[]): PipelineJob[] =>
   });
 
 export default function WorkspaceJobTrackingPage() {
+  const shellProfile = useWorkspaceShellProfile(PROFILE);
   const [trackedJobsByStage, setTrackedJobsByStage] = useState<Partial<Record<StageKey, PipelineJob[]>>>({});
   const [isAddJobOpen, setIsAddJobOpen] = useState(false);
   const [pendingStage, setPendingStage] = useState<StageKey>('Shortlist');
@@ -296,16 +304,7 @@ export default function WorkspaceJobTrackingPage() {
           content="Stay on top of every job application stage with a modern pipeline tracker."
         />
       </Head>
-      <AppShell
-        menuItems={APP_MENU_ITEMS}
-        profileTasks={DEFAULT_PROFILE_TASKS}
-        profile={{
-          name: 'Kuntal Maity',
-          tagline: 'Set your target role',
-          initials: 'KM',
-          progressLabel: '5%',
-        }}
-      >
+      <AppShell menuItems={APP_MENU_ITEMS} profileTasks={DEFAULT_PROFILE_TASKS} profile={shellProfile}>
         <div className={styles.pageWrapper}>
           <section className={styles.jobTrackingHero}>
             <div className={styles.jobTrackingHeroContent}>

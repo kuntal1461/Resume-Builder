@@ -4,18 +4,18 @@ import { useEffect, useState, type FormEvent } from 'react';
 import type { GetServerSideProps } from 'next';
 import AppShell from '../../../../components/workspace/AppShell';
 import { APP_MENU_ITEMS, DEFAULT_PROFILE_TASKS } from '../../../../components/workspace/navigation';
+import { useWorkspaceShellProfile } from '../../../../components/workspace/useWorkspaceShellProfile';
+import { createGuestWorkspaceProfile } from '../../../../components/workspace/profileFallback';
 import styles from '../../../../styles/workspace/ResumeBuilder.module.css';
 import { fetchResumeTemplateDetail, type ResumeTemplateDetailResponse } from '../../../../lib/resumeTemplates';
 import { requestLatexPreview } from '../../../../lib/renderPreview';
 import { fetchResumeDraft, saveResumeDraft } from '../../../../lib/resumeDrafts';
 import { loadAccessToken } from '../../../../lib/authTokenStorage';
 
-const PROFILE = {
-  name: 'Kuntal Maity',
+const PROFILE = createGuestWorkspaceProfile({
   tagline: 'Set your target role',
-  initials: 'KM',
   progressLabel: '5%',
-};
+});
 
 type TemplateEditorProps = {
   template: ResumeTemplateDetailResponse;
@@ -49,6 +49,7 @@ export const getServerSideProps: GetServerSideProps<TemplateEditorProps> = async
 };
 
 export default function TemplateEditorPage({ template }: TemplateEditorProps) {
+  const shellProfile = useWorkspaceShellProfile(PROFILE);
   const [draftTitle, setDraftTitle] = useState(`${template.title} Resume`);
   const [draftRole, setDraftRole] = useState('');
   const [draftSummary, setDraftSummary] = useState('');
@@ -226,7 +227,7 @@ export default function TemplateEditorPage({ template }: TemplateEditorProps) {
       <Head>
         <title>JobMatch · Edit {template.title}</title>
       </Head>
-      <AppShell menuItems={APP_MENU_ITEMS} profileTasks={DEFAULT_PROFILE_TASKS} profile={PROFILE}>
+      <AppShell menuItems={APP_MENU_ITEMS} profileTasks={DEFAULT_PROFILE_TASKS} profile={shellProfile}>
         <div className={styles.page}>
           <section className={styles.templateHero}>
             <div className={styles.templateHeroContent}>

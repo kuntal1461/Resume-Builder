@@ -3,6 +3,8 @@ import { useMemo, useState } from 'react';
 import type { ChangeEvent } from 'react';
 import AppShell from '../../../components/workspace/AppShell';
 import { APP_MENU_ITEMS, DEFAULT_PROFILE_TASKS } from '../../../components/workspace/navigation';
+import { createGuestWorkspaceProfile } from '../../../components/workspace/profileFallback';
+import { useWorkspaceShellProfile } from '../../../components/workspace/useWorkspaceShellProfile';
 import styles from '../../../styles/workspace/OfferPackageAnalyzer.module.css';
 
 type Offer = {
@@ -17,12 +19,10 @@ type Offer = {
   workMode: 'Remote' | 'Hybrid' | 'Onsite';
 };
 
-const PROFILE = {
-  name: 'Kuntal Maity',
+const PROFILE = createGuestWorkspaceProfile({
   tagline: 'Set your target role',
-  initials: 'KM',
   progressLabel: '5%',
-};
+});
 
 const COL_INDEX: Record<string, number> = {
   'San Francisco Bay Area': 1.30,
@@ -50,6 +50,7 @@ function formatCurrency(n: number, currency: 'USD' | 'EUR' | 'GBP' = 'USD') {
 }
 
 export default function OfferPackageAnalyzerPage() {
+  const shellProfile = useWorkspaceShellProfile(PROFILE);
   const [currency, setCurrency] = useState<'USD' | 'EUR' | 'GBP'>('USD');
   const [offers, setOffers] = useState<Offer[]>([
     {
@@ -141,7 +142,7 @@ export default function OfferPackageAnalyzerPage() {
         <title>JobMatch · Offer Package Analyzer</title>
         <meta name="description" content="Compare full compensation packages with taxes and cost of living." />
       </Head>
-      <AppShell menuItems={APP_MENU_ITEMS} profileTasks={DEFAULT_PROFILE_TASKS} profile={PROFILE}>
+      <AppShell menuItems={APP_MENU_ITEMS} profileTasks={DEFAULT_PROFILE_TASKS} profile={shellProfile}>
         <div className={styles.page}>
           <header className={styles.header}>
             <div>

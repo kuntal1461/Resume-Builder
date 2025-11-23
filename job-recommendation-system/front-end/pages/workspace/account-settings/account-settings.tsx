@@ -4,6 +4,7 @@ import { ChangeEvent, FormEvent, useState } from 'react';
 import type { ReactElement } from 'react';
 import AppShell from '../../../components/workspace/AppShell';
 import { APP_MENU_ITEMS, DEFAULT_PROFILE_TASKS } from '../../../components/workspace/navigation';
+import { createGuestWorkspaceProfile } from '../../../components/workspace/profileFallback';
 import styles from '../../../styles/workspace/AccountSettings.module.css';
 
 type FormState = {
@@ -14,17 +15,23 @@ type FormState = {
   location: string;
 };
 
+const PROFILE_TAGLINE = 'Set your target role';
+const PROFILE_PROGRESS_LABEL = '5%';
 const INITIAL_FORM_STATE: FormState = {
-  firstName: 'Kuntal',
-  lastName: 'Maity',
-  email: 'kuntal.1461@gmail.com',
-  headline: 'Product Strategy Lead',
-  location: 'Kolkata, India',
+  firstName: '',
+  lastName: '',
+  email: '',
+  headline: '',
+  location: '',
 };
 
-const FALLBACK_INITIALS = `${INITIAL_FORM_STATE.firstName.charAt(0)}${INITIAL_FORM_STATE.lastName.charAt(0)}`.toUpperCase();
-const INITIAL_PROFILE_NAME = `${INITIAL_FORM_STATE.firstName} ${INITIAL_FORM_STATE.lastName}`.trim();
-const PROFILE_TAGLINE = 'Set your target role';
+const GUEST_PROFILE = createGuestWorkspaceProfile({
+  tagline: PROFILE_TAGLINE,
+  progressLabel: PROFILE_PROGRESS_LABEL,
+});
+
+const FALLBACK_INITIALS = GUEST_PROFILE.initials;
+const INITIAL_PROFILE_NAME = GUEST_PROFILE.name;
 
 const buildProfileCard = (data: FormState) => {
   const firstInitial = data.firstName.trim().charAt(0);
@@ -35,7 +42,7 @@ const buildProfileCard = (data: FormState) => {
     name: `${data.firstName} ${data.lastName}`.trim() || INITIAL_PROFILE_NAME,
     tagline: PROFILE_TAGLINE,
     initials,
-    progressLabel: '5%',
+    progressLabel: PROFILE_PROGRESS_LABEL,
   };
 };
 
@@ -71,7 +78,7 @@ const SOCIAL_PROVIDERS: SocialProvider[] = [
     description: 'Use single sign-on and push resume exports to Drive without friction.',
     icon: 'google',
     status: 'connected',
-    connectedDetail: 'kuntal.1461@gmail.com',
+    connectedDetail: undefined,
   },
 ];
 

@@ -1,11 +1,10 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { ReactNode } from 'react';
 import styles from '../../styles/workspace/WorkspaceLayout.module.css';
 import type { AppMenuItem, AppProfileTask } from './navigation';
 import { CARET_ICON } from './navigation';
-import { buildWorkspaceIdentity, loadWorkspaceProfile } from '../../lib/workspaceProfileStorage';
 
 type AppShellProps = {
   children: ReactNode;
@@ -36,15 +35,6 @@ export default function AppShell({
 }: AppShellProps) {
   const router = useRouter();
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
-  const [resolvedProfile, setResolvedProfile] = useState(profile);
-
-  useEffect(() => {
-    const snapshot = loadWorkspaceProfile();
-    if (!snapshot) {
-      return;
-    }
-    setResolvedProfile((current) => buildWorkspaceIdentity(current, snapshot));
-  }, []);
 
   const normalizePath = (path: string) => path.split('?')[0];
   const currentPath = normalizePath(router.asPath);
@@ -63,15 +53,15 @@ export default function AppShell({
         <section className={styles.profileCard} aria-labelledby="profile-card-title">
           <div className={styles.profileHeader}>
             <span className={styles.profileAvatar} aria-hidden="true">
-              {resolvedProfile.initials}
+              {profile.initials}
             </span>
             <div className={styles.profileMeta}>
               <span className={styles.profileName} id="profile-card-title">
-                {resolvedProfile.name}
+                {profile.name}
               </span>
-              <span className={styles.profileTagline}>{resolvedProfile.tagline}</span>
+              <span className={styles.profileTagline}>{profile.tagline}</span>
             </div>
-            <span className={styles.progressBadge}>{resolvedProfile.progressLabel}</span>
+            <span className={styles.progressBadge}>{profile.progressLabel}</span>
           </div>
           <div className={styles.profileDetails} role="tooltip" aria-label="Profile completion checklist">
             <p className={styles.profilePrompt}>

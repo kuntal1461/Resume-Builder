@@ -2,25 +2,24 @@ import Head from 'next/head';
 import AppShell from '../../../components/workspace/AppShell';
 import AppDashboardHeader from '../../../components/workspace/AppDashboardHeader';
 import { APP_MENU_ITEMS, DEFAULT_PROFILE_TASKS } from '../../../components/workspace/navigation';
+import { createGuestWorkspaceProfile } from '../../../components/workspace/profileFallback';
+import { useWorkspaceShellProfile } from '../../../components/workspace/useWorkspaceShellProfile';
 import styles from '../../../styles/workspace/WorkspaceLayout.module.css';
 
+const PROFILE = createGuestWorkspaceProfile({
+  tagline: 'Set your target role',
+  progressLabel: '5%',
+});
+
 export default function WorkspaceOverviewPage() {
+  const shellProfile = useWorkspaceShellProfile(PROFILE);
   return (
     <>
       <Head>
         <title>JobMatch · Workspace Overview</title>
         <meta name="description" content="Monitor your JobMatch workspace progress and jump into priority tasks." />
       </Head>
-      <AppShell
-        menuItems={APP_MENU_ITEMS}
-        profileTasks={DEFAULT_PROFILE_TASKS}
-        profile={{
-          name: 'Kuntal Maity',
-          tagline: 'Set your target role',
-          initials: 'KM',
-          progressLabel: '5%',
-        }}
-      >
+      <AppShell menuItems={APP_MENU_ITEMS} profileTasks={DEFAULT_PROFILE_TASKS} profile={shellProfile}>
         <AppDashboardHeader />
         <header className={styles.contentHeader}>
           <h1>Keep your search momentum going</h1>

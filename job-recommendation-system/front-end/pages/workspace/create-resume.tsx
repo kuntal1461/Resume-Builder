@@ -3,14 +3,14 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import AppShell from '../../components/workspace/AppShell';
 import { APP_MENU_ITEMS, DEFAULT_PROFILE_TASKS } from '../../components/workspace/navigation';
+import { createGuestWorkspaceProfile } from '../../components/workspace/profileFallback';
+import { useWorkspaceShellProfile } from '../../components/workspace/useWorkspaceShellProfile';
 import styles from '../../styles/workspace/CreateResume.module.css';
 
-const PROFILE = {
-  name: 'Kuntal Maity',
+const PROFILE = createGuestWorkspaceProfile({
   tagline: 'Set your target role',
-  initials: 'KM',
   progressLabel: '5%',
-};
+});
 
 const FEATURE_CARDS = [
   {
@@ -94,6 +94,7 @@ const TESTIMONIAL = {
 };
 
 export default function CreateResumePage() {
+  const shellProfile = useWorkspaceShellProfile(PROFILE);
   const [statValues, setStatValues] = useState<number[]>(() => HERO_STATS.map(() => 0));
 
   useEffect(() => {
@@ -140,7 +141,7 @@ export default function CreateResumePage() {
         <title>JobMatch · Create Resume</title>
         <meta name="description" content="Launch a modern, AI-assisted resume builder from your JobMatch workspace." />
       </Head>
-      <AppShell menuItems={APP_MENU_ITEMS} profileTasks={DEFAULT_PROFILE_TASKS} profile={PROFILE}>
+      <AppShell menuItems={APP_MENU_ITEMS} profileTasks={DEFAULT_PROFILE_TASKS} profile={shellProfile}>
         <div className={styles.page}>
           <section className={styles.hero}>
             <p className={styles.heroTag}>Modern builder · Beta</p>

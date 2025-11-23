@@ -1,4 +1,4 @@
-const WORKSPACE_PROFILE_STORAGE_KEY = 'jobmatch.workspaceProfile';
+export const WORKSPACE_PROFILE_STORAGE_KEY = 'jobmatch.workspaceProfile';
 
 export type WorkspaceProfileSnapshot = {
   userId?: number | null;

@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from 'react';
 import type { GetServerSideProps } from 'next';
 import AppShell from '../../../../components/workspace/AppShell';
 import { APP_MENU_ITEMS, DEFAULT_PROFILE_TASKS } from '../../../../components/workspace/navigation';
+import { useWorkspaceShellProfile } from '../../../../components/workspace/useWorkspaceShellProfile';
+import { createGuestWorkspaceProfile } from '../../../../components/workspace/profileFallback';
 import styles from '../../../../styles/workspace/ResumeBuilder.module.css';
 import {
   fetchPublishedResumeTemplates,
@@ -12,12 +14,10 @@ import {
   type ResumeTemplateRecord,
 } from '../../../../lib/resumeTemplates';
 
-const PROFILE = {
-  name: 'Kuntal Maity',
+const PROFILE = createGuestWorkspaceProfile({
   tagline: 'Set your target role',
-  initials: 'KM',
   progressLabel: '5%',
-};
+});
 
 const BUILDER_STATS = [
   { label: 'Avg score lift', value: '+27 pts' },
@@ -106,6 +106,7 @@ export default function WorkspaceResumeBuilderPage({
   error,
   categoryError,
 }: ResumeBuilderPageProps) {
+  const shellProfile = useWorkspaceShellProfile(PROFILE);
   const [selectedParent, setSelectedParent] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -224,7 +225,7 @@ export default function WorkspaceResumeBuilderPage({
         <title>JobMatch · Resume Builder</title>
         <meta name="description" content="Launch the modern JobMatch resume builder with AI drafting and live preview." />
       </Head>
-      <AppShell menuItems={APP_MENU_ITEMS} profileTasks={DEFAULT_PROFILE_TASKS} profile={PROFILE}>
+      <AppShell menuItems={APP_MENU_ITEMS} profileTasks={DEFAULT_PROFILE_TASKS} profile={shellProfile}>
         <div className={styles.page}>
           <section className={styles.hero}>
             <div>

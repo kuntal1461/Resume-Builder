@@ -1,16 +1,15 @@
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import AppDashboardAccountMenu from './AppDashboardAccountMenu';
 import styles from '../../styles/workspace/WorkspaceLayout.module.css';
 import { ArrowIcon, SparkIcon, UnlimitedLearningIcon } from './icons';
 import {
-  buildWorkspaceIdentity,
   getWorkspaceFirstName,
-  loadWorkspaceProfile,
 } from '../../lib/workspaceProfileStorage';
+import { useWorkspaceProfile } from './WorkspaceProfileProvider';
 
 const HERO = {
-  greeting: 'Good afternoon, Kuntal',
+  greeting: 'Good afternoon',
   badge: 'Fresh this week',
   title: 'Level up your JobMatch workspace',
   subtitle:
@@ -35,10 +34,10 @@ const INSIGHT = {
   },
 };
 
-const ACCOUNT_PROFILE = {
-  name: 'Kuntal Maity',
-  email: 'kuntal.1461@gmail.com',
-  initials: 'KM',
+const GUEST_ACCOUNT_PROFILE = {
+  name: 'Guest',
+  email: '',
+  initials: 'GU',
 };
 
 const GREETING_PREFIX = HERO.greeting.includes(',')
@@ -46,28 +45,40 @@ const GREETING_PREFIX = HERO.greeting.includes(',')
   : HERO.greeting;
 
 export default function AppDashboardHeader() {
-  const [heroGreeting, setHeroGreeting] = useState(HERO.greeting);
-  const [accountProfile, setAccountProfile] = useState(ACCOUNT_PROFILE);
+  const { identity, snapshot, isLoaded } = useWorkspaceProfile();
 
-  useEffect(() => {
-    const snapshot = loadWorkspaceProfile();
-    if (!snapshot) {
-      return;
+  const accountProfile = useMemo(
+    () => ({
+      name: identity.name || GUEST_ACCOUNT_PROFILE.name,
+      email: identity.email || GUEST_ACCOUNT_PROFILE.email,
+      initials: identity.initials || GUEST_ACCOUNT_PROFILE.initials,
+    }),
+    [identity.email, identity.initials, identity.name]
+  );
+
+  const heroGreeting = useMemo(() => {
+    if (!isLoaded) {
+      return '';
     }
 
-    const resolvedIdentity = buildWorkspaceIdentity(ACCOUNT_PROFILE, snapshot);
-    setAccountProfile(resolvedIdentity);
-
-    const fallbackFirst = resolvedIdentity.name.split(' ')[0] ?? resolvedIdentity.name;
+    const fallbackFirst = accountProfile.name.split(' ')[0] ?? accountProfile.name;
     const preferredFirstName = getWorkspaceFirstName(snapshot, fallbackFirst);
-    const greetingName = preferredFirstName || resolvedIdentity.name;
-    setHeroGreeting(`${GREETING_PREFIX}, ${greetingName}`.trim());
-  }, []);
+    const greetingName = snapshot ? preferredFirstName || accountProfile.name : '';
+    return greetingName ? `${GREETING_PREFIX}, ${greetingName}`.trim() : GREETING_PREFIX;
+  }, [accountProfile.name, isLoaded, snapshot]);
 
   return (
     <header className={styles.dashboardHeader} aria-label="Workspace spotlight">
       <div className={styles.dashboardHeaderLeft}>
-        <span className={styles.dashboardGreeting}>{heroGreeting}</span>
+        {isLoaded ? (
+          <span className={styles.dashboardGreeting}>{heroGreeting}</span>
+        ) : (
+          <span
+            aria-hidden="true"
+            className={`${styles.dashboardGreeting} ${styles.dashboardSkeleton} ${styles.dashboardSkeletonText}`}
+            style={{ width: '160px' }}
+          />
+        )}
         <span className={styles.dashboardHeaderBadge}>
           <SparkIcon aria-hidden="true" />
           {HERO.badge}
@@ -96,7 +107,14 @@ export default function AppDashboardHeader() {
           </Link>
         </article>
         <div className={styles.dashboardUtilities}>
-          <AppDashboardAccountMenu profile={accountProfile} />
+          {isLoaded ? (
+            <AppDashboardAccountMenu profile={accountProfile} />
+          ) : (
+            <div
+              aria-hidden="true"
+              className={`${styles.dashboardSkeleton} ${styles.dashboardSkeletonIcon}`}
+            />
+          )}
         </div>
       </div>
     </header>

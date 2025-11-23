@@ -2,18 +2,18 @@ import Head from 'next/head';
 import { useMemo, useState } from 'react';
 import AppShell from '../../../components/workspace/AppShell';
 import { APP_MENU_ITEMS, DEFAULT_PROFILE_TASKS } from '../../../components/workspace/navigation';
+import { createGuestWorkspaceProfile } from '../../../components/workspace/profileFallback';
+import { useWorkspaceShellProfile } from '../../../components/workspace/useWorkspaceShellProfile';
 import styles from '../../../styles/workspace/SalaryAnalyzer.module.css';
 
 type Level = 'Intern' | 'Junior' | 'Mid' | 'Senior' | 'Lead/Staff' | 'Manager' | 'Director+';
 type Period = 'Annual' | 'Hourly';
 type WorkMode = 'Remote' | 'Hybrid' | 'Onsite';
 
-const DEFAULT_PROFILE = {
-  name: 'Kuntal Maity',
+const DEFAULT_PROFILE = createGuestWorkspaceProfile({
   tagline: 'Set your target role',
-  initials: 'KM',
   progressLabel: '5%',
-};
+});
 
 const LEVEL_BASELINES: Record<Level, [number, number]> = {
   Intern: [20000, 35000],
@@ -41,6 +41,7 @@ function clamp(n: number, min: number, max: number) {
 }
 
 export default function SalaryAnalyzerPage() {
+  const shellProfile = useWorkspaceShellProfile(DEFAULT_PROFILE);
   const [title, setTitle] = useState('Software Engineer');
   const [company, setCompany] = useState('');
   const [level, setLevel] = useState<Level>('Mid');
@@ -96,7 +97,7 @@ export default function SalaryAnalyzerPage() {
         <title>JobMatch · Salary Analyzer</title>
         <meta name="description" content="Estimate fair salary ranges by role, level, and location." />
       </Head>
-      <AppShell menuItems={APP_MENU_ITEMS} profileTasks={DEFAULT_PROFILE_TASKS} profile={DEFAULT_PROFILE}>
+      <AppShell menuItems={APP_MENU_ITEMS} profileTasks={DEFAULT_PROFILE_TASKS} profile={shellProfile}>
         <div className={styles.page}>
           <header className={styles.header}>
             <div>

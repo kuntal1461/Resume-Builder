@@ -21,6 +21,8 @@ import {
   RemoteIcon,
 } from '../../../components/workspace/icons';
 import { APP_MENU_ITEMS, DEFAULT_PROFILE_TASKS } from '../../../components/workspace/navigation';
+import { createGuestWorkspaceProfile } from '../../../components/workspace/profileFallback';
+import { useWorkspaceShellProfile } from '../../../components/workspace/useWorkspaceShellProfile';
 import type { LikedJobSnapshot } from '../../../components/workspace/job-tracking/types';
 import styles from '../../../styles/workspace/JobSearch.module.css';
 
@@ -32,12 +34,10 @@ type PreferenceState = {
   jobNature: 'Full-time' | 'Contract' | 'Internship';
 };
 
-const PROFILE = {
-  name: 'Kuntal Maity',
+const PROFILE = createGuestWorkspaceProfile({
   tagline: 'Update your target role',
-  initials: 'KM',
   progressLabel: '12%',
-};
+});
 
 const MATCH_STORAGE_KEY = 'jobSearchMatchState';
 const LIKED_JOBS_STORAGE_KEY = 'jobTrackerLikedJobs';
@@ -215,6 +215,7 @@ const curatedBase: CuratedJobTemplate[] = [
 ];
 
 export default function WorkspaceJobSearchPage() {
+  const shellProfile = useWorkspaceShellProfile(PROFILE);
   const [preferences, setPreferences] = useState<PreferenceState>({
     role: '',
     location: '',
@@ -402,7 +403,7 @@ const curatedJobs = useMemo(() => buildCuratedJobs(preferences), [preferences.jo
         <title>JobMatch · Job Search Preferences</title>
         <meta name="description" content="Answer quick questions so we can personalize your job recommendations." />
       </Head>
-      <AppShell menuItems={APP_MENU_ITEMS} profileTasks={DEFAULT_PROFILE_TASKS} profile={PROFILE}>
+      <AppShell menuItems={APP_MENU_ITEMS} profileTasks={DEFAULT_PROFILE_TASKS} profile={shellProfile}>
         <div className={styles.jobSearchPage}>
           <div className={styles.jobSearchHero}>
             <div className={styles.jobSearchHeroOrbit} aria-hidden="true" />

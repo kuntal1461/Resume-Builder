@@ -2,7 +2,14 @@ import Head from 'next/head';
 import Link from 'next/link';
 import AppShell from '../../../components/workspace/AppShell';
 import { APP_MENU_ITEMS, DEFAULT_PROFILE_TASKS } from '../../../components/workspace/navigation';
+import { createGuestWorkspaceProfile } from '../../../components/workspace/profileFallback';
+import { useWorkspaceShellProfile } from '../../../components/workspace/useWorkspaceShellProfile';
 import styles from '../../../styles/workspace/CareerProfileInsights.module.css';
+
+const PROFILE = createGuestWorkspaceProfile({
+  tagline: 'Set your target role',
+  progressLabel: '45%',
+});
 
 const INSIGHTS = [
   {
@@ -53,6 +60,7 @@ const NEXT_STEPS = [
 ];
 
 export default function CareerProfileInsightsPage() {
+  const shellProfile = useWorkspaceShellProfile(PROFILE);
   return (
     <>
       <Head>
@@ -62,16 +70,7 @@ export default function CareerProfileInsightsPage() {
           content="Review your personalized career insights, strengths, and growth levers to refine your JobMatch profile."
         />
       </Head>
-      <AppShell
-        menuItems={APP_MENU_ITEMS}
-        profileTasks={DEFAULT_PROFILE_TASKS}
-        profile={{
-          name: 'Kuntal Maity',
-          tagline: 'Set your target role',
-          initials: 'KM',
-          progressLabel: '45%',
-        }}
-      >
+      <AppShell menuItems={APP_MENU_ITEMS} profileTasks={DEFAULT_PROFILE_TASKS} profile={shellProfile}>
         <div className={styles.page}>
           <section className={styles.hero}>
             <h1 className={styles.heroTitle}>My Career Insights</h1>

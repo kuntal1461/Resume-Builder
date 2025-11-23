@@ -82,7 +82,9 @@ export default function AppDashboardAccountMenu({ profile }: AccountMenuProps) {
           </div>
           <div>
             <p className={styles.accountName}>{profile.name}</p>
-            <p className={styles.accountEmail}>{profile.email}</p>
+            <p className={styles.accountEmail}>
+              {profile.email || 'Sign in to personalize your workspace'}
+            </p>
           </div>
         </div>
 

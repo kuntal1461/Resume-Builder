@@ -10,7 +10,7 @@ INSERT INTO users (
 ) VALUES (
   'AdminKK',
   'kkadmin@gmail.com',
-  '$2b$12$6pZoHfE8C8qDnEX3A8V1zu6i0GUrHHQ9iVtqPtC1KpUkgHMsxie3i',
+  '$2b$12$NkCxk6uy2i9GyGwn0fLf/.bIzSU3gY1I9bW2YPPqndTDXO0uK8NLi',
   'Admin',
   'Maity',
   1,

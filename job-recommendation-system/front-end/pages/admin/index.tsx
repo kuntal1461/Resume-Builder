@@ -12,6 +12,8 @@ type AuthMode = 'login' | 'signup';
 type BannerState = { type: 'success' | 'error'; message: string } | null;
 
 type AdminLoginResponse = {
+  access_token?: string;
+  token_type?: string;
   success?: boolean;
   message?: string;
   user_id?: number;
@@ -20,6 +22,14 @@ type AdminLoginResponse = {
   first_name?: string;
   last_name?: string;
   is_admin?: boolean;
+  user?: {
+    user_id?: number;
+    email?: string;
+    username?: string;
+    first_name?: string;
+    last_name?: string;
+    is_admin?: boolean;
+  };
 };
 
 const ADMIN_FEATURES = [
@@ -109,27 +119,29 @@ export default function AdminAccessPage() {
         throw new Error(message);
       }
 
-      if (!payload?.is_admin) {
+      const userPayload = payload?.user ?? payload;
+
+      if (!userPayload?.is_admin) {
         throw new Error('You do not have access to the admin dashboard. Please contact support.');
       }
 
       persistAdminProfile({
-        userId: payload.user_id ?? null,
-        email: payload.email ?? null,
-        username: payload.username ?? null,
-        firstName: payload.first_name ?? null,
-        lastName: payload.last_name ?? null,
-        isAdmin: Boolean(payload.is_admin),
+        userId: userPayload.user_id ?? null,
+        email: userPayload.email ?? null,
+        username: userPayload.username ?? null,
+        firstName: userPayload.first_name ?? null,
+        lastName: userPayload.last_name ?? null,
+        isAdmin: Boolean(userPayload.is_admin),
       });
 
       const displayName =
-        [payload.first_name, payload.last_name]
+        [userPayload.first_name, userPayload.last_name]
           .map((part) => (typeof part === 'string' ? part.trim() : ''))
           .filter(Boolean)
           .join(' ')
           .trim() ||
-        payload.username ||
-        payload.email ||
+        userPayload.username ||
+        userPayload.email ||
         'admin';
 
       setAdminBanner({

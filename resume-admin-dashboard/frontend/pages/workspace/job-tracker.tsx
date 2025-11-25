@@ -24,6 +24,17 @@ type QueueEntry = {
   jobCount: number;
 };
 
+type Job = {
+  id: string;
+  title: string;
+  location: string;
+  type: string;
+  postedDate: string;
+  description: string;
+  requirements: string[];
+  isRejected: boolean;
+};
+
 const HERO_PILLS = ['Scrape approvals', 'Queue orchestration', 'Workspace integrations'];
 const CADENCE_OPTIONS: CadenceOption[] = ['Hourly', 'Daily', 'Weekly'];
 const SOURCE_OPTIONS: SourceType[] = ['LinkedIn', 'Career page'];
@@ -129,6 +140,115 @@ const INITIAL_QUEUE: QueueEntry[] = [
   },
 ];
 
+const MOCK_JOBS: Record<string, Job[]> = {
+  'Nimbus AI Lab': [
+    {
+      id: 'job-001',
+      title: 'Senior ML Engineer',
+      location: 'San Francisco, CA',
+      type: 'Full-time',
+      postedDate: '2 days ago',
+      description: 'We are seeking a Senior ML Engineer to lead the development of our next-generation AI models. You will work on cutting-edge machine learning projects, collaborate with cross-functional teams, and mentor junior engineers.',
+      requirements: ['5+ years ML experience', 'Python, TensorFlow, PyTorch', 'PhD or MS in CS/ML preferred', 'Experience with large-scale systems'],
+      isRejected: false
+    },
+    {
+      id: 'job-002',
+      title: 'Product Designer',
+      location: 'Remote',
+      type: 'Full-time',
+      postedDate: '1 week ago',
+      description: 'Join our design team to create beautiful, intuitive user experiences for our AI-powered products. You will own the design process from research to final implementation.',
+      requirements: ['3+ years product design', 'Figma expertise', 'Strong portfolio', 'UX research skills'],
+      isRejected: false
+    },
+    {
+      id: 'job-003',
+      title: 'Data Scientist',
+      location: 'New York, NY',
+      type: 'Full-time',
+      postedDate: '3 days ago',
+      description: 'Analyze complex datasets to drive business insights and build predictive models. Work closely with product and engineering teams to implement data-driven solutions.',
+      requirements: ['MS in Statistics/Data Science', 'SQL, Python, R', 'A/B testing experience', 'Strong communication skills'],
+      isRejected: false
+    },
+    {
+      id: 'job-004',
+      title: 'Frontend Engineer',
+      location: 'Austin, TX',
+      type: 'Contract',
+      postedDate: '5 days ago',
+      description: 'Build responsive, performant web applications using modern JavaScript frameworks. Collaborate with designers and backend engineers to deliver exceptional user experiences.',
+      requirements: ['React/Next.js expert', 'TypeScript proficiency', '3+ years frontend dev', 'CSS/Tailwind skills'],
+      isRejected: false
+    },
+    {
+      id: 'job-005',
+      title: 'DevOps Engineer',
+      location: 'Seattle, WA',
+      type: 'Full-time',
+      postedDate: '1 day ago',
+      description: 'Manage and scale our cloud infrastructure, implement CI/CD pipelines, and ensure high availability of our services. Work with engineering teams to optimize deployment processes.',
+      requirements: ['AWS/GCP experience', 'Kubernetes, Docker', 'Infrastructure as Code', 'Monitoring & alerting'],
+      isRejected: false
+    },
+  ],
+  'Skyline Analytics': [
+    {
+      id: 'job-006',
+      title: 'Analytics Engineer',
+      location: 'Boston, MA',
+      type: 'Full-time',
+      postedDate: '4 days ago',
+      description: 'Build and maintain data pipelines and analytics infrastructure. Transform raw data into actionable insights for business stakeholders.',
+      requirements: ['SQL mastery', 'dbt experience', 'Data warehousing', 'Python/R skills'],
+      isRejected: false
+    },
+    {
+      id: 'job-007',
+      title: 'Business Analyst',
+      location: 'Chicago, IL',
+      type: 'Full-time',
+      postedDate: '1 week ago',
+      description: 'Partner with business leaders to identify opportunities, analyze data, and drive strategic decisions. Create dashboards and reports to track key metrics.',
+      requirements: ['3+ years BA experience', 'Excel/Tableau expert', 'Strong analytical skills', 'Business acumen'],
+      isRejected: false
+    },
+    {
+      id: 'job-008',
+      title: 'Data Engineer',
+      location: 'Remote',
+      type: 'Full-time',
+      postedDate: '2 days ago',
+      description: 'Design and build scalable data infrastructure to support analytics and ML workloads. Optimize data pipelines for performance and reliability.',
+      requirements: ['Spark, Airflow', 'Cloud platforms', 'ETL/ELT expertise', 'Distributed systems'],
+      isRejected: false
+    },
+  ],
+  'CivicTech Labs': [
+    {
+      id: 'job-009',
+      title: 'Software Engineer',
+      location: 'Washington, DC',
+      type: 'Full-time',
+      postedDate: '3 days ago',
+      description: 'Develop civic technology solutions that improve government services and citizen engagement. Work on impactful projects that serve the public good.',
+      requirements: ['Full-stack development', 'Node.js, React', 'API design', 'Security best practices'],
+      isRejected: false
+    },
+    {
+      id: 'job-010',
+      title: 'UX Researcher',
+      location: 'Remote',
+      type: 'Contract',
+      postedDate: '1 week ago',
+      description: 'Conduct user research to understand citizen needs and inform product decisions. Plan and execute usability studies, interviews, and surveys.',
+      requirements: ['UX research methods', 'Qualitative analysis', 'Usability testing', 'Stakeholder management'],
+      isRejected: false
+    },
+  ],
+};
+
 const isValidUrl = (value: string) => {
   try {
     const parsed = new URL(value);
@@ -145,6 +265,9 @@ export default function AdminJobTrackerPage() {
   const [banner, setBanner] = useState<BannerState>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [expandedCompanies, setExpandedCompanies] = useState<Record<string, boolean>>({});
+  const [expandedJobs, setExpandedJobs] = useState<Record<string, boolean>>({});
+  const [expandedJobDetails, setExpandedJobDetails] = useState<Record<string, boolean>>({});
+  const [jobs, setJobs] = useState<Record<string, Job[]>>(MOCK_JOBS);
   const rowIdRef = useRef(1);
 
   const { runningCount, pendingCount } = useMemo(() => {
@@ -175,14 +298,14 @@ export default function AdminJobTrackerPage() {
       previous.map((row, rowIndex) =>
         rowIndex === index
           ? {
-              ...row,
-              [field]:
-                field === 'cadence'
-                  ? (value as CadenceOption)
-                  : field === 'sourceType'
+            ...row,
+            [field]:
+              field === 'cadence'
+                ? (value as CadenceOption)
+                : field === 'sourceType'
                   ? (value as SourceType)
                   : value,
-            }
+          }
           : row,
       ),
     );
@@ -261,6 +384,32 @@ export default function AdminJobTrackerPage() {
     setExpandedCompanies((previous) => ({
       ...previous,
       [company]: !previous[company],
+    }));
+  };
+
+  const toggleJobsView = (company: string, event: React.MouseEvent) => {
+    event.stopPropagation();
+    setExpandedJobs((previous) => ({
+      ...previous,
+      [company]: !previous[company],
+    }));
+  };
+
+  const handleJobAction = (company: string, jobId: string, action: 'visible' | 'reject') => {
+    if (action === 'reject') {
+      setJobs((previous) => ({
+        ...previous,
+        [company]: previous[company].map((job) =>
+          job.id === jobId ? { ...job, isRejected: true } : job
+        ),
+      }));
+    }
+  };
+
+  const toggleJobDetails = (jobId: string) => {
+    setExpandedJobDetails((previous) => ({
+      ...previous,
+      [jobId]: !previous[jobId],
     }));
   };
 
@@ -346,175 +495,246 @@ export default function AdminJobTrackerPage() {
             </section>
 
             <section className={styles.formPanel}>
-                <header className={styles.panelHeader}>
-                  <div>
-                    <p className={styles.panelEyebrow}>Intake console</p>
-                    <h2>Submit a job source</h2>
-                  </div>
-                  <p className={styles.panelHint}>We&apos;ll validate schema, robots.txt, and attach it to the workspace automatically.</p>
-                </header>
-                <form className={styles.form} onSubmit={handleSubmit}>
-                  {banner ? (
-                    <div className={`${styles.banner} ${banner.type === 'error' ? styles.bannerError : styles.bannerSuccess}`}>
-                      {banner.message}
-                    </div>
-                  ) : null}
-                  <div className={styles.multiInput}>
-                    {linkRows.map((row, index) => (
-                      <div key={row.id} className={styles.linkRow}>
-                        <label className={styles.linkField}>
-                          <span>Company name</span>
-                          <input
-                            type="text"
-                            placeholder="Example: Nimbus Labs"
-                            value={row.company}
-                            onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                              handleRowChange(index, 'company', event.target.value)
-                            }
-                            required
-                          />
-                        </label>
-                        <label className={styles.linkFieldSmall}>
-                          <span>Source</span>
-                          <select
-                            value={row.sourceType}
-                            onChange={(event: ChangeEvent<HTMLSelectElement>) =>
-                              handleRowChange(index, 'sourceType', event.target.value)
-                            }
-                          >
-                            {SOURCE_OPTIONS.map((option) => (
-                              <option key={option} value={option}>
-                                {option}
-                              </option>
-                            ))}
-                          </select>
-                        </label>
-                        <label className={styles.linkField}>
-                          <span>Job board URL</span>
-                          <input
-                            type="url"
-                            placeholder="https://jobs.example.com/open-roles"
-                            value={row.url}
-                            onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                              handleRowChange(index, 'url', event.target.value)
-                            }
-                            required
-                          />
-                        </label>
-                        <label className={styles.linkFieldSmall}>
-                          <span>Scrape cadence</span>
-                          <select
-                            value={row.cadence}
-                            onChange={(event: ChangeEvent<HTMLSelectElement>) =>
-                              handleRowChange(index, 'cadence', event.target.value)
-                            }
-                          >
-                            {CADENCE_OPTIONS.map((option) => (
-                              <option key={option} value={option}>
-                                {option}
-                              </option>
-                            ))}
-                          </select>
-                        </label>
-                        {linkRows.length > 1 ? (
-                          <button
-                            type="button"
-                            className={styles.removeRowButton}
-                            onClick={() => removeLinkRow(index)}
-                            aria-label={`Remove row ${index + 1}`}
-                          >
-                            ×
-                          </button>
-                        ) : null}
-                      </div>
-                    ))}
-                  </div>
-                  <button type="button" className={styles.addRowButton} onClick={addLinkRow}>
-                    + Add another link
-                  </button>
-                  <p className={styles.complianceCopy}>
-                    By submitting you confirm the source allows programmatic access and that contracts cover candidate redistribution.
-                  </p>
-                  <div className={styles.actions}>
-                    <button type="submit" disabled={isSubmitting}>
-                      {isSubmitting ? 'Queueing source…' : 'Send to scraper'}
-                    </button>
-                  </div>
-                </form>
-
-                {groupedResults.length ? (
-                  <div className={styles.queuePanel}>
-                    <header className={styles.panelHeader}>
-                      <div>
-                        <p className={styles.panelEyebrow}>Result section</p>
-                        <h2>Scrape status by company</h2>
-                      </div>
-                      <p className={styles.panelHint}>
-                        Expand a company to see every URL we are monitoring and whether scraping is working or pending.
-                      </p>
-                    </header>
-                    <ul className={styles.queueList}>
-                      {groupedResults.map((group) => {
-                        const isExpanded = Boolean(expandedCompanies[group.company]);
-                        return (
-                          <li key={group.company} className={styles.queueCard}>
-                            <button
-                              type="button"
-                              className={styles.companyToggle}
-                              onClick={() => toggleCompanySection(group.company)}
-                              aria-expanded={isExpanded}
-                            >
-                              <div>
-                                <strong>{group.company}</strong>
-                                <span className={styles.companyMeta}>
-                                  {group.totalSources} source{group.totalSources === 1 ? '' : 's'}
-                                </span>
-                              </div>
-                              <div className={styles.companyStats}>
-                                <span className={styles.jobCountBadge}>
-                                  {group.totalJobs} job{group.totalJobs === 1 ? '' : 's'} scraped
-                                </span>
-                                <span className={styles.companyToggleIcon} aria-hidden="true">
-                                  {isExpanded ? '−' : '+'}
-                                </span>
-                              </div>
-                            </button>
-                            {isExpanded ? (
-                              <ul className={styles.queueListInner}>
-                                {group.entries.map((entry) => (
-                                  <li key={entry.id} className={styles.queueEntry}>
-                                    <div className={styles.queueCardHeader}>
-                                      <span
-                                        className={`${styles.statusBadge} ${
-                                          entry.status === 'running'
-                                            ? styles.statusRunning
-                                            : entry.status === 'scheduled'
-                                            ? styles.statusScheduled
-                                            : styles.statusPending
-                                        }`}
-                                      >
-                                        {entry.status}
-                                      </span>
-                                      <span className={styles.cadencePill}>{entry.cadence}</span>
-                                    </div>
-                                    <p className={styles.entryMeta}>
-                                      <span>{entry.sourceType}</span>
-                                      <span>·</span>
-                                      <span>{entry.jobCount} jobs captured</span>
-                                    </p>
-                                    <a href={entry.url} target="_blank" rel="noreferrer" className={styles.urlLink}>
-                                      {entry.url}
-                                    </a>
-                                  </li>
-                                ))}
-                              </ul>
-                            ) : null}
-                          </li>
-                        );
-                      })}
-                    </ul>
+              <header className={styles.panelHeader}>
+                <div>
+                  <p className={styles.panelEyebrow}>Intake console</p>
+                  <h2>Submit a job source</h2>
+                </div>
+                <p className={styles.panelHint}>We&apos;ll validate schema, robots.txt, and attach it to the workspace automatically.</p>
+              </header>
+              <form className={styles.form} onSubmit={handleSubmit}>
+                {banner ? (
+                  <div className={`${styles.banner} ${banner.type === 'error' ? styles.bannerError : styles.bannerSuccess}`}>
+                    {banner.message}
                   </div>
                 ) : null}
+                <div className={styles.multiInput}>
+                  {linkRows.map((row, index) => (
+                    <div key={row.id} className={styles.linkRow}>
+                      <label className={styles.linkField}>
+                        <span>Company name</span>
+                        <input
+                          type="text"
+                          placeholder="Example: Nimbus Labs"
+                          value={row.company}
+                          onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                            handleRowChange(index, 'company', event.target.value)
+                          }
+                          required
+                        />
+                      </label>
+                      <label className={styles.linkFieldSmall}>
+                        <span>Source</span>
+                        <select
+                          value={row.sourceType}
+                          onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+                            handleRowChange(index, 'sourceType', event.target.value)
+                          }
+                        >
+                          {SOURCE_OPTIONS.map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label className={styles.linkField}>
+                        <span>Job board URL</span>
+                        <input
+                          type="url"
+                          placeholder="https://jobs.example.com/open-roles"
+                          value={row.url}
+                          onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                            handleRowChange(index, 'url', event.target.value)
+                          }
+                          required
+                        />
+                      </label>
+                      <label className={styles.linkFieldSmall}>
+                        <span>Scrape cadence</span>
+                        <select
+                          value={row.cadence}
+                          onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+                            handleRowChange(index, 'cadence', event.target.value)
+                          }
+                        >
+                          {CADENCE_OPTIONS.map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      {linkRows.length > 1 ? (
+                        <button
+                          type="button"
+                          className={styles.removeRowButton}
+                          onClick={() => removeLinkRow(index)}
+                          aria-label={`Remove row ${index + 1}`}
+                        >
+                          ×
+                        </button>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
+                <button type="button" className={styles.addRowButton} onClick={addLinkRow}>
+                  + Add another link
+                </button>
+                <p className={styles.complianceCopy}>
+                  By submitting you confirm the source allows programmatic access and that contracts cover candidate redistribution.
+                </p>
+                <div className={styles.actions}>
+                  <button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? 'Queueing source…' : 'Send to scraper'}
+                  </button>
+                </div>
+              </form>
+
+              {groupedResults.length ? (
+                <div className={styles.queuePanel}>
+                  <header className={styles.panelHeader}>
+                    <div>
+                      <p className={styles.panelEyebrow}>Result section</p>
+                      <h2>Scrape status by company</h2>
+                    </div>
+                    <p className={styles.panelHint}>
+                      Expand a company to see every URL we are monitoring and whether scraping is working or pending.
+                    </p>
+                  </header>
+                  <ul className={styles.queueList}>
+                    {groupedResults.map((group) => {
+                      const isExpanded = Boolean(expandedCompanies[group.company]);
+                      return (
+                        <li key={group.company} className={styles.queueCard}>
+                          <button
+                            type="button"
+                            className={styles.companyToggle}
+                            onClick={() => toggleCompanySection(group.company)}
+                            aria-expanded={isExpanded}
+                          >
+                            <div>
+                              <strong>{group.company}</strong>
+                              <span className={styles.companyMeta}>
+                                {group.totalSources} source{group.totalSources === 1 ? '' : 's'}
+                              </span>
+                            </div>
+                            <div className={styles.companyStats}>
+                              <span
+                                className={styles.jobCountBadge}
+                                onClick={(e) => toggleJobsView(group.company, e)}
+                                style={{ cursor: 'pointer' }}
+                              >
+                                {group.totalJobs} job{group.totalJobs === 1 ? '' : 's'} scraped
+                              </span>
+                              <span className={styles.companyToggleIcon} aria-hidden="true">
+                                {isExpanded ? '−' : '+'}
+                              </span>
+                            </div>
+                          </button>
+                          {expandedJobs[group.company] && jobs[group.company] ? (
+                            <div className={styles.jobsContainer}>
+                              {jobs[group.company].map((job) => {
+                                const isJobExpanded = Boolean(expandedJobDetails[job.id]);
+                                return (
+                                  <div
+                                    key={job.id}
+                                    className={`${styles.jobCard} ${job.isRejected ? styles.jobCardRejected : ''}`}
+                                  >
+                                    <div
+                                      className={styles.jobCardHeader}
+                                      onClick={() => toggleJobDetails(job.id)}
+                                      style={{ cursor: 'pointer' }}
+                                    >
+                                      <div className={styles.jobCardMain}>
+                                        <h4 className={styles.jobTitle}>{job.title}</h4>
+                                        <p className={styles.jobLocation}>📍 {job.location}</p>
+                                        <div className={styles.jobMeta}>
+                                          <span>{job.type}</span>
+                                          <span>·</span>
+                                          <span>{job.postedDate}</span>
+                                        </div>
+                                      </div>
+                                      <div className={styles.jobExpandIcon}>
+                                        {isJobExpanded ? '−' : '+'}
+                                      </div>
+                                    </div>
+
+                                    {isJobExpanded && (
+                                      <div className={styles.jobDetails}>
+                                        <div className={styles.jobDescription}>
+                                          <h5>Description</h5>
+                                          <p>{job.description}</p>
+                                        </div>
+                                        <div className={styles.jobRequirements}>
+                                          <h5>Requirements</h5>
+                                          <ul>
+                                            {job.requirements.map((req, idx) => (
+                                              <li key={idx}>{req}</li>
+                                            ))}
+                                          </ul>
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {!job.isRejected ? (
+                                      <div className={styles.jobActions}>
+                                        <button
+                                          className={styles.jobActionVisible}
+                                          onClick={() => handleJobAction(group.company, job.id, 'visible')}
+                                        >
+                                          ✓ Visible
+                                        </button>
+                                        <button
+                                          className={styles.jobActionReject}
+                                          onClick={() => handleJobAction(group.company, job.id, 'reject')}
+                                        >
+                                          × Reject
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      <div className={styles.rejectedBadge}>Rejected</div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ) : null}
+                          {isExpanded ? (
+                            <ul className={styles.queueListInner}>
+                              {group.entries.map((entry) => (
+                                <li key={entry.id} className={styles.queueEntry}>
+                                  <div className={styles.queueCardHeader}>
+                                    <span
+                                      className={`${styles.statusBadge} ${entry.status === 'running'
+                                        ? styles.statusRunning
+                                        : entry.status === 'scheduled'
+                                          ? styles.statusScheduled
+                                          : styles.statusPending
+                                        }`}
+                                    >
+                                      {entry.status}
+                                    </span>
+                                    <span className={styles.cadencePill}>{entry.cadence}</span>
+                                  </div>
+                                  <p className={styles.entryMeta}>
+                                    <span>{entry.sourceType}</span>
+                                    <span>·</span>
+                                    <span>{entry.jobCount} jobs captured</span>
+                                  </p>
+                                  <a href={entry.url} target="_blank" rel="noreferrer" className={styles.urlLink}>
+                                    {entry.url}
+                                  </a>
+                                </li>
+                              ))}
+                            </ul>
+                          ) : null}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ) : null}
             </section>
           </div>
         </div>

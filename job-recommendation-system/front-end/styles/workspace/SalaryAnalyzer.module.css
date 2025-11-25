@@ -3,27 +3,201 @@
 .page {
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 32px;
 }
 
-.header {
+.salaryHeroSection {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(260px, 320px);
+  gap: 26px;
+  padding: 26px 32px;
+  border-radius: 32px;
+  background: linear-gradient(140deg, #061344 0%, #1c2fb0 45%, #5c4cfd 100%);
+  color: #f7f9ff;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 32px 76px rgba(4, 9, 38, 0.45);
+  width: 959px;
+  min-height: 308px;
+  align-items: center;
+  margin: 0 auto;
+  position: relative;
+  overflow: visible;
+}
+
+.salaryHeroSection::before,
+.salaryHeroSection::after {
+  content: '';
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.salaryHeroSection::before {
+  top: -60px;
+  right: -30px;
+  background: radial-gradient(circle at center, rgba(255, 198, 105, 0.3) 0%, rgba(255, 198, 105, 0) 70%);
+}
+
+.salaryHeroSection::after {
+  bottom: -40px;
+  left: -20px;
+  background: radial-gradient(circle at center, rgba(96, 255, 218, 0.26) 0%, rgba(96, 255, 218, 0) 68%);
+}
+
+.salaryHeroCopy {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
 }
 
-.header h1 {
-  margin: 0 0 8px;
-  font-size: 28px;
-  font-weight: 700;
+.salaryHeroCopy h1 {
+  margin: 4px 0;
+  font-size: 26px;
+  line-height: 1.15;
+  color: #f7f9ff;
 }
 
-.header p {
+.salaryHeroHighlight {
+  color: #8df0ff;
+}
+
+.salaryHeroCopy p {
   margin: 0;
-  color: #516489;
-  max-width: 680px;
+  color: rgba(244, 246, 255, 0.82);
   line-height: 1.5;
+}
+
+.salaryHeroEyebrow {
+  margin: 0;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.salaryHeroHighlights {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.salaryHeroHighlights li {
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.salaryHeroHighlightIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8df0ff;
+}
+
+.salaryHeroHighlightIcon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.salaryHeroHighlights span {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.salaryHeroHighlights p {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: rgba(244, 246, 255, 0.75);
+}
+
+.salaryHeroPanel {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 24px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: space-between;
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(12px);
+  position: relative;
+  z-index: 1;
+  color: rgba(247, 249, 255, 0.9);
+}
+
+.salaryHeroPanelHeader {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: rgba(247, 249, 255, 0.72);
+}
+
+.salaryHeroStats {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+}
+
+.salaryHeroStats div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  padding-bottom: 8px;
+}
+
+.salaryHeroStats div:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.salaryHeroStats dt {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(247, 249, 255, 0.62);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.salaryHeroStats dd {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.salaryHeroPanelFoot {
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  color: rgba(247, 249, 255, 0.9);
+}
+
+.salaryHeroPanelFoot p {
+  margin: 0;
+  font-size: 13px;
+  color: inherit;
 }
 
 .card {
@@ -32,7 +206,57 @@
   padding: 22px;
   border: 1px solid #e4eaf5;
   box-shadow: 0 20px 48px rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
+
+.formHeader {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(16, 36, 76, 0.08);
+}
+
+.formHeader h2 {
+  margin: 4px 0 6px;
+  font-size: 22px;
+  color: #0f1c3e;
+}
+
+.formHeader p {
+  margin: 0;
+  color: #4a5773;
+  line-height: 1.4;
+}
+
+.formEyebrow {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(16, 36, 76, 0.5);
+}
+
+.headerBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.headerBadge {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4d34c0;
+  background: rgba(93, 77, 253, 0.12);
+  border: 1px solid rgba(93, 77, 253, 0.2);
+}
+
 
 .formGrid {
   display: grid;
@@ -179,9 +403,23 @@
 }
 
 @media (max-width: 960px) {
-  .header {
+  .salaryHeroSection {
+    grid-template-columns: 1fr;
+    padding: 24px;
+    width: 100%;
+    min-height: unset;
+    margin: 0;
+  }
+
+  .salaryHeroHighlights {
+    grid-template-columns: 1fr;
+  }
+
+  .salaryHeroPanel {
+    order: -1;
+  }
+
+  .formHeader {
     flex-direction: column;
-    align-items: flex-start;
   }
 }
-

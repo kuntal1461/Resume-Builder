@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import { useMemo, useState } from 'react';
 import AppShell from '../../../components/workspace/AppShell';
+import { CompensationIcon, RemoteModeIcon, WorkTypeIcon } from '../../../components/workspace/icons';
 import { APP_MENU_ITEMS, DEFAULT_PROFILE_TASKS } from '../../../components/workspace/navigation';
 import { createGuestWorkspaceProfile } from '../../../components/workspace/profileFallback';
 import { useWorkspaceShellProfile } from '../../../components/workspace/useWorkspaceShellProfile';
@@ -14,6 +15,18 @@ const DEFAULT_PROFILE = createGuestWorkspaceProfile({
   tagline: 'Set your target role',
   progressLabel: '5%',
 });
+
+const HERO_HIGHLIGHTS = [
+  { label: 'Level-calibrated bands', helper: 'Intern → Director+', Icon: WorkTypeIcon },
+  { label: 'Remote, hybrid, onsite aware', helper: 'Location multipliers', Icon: RemoteModeIcon },
+  { label: 'Offer-ready benchmarks', helper: 'Export to negotiation plan', Icon: CompensationIcon },
+];
+
+const HERO_STATS = [
+  { label: 'Markets tracked', value: '24' },
+  { label: 'Levels modeled', value: '7' },
+  { label: 'Median uplift', value: '+12%' },
+];
 
 const LEVEL_BASELINES: Record<Level, [number, number]> = {
   Intern: [20000, 35000],
@@ -99,17 +112,60 @@ export default function SalaryAnalyzerPage() {
       </Head>
       <AppShell menuItems={APP_MENU_ITEMS} profileTasks={DEFAULT_PROFILE_TASKS} profile={shellProfile}>
         <div className={styles.page}>
-          <header className={styles.header}>
-            <div>
-              <h1>Salary Analyzer</h1>
+          <section className={styles.salaryHeroSection} aria-label="Salary Analyzer hero">
+            <div className={styles.salaryHeroCopy}>
+              <p className={styles.salaryHeroEyebrow}>Salary Analyzer</p>
+              <h1>
+                Lead every salary conversation with <span className={styles.salaryHeroHighlight}>evidence.</span>
+              </h1>
               <p>
-                Benchmark compensation for your target role by level and geography. Estimates use heuristic bands and
-                are for guidance only.
+                Calibrate the right range for your role before countering an offer. Blend level, geography, and work model data
+                to chart a confident response.
               </p>
+              <ul className={styles.salaryHeroHighlights}>
+                {HERO_HIGHLIGHTS.map(({ label, helper, Icon }) => (
+                  <li key={label}>
+                    <div className={styles.salaryHeroHighlightIcon} role="presentation">
+                      <Icon aria-hidden="true" />
+                    </div>
+                    <div>
+                      <span>{label}</span>
+                      <p>{helper}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             </div>
-          </header>
+            <div className={styles.salaryHeroPanel} aria-live="polite">
+              <div className={styles.salaryHeroPanelHeader}>Live benchmark signals</div>
+              <dl className={styles.salaryHeroStats}>
+                {HERO_STATS.map(({ label, value }) => (
+                  <div key={label}>
+                    <dt>{label}</dt>
+                    <dd>{value}</dd>
+                  </div>
+                ))}
+              </dl>
+              <div className={styles.salaryHeroPanelFoot}>
+                <p>Use these signals to lock your negotiation guardrails before modeling a full offer.</p>
+              </div>
+            </div>
+          </section>
 
           <section className={styles.card} aria-label="Inputs">
+            <header className={styles.formHeader}>
+              <div>
+                <p className={styles.formEyebrow}>Comp target builder</p>
+                <h2>Design your salary brief</h2>
+                <p>Pair role context with offer details to generate a negotiation-ready band before you counter.</p>
+              </div>
+              <div className={styles.headerBadges} aria-label="Data coverage highlights">
+                <span className={styles.headerBadge}>Level aware</span>
+                <span className={styles.headerBadge}>Geo indexed</span>
+                <span className={styles.headerBadge}>Offer ready</span>
+              </div>
+            </header>
+
             <div className={styles.formGrid}>
               <div className={styles.inputGroup}>
                 <label className={styles.label} htmlFor="company-name">

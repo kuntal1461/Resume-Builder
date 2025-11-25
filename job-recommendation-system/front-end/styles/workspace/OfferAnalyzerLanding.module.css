@@ -177,37 +177,207 @@
   text-align: right;
 }
 
-.tools {
+.workflowSection {
   display: flex;
   flex-direction: column;
+  gap: 18px;
+  padding: 32px;
+  border-radius: 32px;
+  border: 1px solid #e2e7ff;
+  background: linear-gradient(180deg, #f9fbff 0%, #f3f5ff 100%);
+  box-shadow: 0 28px 60px rgba(16, 26, 87, 0.08);
+}
+
+.workflowIntro h2 {
+  margin: 8px 0;
+}
+
+.workflowIntro p {
+  margin: 0;
+  max-width: 660px;
+  color: #4a4f6b;
+}
+
+.workflowEyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  font-size: 12px;
+  color: #7c80a8;
+  margin: 0;
+}
+
+.workflowGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
   gap: 22px;
 }
 
-.toolsHeader h2 {
-  margin: 0 0 8px;
-}
-
-.toolsHeader p {
-  max-width: 620px;
-}
-
-.toolGrid {
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-}
-
-.toolCard {
+.workflowCard {
+  border-radius: 28px;
+  border: 1px solid #e0e5ff;
+  padding: 26px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 18px;
+  background: #ffffff;
+  box-shadow: 0 18px 36px rgba(29, 42, 89, 0.08);
 }
 
-.toolCard h3 {
+.workflowPrimary {
+  background: linear-gradient(140deg, #f8f1ff 0%, #eef4ff 100%);
+  border-color: #d7dbff;
+  box-shadow: 0 32px 64px rgba(40, 45, 110, 0.18);
+}
+
+.workflowSecondary {
+  border-style: dashed;
+  border-color: #d4dbff;
+}
+
+.workflowCardHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 22px;
+  align-items: flex-start;
+}
+
+.workflowCardHeader h3 {
+  margin: 8px 0 6px;
+  font-size: 22px;
+}
+
+.workflowCardHeader p {
   margin: 0;
-  font-size: 20px;
+  color: #4b4f69;
 }
 
-.toolCard p:last-child {
+.workflowStatusPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  background: rgba(71, 78, 255, 0.12);
+  color: #4047ff;
+  font-weight: 600;
+}
+
+.workflowIconBadge {
+  width: 52px;
+  height: 52px;
+  padding: 10px;
+  border-radius: 16px;
+  background: rgba(71, 85, 255, 0.12);
+  color: #414bff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.workflowIconBadge svg {
+  width: 32px;
+  height: 32px;
+}
+
+.workflowMeta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.workflowMeta li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(65, 75, 255, 0.16);
+}
+
+.workflowMeta strong {
+  font-size: 20px;
+  color: #1a1d3f;
+}
+
+.workflowMeta span {
+  font-size: 13px;
+  color: #6b7091;
+}
+
+.workflowSteps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  counter-reset: workflow-step;
+}
+
+.workflowSteps li {
+  counter-increment: workflow-step;
+  padding-left: 48px;
+  position: relative;
+}
+
+.workflowSteps li::before {
+  content: counter(workflow-step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 12px;
+  background: rgba(71, 78, 255, 0.1);
+  color: #4249ff;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.workflowSteps span {
+  font-weight: 600;
+  color: #1f244a;
+}
+
+.workflowSteps p {
+  margin: 4px 0 0;
+  color: #4e5473;
+}
+
+.workflowLink {
   margin-top: auto;
+  align-self: flex-start;
+  font-weight: 600;
+  color: #373eff;
+  text-decoration: none;
+}
+
+.workflowLink:hover,
+.workflowLink:focus {
+  text-decoration: underline;
+}
+
+.workflowTagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.workflowTagList span {
+  padding: 4px 10px;
+  border-radius: 10px;
+  background: rgba(129, 137, 255, 0.14);
+  color: #4a4fff;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -218,5 +388,13 @@
     width: 100%;
     min-height: unset;
     margin: 0;
+  }
+
+  .workflowSection {
+    padding: 24px;
+  }
+
+  .workflowGrid {
+    grid-template-columns: 1fr;
   }
 }

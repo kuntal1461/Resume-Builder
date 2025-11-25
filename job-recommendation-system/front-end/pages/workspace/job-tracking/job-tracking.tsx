@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
-import type { CSSProperties, ReactNode } from 'react';
+import type { CSSProperties, ReactNode, ReactElement, SVGProps } from 'react';
 import AppShell from '../../../components/workspace/AppShell';
 import {
   AutoApplyIcon,

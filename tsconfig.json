@@ -2,7 +2,17 @@
   // Central TS entry that wires every workspace project together.
   "files": [],
   "references": [
-    { "path": "./Backedc-common" },
-    { "path": "./job-recommendation-system/front-end" }
+    {
+      "path": "./frontend-common"
+    },
+    {
+      "path": "./job-recommendation-system/front-end"
+    },
+    {
+      "path": "./resume-admin-dashboard/frontend"
+    },
+    {
+      "path": "./latex-renderer-service"
+    }
   ]
 }

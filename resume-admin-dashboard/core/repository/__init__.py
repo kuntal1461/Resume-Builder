@@ -10,6 +10,7 @@ from .AdminUserRepository import AdminUserRepository
 from .JobSourceRepository import JobSourceRepository
 from .JobRawScrapeRepository import JobRawScrapeRepository
 from .JobMasterRepository import JobMasterRepository
+from .CompanyMasterRepository import CompanyMasterRepository
 
 __all__ = [
     "ResumeTemplateParentCategoryRepository",
@@ -20,4 +21,5 @@ __all__ = [
     "JobSourceRepository",
     "JobRawScrapeRepository",
     "JobMasterRepository",
+    "CompanyMasterRepository",
 ]

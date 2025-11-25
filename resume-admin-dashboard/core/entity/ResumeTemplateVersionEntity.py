@@ -1,15 +1,16 @@
 from sqlalchemy import BigInteger, Column, ForeignKey, Text, JSON
 
 from core.baseEntity.baseEntity import Base, CommonEntity
+from core.constants import TableConstant
 
 
 class ResumeTemplateVersionEntity(Base, CommonEntity):
-    __tablename__ = "resume_template_version"
+    __tablename__ = TableConstant.RESUME_TEMPLATE_VERSION
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     template_id = Column(
         BigInteger,
-        ForeignKey("resume_template.id"),
+        ForeignKey(f"{TableConstant.RESUME_TEMPLATE}.id"),
         nullable=False,
     )
     version_no = Column(BigInteger, nullable=False, default=1)

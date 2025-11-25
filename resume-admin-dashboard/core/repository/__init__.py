@@ -7,6 +7,9 @@ from .ResumeTemplateSubCategoryRepository import (
 from .ResumeTemplateRepository import ResumeTemplateRepository
 from .ResumeTemplateVersionRepository import ResumeTemplateVersionRepository
 from .AdminUserRepository import AdminUserRepository
+from .JobSourceRepository import JobSourceRepository
+from .JobRawScrapeRepository import JobRawScrapeRepository
+from .JobMasterRepository import JobMasterRepository
 
 __all__ = [
     "ResumeTemplateParentCategoryRepository",
@@ -14,4 +17,7 @@ __all__ = [
     "ResumeTemplateRepository",
     "ResumeTemplateVersionRepository",
     "AdminUserRepository",
+    "JobSourceRepository",
+    "JobRawScrapeRepository",
+    "JobMasterRepository",
 ]

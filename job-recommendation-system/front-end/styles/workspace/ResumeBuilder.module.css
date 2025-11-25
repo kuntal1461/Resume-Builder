@@ -470,9 +470,7 @@
   overflow: hidden;
 }
 
-.stackCardPrimary img {
-  width: 100%;
-  height: 100%;
+.stackCardPrimaryImage {
   object-fit: cover;
   border-radius: 20px;
   box-shadow: 0 28px 48px rgba(4, 3, 18, 0.45);

@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import type { GetServerSideProps } from 'next';
 import AppShell from '../../../../components/workspace/AppShell';
@@ -307,8 +308,6 @@ export default function WorkspaceResumeBuilderPage({
                         : 'Modern rhythm, bold accents, and ATS-optimized spacing.';
                       const ownerLabel = resolveOwner(template);
                       const lastUpdatedLabel = formatUpdateTime(template.last_update_time);
-                      const moodChip = template.child_category_label ? `${template.child_category_label} ready` : 'Multi-role ready';
-
                       return (
                         <article key={template.id} className={styles.templateCard}>
                           <div className={styles.templateVisual}>
@@ -351,7 +350,14 @@ export default function WorkspaceResumeBuilderPage({
                                 <span className={styles.stackCardAlt} aria-hidden="true" />
                                 <div className={styles.stackCardPrimary}>
                                   {template.preview_image_url ? (
-                                    <img src={template.preview_image_url} alt={`${template.title} preview`} />
+                                    <Image
+                                      src={template.preview_image_url}
+                                      alt={`${template.title} preview`}
+                                      fill
+                                      sizes="(max-width: 768px) 80vw, 360px"
+                                      className={styles.stackCardPrimaryImage}
+                                      unoptimized
+                                    />
                                   ) : (
                                     <div className={styles.stackSkeleton}>
                                       <span />

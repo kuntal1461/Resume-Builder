@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ChangeEvent, FormEvent, ReactElement, SVGProps } from 'react';
 import AppShell from '../../../components/workspace/AppShell';
 import {
@@ -231,65 +231,23 @@ export default function WorkspaceJobSearchPage() {
   const [savedJobIds, setSavedJobIds] = useState<string[]>([]);
   const [activeActionMenu, setActiveActionMenu] = useState<string | null>(null);
 
-  const matchScore = useMemo(() => {
-    let score = 64;
-    if (preferences.role.trim()) {
-      score += 12;
-    }
-    if (preferences.location.trim()) {
-      score += 8;
-    }
-    if (preferences.workModel === 'Remote') {
-      score += 4;
-    }
-    if (preferences.experience === 'Fresher') {
-      score += 6;
-    } else if (preferences.experience === 'Junior') {
-      score += 4;
-    }
-    if (preferences.jobNature === 'Internship') {
-      score += 3;
-    }
-    return Math.min(96, score);
-  }, [preferences]);
-
-  const insightChips = useMemo(() => {
-    const chips: string[] = [];
-    if (preferences.experience === 'Fresher') {
-      chips.push('Starter-friendly teams');
-      chips.push('Upskilling budget');
-    }
-    if (preferences.workModel === 'Remote') {
-      chips.push('Async collaboration');
-    }
-    if (preferences.role) {
-      chips.push(`${preferences.role} community`);
-    }
-    if (!chips.length) {
-      chips.push('Personalized ramp plan');
-    }
-    return chips.slice(0, 3);
-  }, [preferences]);
-
-const buildCuratedJobs = (target: PreferenceState): CuratedJob[] => {
-  return curatedBase.map((template, index) => {
-    const title = target.role?.trim() ? target.role.trim() : template.baseTitle;
-    const highlight = template.highlightTemplate.replace('{ROLE}', title);
-    const chip = template.chip;
-    let adjustedChip = chip;
-    if (target.jobNature === 'Internship' && index === 0) {
-      adjustedChip = 'Portfolio spotlight';
-    }
-    return {
-      ...template,
-      title,
-      highlight,
-      chip: adjustedChip,
-    };
-  });
-};
-
-const curatedJobs = useMemo(() => buildCuratedJobs(preferences), [preferences.jobNature, preferences.role]);
+  const buildCuratedJobs = (target: PreferenceState): CuratedJob[] => {
+    return curatedBase.map((template, index) => {
+      const title = target.role?.trim() ? target.role.trim() : template.baseTitle;
+      const highlight = template.highlightTemplate.replace('{ROLE}', title);
+      const chip = template.chip;
+      let adjustedChip = chip;
+      if (target.jobNature === 'Internship' && index === 0) {
+        adjustedChip = 'Portfolio spotlight';
+      }
+      return {
+        ...template,
+        title,
+        highlight,
+        chip: adjustedChip,
+      };
+    });
+  };
 
   const handleTextChange =
     (key: 'role' | 'location') =>

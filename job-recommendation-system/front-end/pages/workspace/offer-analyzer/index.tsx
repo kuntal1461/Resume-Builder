@@ -56,7 +56,8 @@ export default function OfferAnalyzerIndex() {
             <div className={styles.offerHeroCard} aria-live="polite">
               <div className={styles.offerHeroBadge}>Your pipeline</div>
               <p className={styles.offerHeroLead}>
-                You're tracking {HERO_CARD_STATS[0].value} with {HERO_CARD_STATS[1].value} ready for an Offer Analyzer deep dive.
+                You&rsquo;re tracking {HERO_CARD_STATS[0].value} with {HERO_CARD_STATS[1].value} ready for an Offer Analyzer deep
+                dive.
               </p>
               <dl className={styles.offerHeroStats}>
                 {HERO_CARD_STATS.map(({ label, value }) => (

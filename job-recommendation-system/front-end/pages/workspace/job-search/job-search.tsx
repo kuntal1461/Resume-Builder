@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import type { ChangeEvent, FormEvent, ReactElement, SVGProps } from 'react';
 import AppShell from '../../../components/workspace/AppShell';
@@ -45,6 +46,7 @@ type StoredMatchState = { mode: 'results' | 'empty'; preferences?: PreferenceSta
 
 type CuratedJobTemplate = {
   id: string;
+  jobId: string;
   baseTitle: string;
   company: string;
   posted: string;
@@ -61,6 +63,17 @@ type CuratedJobTemplate = {
   highlightTemplate: string;
   chip: string;
   logoText: string;
+  description: string;
+  responsibilities: string[];
+  qualifications: string[];
+  required: string[];
+  benefits: string[];
+  companyInfo: {
+    about: string;
+    size: string;
+    founded: string;
+    culture: string[];
+  };
 };
 
 type CuratedJob = Omit<CuratedJobTemplate, 'baseTitle' | 'highlightTemplate'> & { title: string; highlight: string };
@@ -154,6 +167,7 @@ const JOB_NATURE_OPTIONS: { label: PreferenceState['jobNature']; Icon: (props: S
 const curatedBase: CuratedJobTemplate[] = [
   {
     id: 'card-1',
+    jobId: 'cna-associate-software-engineer-2',
     baseTitle: 'Backend Software Engineer',
     company: 'Atlassian',
     posted: '10 hours ago',
@@ -171,9 +185,45 @@ const curatedBase: CuratedJobTemplate[] = [
       'Atlassian teams are looking for {ROLE} to ship creative improvements and mentor peers inside their engineering pods.',
     chip: 'Design + PM pairing',
     logoText: 'AT',
+    description: 'Join Atlassian\'s engineering team to build scalable backend systems that power collaboration tools used by millions worldwide. You\'ll work on distributed systems, APIs, and microservices while collaborating with cross-functional teams.',
+    responsibilities: [
+      'Design and implement scalable backend services and APIs',
+      'Collaborate with product managers and designers to deliver features',
+      'Write clean, maintainable code with comprehensive test coverage',
+      'Participate in code reviews and mentor junior engineers',
+      'Optimize system performance and troubleshoot production issues',
+    ],
+    qualifications: [
+      'Bachelor\'s degree in Computer Science or related field',
+      '2+ years of backend development experience',
+      'Strong understanding of data structures and algorithms',
+      'Experience with agile development methodologies',
+    ],
+    required: [
+      'Proficiency in Java, Python, or Go',
+      'Experience with RESTful API design',
+      'Knowledge of SQL and NoSQL databases',
+      'Familiarity with cloud platforms (AWS, GCP, or Azure)',
+      'Strong problem-solving and communication skills',
+    ],
+    benefits: [
+      'Comprehensive health, dental, and vision insurance',
+      '$5,000 annual learning and development budget',
+      'Flexible work arrangements and unlimited PTO',
+      'Stock options and 401(k) matching',
+      'H1B visa sponsorship available',
+      'Wellness programs and gym membership',
+    ],
+    companyInfo: {
+      about: 'Atlassian builds collaboration software that helps teams work better together. Our products include Jira, Confluence, Trello, and Bitbucket, serving over 250,000 customers worldwide.',
+      size: '10,000+ employees',
+      founded: '2002',
+      culture: ['Remote-first', 'Innovation-driven', 'Inclusive', 'Collaborative'],
+    },
   },
   {
     id: 'card-2',
+    jobId: 'pulse-analytics-associate-growth-analyst',
     baseTitle: 'Associate Growth Analyst',
     company: 'Pulse Analytics',
     posted: '1 day ago',
@@ -191,9 +241,45 @@ const curatedBase: CuratedJobTemplate[] = [
       'Pulse Analytics spins up micro teams so {ROLE} can own experiments, work cross-functionally, and get weekly product coaching.',
     chip: 'Coaching included',
     logoText: 'PA',
+    description: 'Drive growth initiatives through data-driven insights at a fast-growing YC-backed analytics startup. You\'ll design experiments, analyze user behavior, and work directly with leadership to scale our product.',
+    responsibilities: [
+      'Design and execute growth experiments across acquisition and retention',
+      'Analyze user data to identify opportunities and bottlenecks',
+      'Build dashboards and reports to track key growth metrics',
+      'Collaborate with product, engineering, and marketing teams',
+      'Present findings and recommendations to stakeholders',
+    ],
+    qualifications: [
+      'Bachelor\'s degree in Business, Economics, Statistics, or related field',
+      '1-3 years of experience in growth, analytics, or product',
+      'Strong analytical and problem-solving skills',
+      'Excellent communication and presentation abilities',
+    ],
+    required: [
+      'Proficiency in SQL and data visualization tools (Tableau, Looker)',
+      'Experience with A/B testing and statistical analysis',
+      'Knowledge of Python or R for data analysis',
+      'Understanding of growth metrics and funnel optimization',
+      'Ability to work in a fast-paced startup environment',
+    ],
+    benefits: [
+      'Competitive salary with equity compensation',
+      '$3,000 annual professional development budget',
+      'Hybrid work model (3 days in office)',
+      'Health, dental, and vision insurance',
+      'Weekly 1:1 coaching sessions with growth leaders',
+      'Catered lunches and snacks',
+    ],
+    companyInfo: {
+      about: 'Pulse Analytics (YC W19) helps companies make better decisions through real-time analytics. We\'re a Series B startup backed by top-tier VCs, growing 300% year-over-year.',
+      size: '50-100 employees',
+      founded: '2019',
+      culture: ['Data-driven', 'Fast-paced', 'Learning-focused', 'Transparent'],
+    },
   },
   {
     id: 'card-3',
+    jobId: 'orbit-systems-product-trainee-ai',
     baseTitle: 'Product Trainee (AI)',
     company: 'Orbit Systems',
     posted: '2 days ago',
@@ -211,10 +297,46 @@ const curatedBase: CuratedJobTemplate[] = [
       'Orbit pairs every {ROLE} with a rotating mentor pod and a quarterly showcase so your work is visible.',
     chip: 'Mentorship pod',
     logoText: 'OS',
+    description: 'Launch your product career in AI at Orbit Systems. This 6-month internship program pairs you with experienced product managers to work on cutting-edge AI products, with potential for full-time conversion.',
+    responsibilities: [
+      'Assist in product research and user interviews',
+      'Help define product requirements and user stories',
+      'Support product launches and feature rollouts',
+      'Analyze product metrics and user feedback',
+      'Participate in sprint planning and product reviews',
+    ],
+    qualifications: [
+      'Currently pursuing or recently completed Bachelor\'s/Master\'s degree',
+      'Strong interest in AI and product management',
+      'Excellent written and verbal communication skills',
+      'Ability to work full-time for 6 months',
+    ],
+    required: [
+      'Basic understanding of AI/ML concepts',
+      'Analytical mindset with attention to detail',
+      'Proficiency in Google Workspace and collaboration tools',
+      'Eagerness to learn and take initiative',
+      'Strong organizational and time management skills',
+    ],
+    benefits: [
+      'Competitive hourly compensation',
+      'Rotating mentorship with senior PMs and engineers',
+      'Quarterly showcase to present your work',
+      'Networking opportunities with AI industry leaders',
+      'Potential for full-time conversion',
+      'Free lunch and commuter benefits',
+    ],
+    companyInfo: {
+      about: 'Orbit Systems is building the next generation of AI-powered productivity tools. Our mission is to make AI accessible and useful for everyone, from students to enterprises.',
+      size: '20-50 employees',
+      founded: '2021',
+      culture: ['Innovation-first', 'Mentorship-driven', 'Inclusive', 'Fast-growing'],
+    },
   },
 ];
 
 export default function WorkspaceJobSearchPage() {
+  const router = useRouter();
   const shellProfile = useWorkspaceShellProfile(PROFILE);
   const [preferences, setPreferences] = useState<PreferenceState>({
     role: '',
@@ -251,11 +373,11 @@ export default function WorkspaceJobSearchPage() {
 
   const handleTextChange =
     (key: 'role' | 'location') =>
-    (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-      const { value } = event.target;
-      setPreferences((prev) => ({ ...prev, [key]: value }));
-      setSubmitted(false);
-    };
+      (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { value } = event.target;
+        setPreferences((prev) => ({ ...prev, [key]: value }));
+        setSubmitted(false);
+      };
 
   const handlePreferenceChange = <Key extends keyof PreferenceState>(key: Key, value: PreferenceState[Key]) => {
     setPreferences((prev) => ({ ...prev, [key]: value }));
@@ -400,110 +522,107 @@ export default function WorkspaceJobSearchPage() {
                   <p>We will use these details to personalize your job board and alerts.</p>
                 </div>
 
-              <div className={styles.jobSearchFieldGroup}>
-                <label htmlFor="role-input" className={styles.jobSearchLabel}>
-                  Which role are you targeting?
-                </label>
-                <div className={styles.jobSearchSelectWrap}>
-                  <FieldIcon />
-                  <select
-                    id="role-input"
-                    className={styles.jobSearchSelect}
-                    value={preferences.role}
-                    onChange={handleTextChange('role')}
-                  >
-                    <option value="">Select a role track</option>
-                    {ROLE_SUGGESTIONS.map((role) => (
-                      <option key={role} value={role}>
-                        {role}
-                      </option>
+                <div className={styles.jobSearchFieldGroup}>
+                  <label htmlFor="role-input" className={styles.jobSearchLabel}>
+                    Which role are you targeting?
+                  </label>
+                  <div className={styles.jobSearchSelectWrap}>
+                    <FieldIcon />
+                    <select
+                      id="role-input"
+                      className={styles.jobSearchSelect}
+                      value={preferences.role}
+                      onChange={handleTextChange('role')}
+                    >
+                      <option value="">Select a role track</option>
+                      {ROLE_SUGGESTIONS.map((role) => (
+                        <option key={role} value={role}>
+                          {role}
+                        </option>
+                      ))}
+                      <option value="Other / custom">Other / custom</option>
+                    </select>
+                  </div>
+                  <p className={styles.jobSearchHelperText}>Be specific so we can surface niche roles.</p>
+                </div>
+
+                <div className={styles.jobSearchFieldGroup}>
+                  <label htmlFor="location-input" className={styles.jobSearchLabel}>
+                    Preferred location
+                  </label>
+                  <div className={styles.jobSearchInputWrap}>
+                    <LocationIcon />
+                    <input
+                      id="location-input"
+                      type="text"
+                      placeholder="Any city or remote preference"
+                      className={styles.jobSearchInput}
+                      value={preferences.location}
+                      onChange={handleTextChange('location')}
+                    />
+                  </div>
+                  <p className={styles.jobSearchHelperText}>We will mix local + remote matches if you leave this blank.</p>
+                </div>
+
+                <div className={styles.jobSearchFieldGroup}>
+                  <span className={styles.jobSearchLabel}>Experience level</span>
+                  <div className={styles.jobSearchCardGrid}>
+                    {EXPERIENCE_OPTIONS.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        className={`${styles.jobSearchExperienceCard} ${option.value === preferences.experience ? styles.jobSearchExperienceCardActive : ''
+                          }`}
+                        onClick={() => handlePreferenceChange('experience', option.value)}
+                        aria-pressed={option.value === preferences.experience}
+                      >
+                        <div className={styles.jobSearchCardHeading}>
+                          <BadgeIcon />
+                          <span>{option.label}</span>
+                        </div>
+                        <p>{option.helper}</p>
+                      </button>
                     ))}
-                    <option value="Other / custom">Other / custom</option>
-                  </select>
+                  </div>
                 </div>
-                <p className={styles.jobSearchHelperText}>Be specific so we can surface niche roles.</p>
-              </div>
 
-              <div className={styles.jobSearchFieldGroup}>
-                <label htmlFor="location-input" className={styles.jobSearchLabel}>
-                  Preferred location
-                </label>
-                <div className={styles.jobSearchInputWrap}>
-                  <LocationIcon />
-                  <input
-                    id="location-input"
-                    type="text"
-                    placeholder="Any city or remote preference"
-                    className={styles.jobSearchInput}
-                    value={preferences.location}
-                    onChange={handleTextChange('location')}
-                  />
+                <div className={styles.jobSearchFieldGroup}>
+                  <span className={styles.jobSearchLabel}>Work style</span>
+                  <div className={styles.jobSearchToggleGroup}>
+                    {WORK_OPTIONS.map((option) => (
+                      <button
+                        key={option.label}
+                        type="button"
+                        className={`${styles.jobSearchToggleButton} ${option.label === preferences.workModel ? styles.jobSearchToggleButtonActive : ''
+                          }`}
+                        onClick={() => handlePreferenceChange('workModel', option.label)}
+                        aria-pressed={option.label === preferences.workModel}
+                      >
+                        <option.Icon />
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <p className={styles.jobSearchHelperText}>We will mix local + remote matches if you leave this blank.</p>
-              </div>
 
-              <div className={styles.jobSearchFieldGroup}>
-                <span className={styles.jobSearchLabel}>Experience level</span>
-                <div className={styles.jobSearchCardGrid}>
-                  {EXPERIENCE_OPTIONS.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      className={`${styles.jobSearchExperienceCard} ${
-                        option.value === preferences.experience ? styles.jobSearchExperienceCardActive : ''
-                      }`}
-                      onClick={() => handlePreferenceChange('experience', option.value)}
-                      aria-pressed={option.value === preferences.experience}
-                    >
-                      <div className={styles.jobSearchCardHeading}>
-                        <BadgeIcon />
-                        <span>{option.label}</span>
-                      </div>
-                      <p>{option.helper}</p>
-                    </button>
-                  ))}
+                <div className={styles.jobSearchFieldGroup}>
+                  <span className={styles.jobSearchLabel}>Job type</span>
+                  <div className={styles.jobSearchChips}>
+                    {JOB_NATURE_OPTIONS.map((option) => (
+                      <button
+                        key={option.label}
+                        type="button"
+                        className={`${styles.jobSearchChip} ${option.label === preferences.jobNature ? styles.jobSearchChipActive : ''
+                          }`}
+                        onClick={() => handlePreferenceChange('jobNature', option.label)}
+                        aria-pressed={option.label === preferences.jobNature}
+                      >
+                        <option.Icon />
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-
-              <div className={styles.jobSearchFieldGroup}>
-                <span className={styles.jobSearchLabel}>Work style</span>
-                <div className={styles.jobSearchToggleGroup}>
-                  {WORK_OPTIONS.map((option) => (
-                    <button
-                      key={option.label}
-                      type="button"
-                      className={`${styles.jobSearchToggleButton} ${
-                        option.label === preferences.workModel ? styles.jobSearchToggleButtonActive : ''
-                      }`}
-                      onClick={() => handlePreferenceChange('workModel', option.label)}
-                      aria-pressed={option.label === preferences.workModel}
-                    >
-                      <option.Icon />
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className={styles.jobSearchFieldGroup}>
-                <span className={styles.jobSearchLabel}>Job type</span>
-                <div className={styles.jobSearchChips}>
-                  {JOB_NATURE_OPTIONS.map((option) => (
-                    <button
-                      key={option.label}
-                      type="button"
-                      className={`${styles.jobSearchChip} ${
-                        option.label === preferences.jobNature ? styles.jobSearchChipActive : ''
-                      }`}
-                      onClick={() => handlePreferenceChange('jobNature', option.label)}
-                      aria-pressed={option.label === preferences.jobNature}
-                    >
-                      <option.Icon />
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
 
                 <div className={styles.jobSearchActions}>
                   <button className={styles.jobSearchPrimaryButton} type="submit" disabled={isSubmitting}>
@@ -540,7 +659,13 @@ export default function WorkspaceJobSearchPage() {
                         </div>
                         <div className={styles.jobSearchJobDesc}>
                           <span className={styles.jobSearchPublishTag}>{job.posted}</span>
-                          <h3>{job.title}</h3>
+                          <h3
+                            onClick={() => router.push(`/workspace/job-search/info/${job.jobId}`)}
+                            style={{ cursor: 'pointer' }}
+                            className={styles.jobSearchJobTitle}
+                          >
+                            {job.title}
+                          </h3>
                           <div className={styles.jobSearchCompanyRow}>
                             <span>{job.company}</span>
                             <span>/</span>
@@ -577,9 +702,8 @@ export default function WorkspaceJobSearchPage() {
                       <div className={styles.jobSearchJobActions}>
                         <div className={styles.jobSearchActionGroup}>
                           <div
-                            className={`${styles.jobSearchDangerWrapper} ${
-                              activeActionMenu === job.id ? styles.jobSearchActionGroupActive : ''
-                            }`}
+                            className={`${styles.jobSearchDangerWrapper} ${activeActionMenu === job.id ? styles.jobSearchActionGroupActive : ''
+                              }`}
                             data-job-action-area="true"
                             onMouseEnter={() => setActiveActionMenu(job.id)}
                             onMouseLeave={() => setActiveActionMenu(null)}
@@ -615,9 +739,8 @@ export default function WorkspaceJobSearchPage() {
                             ) : null}
                           </div>
                           <button
-                            className={`${styles.jobSearchIconButton} ${styles.jobSearchSaveButton} ${
-                              savedJobIds.includes(job.id) ? styles.jobSearchSaveButtonActive : ''
-                            }`}
+                            className={`${styles.jobSearchIconButton} ${styles.jobSearchSaveButton} ${savedJobIds.includes(job.id) ? styles.jobSearchSaveButtonActive : ''
+                              }`}
                             type="button"
                             aria-label="Save this job"
                             aria-pressed={savedJobIds.includes(job.id)}
@@ -626,32 +749,11 @@ export default function WorkspaceJobSearchPage() {
                             <LikeIcon />
                           </button>
                         </div>
-                        <button
-                          className={styles.jobSearchAskButton}
-                          type="button"
-                          onClick={() => setExpandedJobId((current) => (current === job.id ? null : job.id))}
-                          aria-expanded={expandedJobId === job.id}
-                        >
-                          Ask your AI
-                        </button>
                         <button className={styles.jobSearchApplyButton} type="button">
                           Apply now
                         </button>
                       </div>
-                      {expandedJobId === job.id ? (
-                        <div className={styles.jobSearchJobDetails}>
-                          <p>
-                            Recommended because you prefer <strong>{preferences.workModel}</strong> roles with a{' '}
-                            <strong>{preferences.jobNature}</strong> focus. We also looked at your interest in{' '}
-                            <strong>{preferences.role || 'your target discipline'}</strong>.
-                          </p>
-                          <ul>
-                            <li>Team mentors fresh talent every quarter.</li>
-                            <li>Includes a structured ramp plan and async collaboration rituals.</li>
-                            <li>Apply soon to unlock interview prep tips tailored to this role.</li>
-                          </ul>
-                        </div>
-                      ) : null}
+
                     </article>
                   ))}
                 </div>
@@ -684,6 +786,234 @@ export default function WorkspaceJobSearchPage() {
               </div>
             )}
           </div>
+
+          {/* Job Details Modal */}
+          {expandedJobId && (() => {
+            const selectedJob = generatedJobs.find((job) => job.id === expandedJobId);
+            if (!selectedJob) return null;
+
+            return (
+              <div className={styles.jobModal} onClick={() => setExpandedJobId(null)}>
+                <div className={styles.jobModalContent} onClick={(e) => e.stopPropagation()}>
+                  {/* Top Action Bar */}
+                  <div className={styles.jobModalTopBar}>
+                    <button
+                      className={styles.jobModalClose}
+                      onClick={() => setExpandedJobId(null)}
+                      aria-label="Close"
+                    >
+                      ×
+                    </button>
+                    <div className={styles.jobModalBadges}>
+                      <span className={styles.jobBadge}>Be an early applicant</span>
+                      <span className={styles.jobBadge}>Less than 25 applicants</span>
+                    </div>
+                    <div className={styles.jobModalTopActions}>
+                      <button className={styles.iconBtn} aria-label="Hide">🚫</button>
+                      <button
+                        className={styles.iconBtn}
+                        onClick={() => handleToggleSave(selectedJob.id)}
+                        aria-label="Save"
+                      >
+                        {savedJobIds.includes(selectedJob.id) ? '❤️' : '🤍'}
+                      </button>
+                      <button className={styles.applyNowBtn}>
+                        APPLY NOW →
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Tabs */}
+                  <div className={styles.jobModalTabs}>
+                    <button className={`${styles.tabBtn} ${styles.tabBtnActive}`}>Overview</button>
+                    <button className={styles.tabBtn}>Company</button>
+                    <div className={styles.tabActions}>
+                      <button className={styles.tabAction}>🔗 Share</button>
+                      <button className={styles.tabAction}>🚩 Report Issue</button>
+                      <button className={styles.tabAction}>📄 Original Job Post</button>
+                    </div>
+                  </div>
+
+                  <div className={styles.jobModalBody}>
+                    <div className={styles.jobModalMain}>
+                      {/* Company Header */}
+                      <div className={styles.companyHeader}>
+                        <div className={styles.companyLogoSmall}>{selectedJob.logoText}</div>
+                        <div>
+                          <div className={styles.companyName}>
+                            {selectedJob.company} · {selectedJob.posted}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Job Title */}
+                      <h1 className={styles.jobTitleLarge}>{selectedJob.title}</h1>
+
+                      {/* Job Metadata */}
+                      <div className={styles.jobMetadata}>
+                        <div className={styles.metaRow}>
+                          <span>📍 {selectedJob.location}</span>
+                          <span>🕒 {selectedJob.workType}</span>
+                        </div>
+                        <div className={styles.metaRow}>
+                          <span>🏢 {selectedJob.remoteLabel}</span>
+                          <span>🎓 {selectedJob.seniority}</span>
+                        </div>
+                        <div className={styles.metaRow}>
+                          <span>💰 {selectedJob.salary}</span>
+                          <span>📅 {selectedJob.experience}</span>
+                        </div>
+                      </div>
+
+                      {/* Resume Banner */}
+                      <div className={styles.resumeBanner}>
+                        <div className={styles.resumeBannerLeft}>
+                          <span className={styles.resumeIcon}>🎯</span>
+                          <span className={styles.resumeText}>Maximize your interview chances</span>
+                        </div>
+                        <button className={styles.resumeBtn}>✨ Generate Custom Resume</button>
+                      </div>
+
+                      {/* Description */}
+                      <div className={styles.descriptionSection}>
+                        <p className={styles.descriptionText}>
+                          <strong>{selectedJob.company}</strong> {selectedJob.description}
+                        </p>
+                      </div>
+
+                      {/* Responsibilities */}
+                      <div className={styles.contentSection}>
+                        <h3 className={styles.sectionTitle}>🎯 Key Responsibilities</h3>
+                        <ul className={styles.bulletList}>
+                          {selectedJob.responsibilities.map((item, idx) => (
+                            <li key={idx}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {/* Qualifications */}
+                      <div className={styles.contentSection}>
+                        <h3 className={styles.sectionTitle}>🎓 Qualifications</h3>
+                        <ul className={styles.bulletList}>
+                          {selectedJob.qualifications.map((item, idx) => (
+                            <li key={idx}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {/* Required Skills */}
+                      <div className={styles.contentSection}>
+                        <h3 className={styles.sectionTitle}>✅ Required Skills</h3>
+                        <ul className={styles.bulletList}>
+                          {selectedJob.required.map((item, idx) => (
+                            <li key={idx}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {/* Benefits */}
+                      <div className={styles.contentSection}>
+                        <h3 className={styles.sectionTitle}>🎁 Benefits & Perks</h3>
+                        <ul className={styles.bulletList}>
+                          {selectedJob.benefits.map((item, idx) => (
+                            <li key={idx}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {/* Industry Tags */}
+                      <div className={styles.tagsSection}>
+                        <div className={styles.industryTags}>
+                          {selectedJob.jobTags.map((tag, idx) => (
+                            <span key={idx} className={styles.industryTag}>{tag}</span>
+                          ))}
+                          {selectedJob.companyInfo.culture.map((tag, idx) => (
+                            <span key={idx} className={styles.industryTag}>{tag}</span>
+                          ))}
+                        </div>
+                        <div className={styles.sponsorBadge}>
+                          ✅ H1B Sponsor Likely
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right Sidebar - Match Score */}
+                    <div className={styles.jobModalSidebar}>
+                      <div className={styles.matchScoreCard}>
+                        <div className={styles.mainMatchScore}>
+                          <svg className={styles.scoreCircle} viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="#e5e7eb" strokeWidth="8" />
+                            <circle
+                              cx="50" cy="50" r="45"
+                              fill="none"
+                              stroke="#10b981"
+                              strokeWidth="8"
+                              strokeDasharray={`${selectedJob.matchScore * 2.83} 283`}
+                              strokeLinecap="round"
+                              transform="rotate(-90 50 50)"
+                            />
+                          </svg>
+                          <div className={styles.scoreValue}>{selectedJob.matchScore}%</div>
+                        </div>
+                        <div className={styles.matchLabel}>GOOD MATCH</div>
+                      </div>
+
+                      <div className={styles.subScores}>
+                        <div className={styles.subScore}>
+                          <svg className={styles.smallCircle} viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="#e5e7eb" strokeWidth="10" />
+                            <circle
+                              cx="50" cy="50" r="45"
+                              fill="none"
+                              stroke="#10b981"
+                              strokeWidth="10"
+                              strokeDasharray="283 283"
+                              strokeLinecap="round"
+                              transform="rotate(-90 50 50)"
+                            />
+                          </svg>
+                          <div className={styles.smallScoreValue}>100%</div>
+                          <div className={styles.scoreLabel}>Exp. Level</div>
+                        </div>
+                        <div className={styles.subScore}>
+                          <svg className={styles.smallCircle} viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="#e5e7eb" strokeWidth="10" />
+                            <circle
+                              cx="50" cy="50" r="45"
+                              fill="none"
+                              stroke="#10b981"
+                              strokeWidth="10"
+                              strokeDasharray="209 283"
+                              strokeLinecap="round"
+                              transform="rotate(-90 50 50)"
+                            />
+                          </svg>
+                          <div className={styles.smallScoreValue}>74%</div>
+                          <div className={styles.scoreLabel}>Skill</div>
+                        </div>
+                        <div className={styles.subScore}>
+                          <svg className={styles.smallCircle} viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="#e5e7eb" strokeWidth="10" />
+                            <circle
+                              cx="50" cy="50" r="45"
+                              fill="none"
+                              stroke="#10b981"
+                              strokeWidth="10"
+                              strokeDasharray="130 283"
+                              strokeLinecap="round"
+                              transform="rotate(-90 50 50)"
+                            />
+                          </svg>
+                          <div className={styles.smallScoreValue}>46%</div>
+                          <div className={styles.scoreLabel}>Industry Exp.</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </AppShell>
     </>

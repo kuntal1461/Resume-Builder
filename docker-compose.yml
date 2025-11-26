@@ -139,8 +139,75 @@ services:
     entrypoint: ["/bin/bash", "/seed/db-seed.sh"]
     restart: "no"
 
+  # Redis for job scraper
+  redis:
+    image: redis:7-alpine
+    container_name: job-scraper-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  # Job Scraper Core API (Python/FastAPI)
+  scraper-core:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.scraper-core
+    image: job-scraper-core:latest
+    container_name: job-scraper-core
+    env_file: .env
+    environment:
+      API_HOST: 0.0.0.0
+      API_PORT: 8200
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+      DATABASE_URL: mysql+pymysql://${MYSQL_USER:-resume_user}:${MYSQL_PASSWORD:-resume_pass}@mysql:3306/${MYSQL_DB:-resumes}?charset=utf8mb4
+    ports:
+      - "8200:8200"
+    volumes:
+      - ./job-recommendation-scrapper/core:/app:rw,cached
+      - ./backend-common:/backend_common:rw,cached
+    working_dir: /app
+    command: uvicorn main:app --host 0.0.0.0 --port 8200 --reload
+    depends_on:
+      - redis
+      - mysql
+    restart: unless-stopped
+
+  # Celery Worker for scraping jobs
+  scraper-worker:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.scraper-core
+    image: job-scraper-core:latest
+    container_name: job-scraper-worker
+    env_file: .env
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+      DATABASE_URL: mysql+pymysql://${MYSQL_USER:-resume_user}:${MYSQL_PASSWORD:-resume_pass}@mysql:3306/${MYSQL_DB:-resumes}?charset=utf8mb4
+    volumes:
+      - ./job-recommendation-scrapper/core:/app:rw,cached
+      - ./backend-common:/backend_common:rw,cached
+    working_dir: /app
+    command: celery -A tasks worker --loglevel=info
+    depends_on:
+      - redis
+      - mysql
+    restart: unless-stopped
+
+
+
 volumes:
   mysqldata:
   frontend_node_modules:
   resume_admin_frontend_node_modules:
   latex_renderer_node_modules:
+  redis_data:
+  scraper_web_node_modules:
+  scraper_frontend_node_modules:

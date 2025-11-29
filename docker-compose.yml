@@ -184,7 +184,7 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.scraper-core
-    image: job-scraper-core:latest
+    image: job-scraper-worker:latest
     container_name: job-scraper-worker
     env_file: .env
     environment:

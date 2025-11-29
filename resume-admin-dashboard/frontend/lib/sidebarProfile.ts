@@ -16,7 +16,7 @@ export type SidebarProfile = {
   email: string;
 };
 
-const ADMIN_TAGLINE = 'Admin';
+const ADMIN_TAGLINE = 'Administrator';
 
 const computeInitials = (name: string): string => {
   return (

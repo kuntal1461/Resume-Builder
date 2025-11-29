@@ -46,12 +46,29 @@ export function useSidebarProfile(defaultProfile: SidebarProfile): SidebarProfil
         }
 
         if (isMounted) {
-          setProfile(
-            resolveSidebarProfile({
-              ...defaultProfile,
-              email: data.email || defaultProfile.email,
-            }),
-          );
+          // Build the name from API data
+          const firstName = data.firstName?.trim() || '';
+          const lastName = data.lastName?.trim() || '';
+          const fullName = `${firstName} ${lastName}`.trim();
+          const displayName = fullName || data.username || data.email || defaultProfile.name;
+
+          // Compute initials from the display name
+          const initials = displayName
+            .split(/\s+/)
+            .filter(Boolean)
+            .slice(0, 2)
+            .map((part) => part[0]?.toUpperCase() ?? '')
+            .join('') || defaultProfile.initials;
+
+          // Set tagline based on admin status
+          const tagline = data.isAdmin ? 'Administrator' : defaultProfile.tagline;
+
+          setProfile({
+            name: displayName,
+            email: data.email || defaultProfile.email,
+            initials,
+            tagline,
+          });
         }
       } catch (error) {
         console.error('Failed to load admin sidebar profile', error);

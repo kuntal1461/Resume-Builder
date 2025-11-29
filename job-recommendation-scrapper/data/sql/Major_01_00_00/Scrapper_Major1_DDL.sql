@@ -1,9 +1,19 @@
+SET @OLD_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS;
+SET FOREIGN_KEY_CHECKS = 0;
+
+DROP TABLE IF EXISTS job_raw_scrape;
 DROP TABLE IF EXISTS job_source;
+
 CREATE TABLE IF NOT EXISTS job_source (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  source_name BIGINT UNSIGNED NOT NULL,
+  source_name VARCHAR(255) NOT NULL,
   source_url TEXT NULL,
   enabled_for_scrapping BOOLEAN NOT NULL DEFAULT TRUE,
+  scrape_type BIGINT NULL,
+  api_endpoint VARCHAR(500) NULL,
+  api_key VARCHAR(500) NULL,
+  rate_limit_per_min VARCHAR(50) NULL,
+  scraping_schedule BIGINT NULL,
   -- BaseEntity fields
   rowstate        INT NOT NULL DEFAULT 1,
   field1          VARCHAR(200) NULL,
@@ -19,7 +29,6 @@ CREATE TABLE IF NOT EXISTS job_source (
   DEFAULT CHARSET=utf8mb4
   COLLATE=utf8mb4_unicode_ci;
 
-DROP TABLE IF EXISTS job_raw_scrape;
 CREATE TABLE IF NOT EXISTS job_raw_scrape (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   source_id     BIGINT UNSIGNED NOT NULL,
@@ -43,3 +52,5 @@ CREATE TABLE IF NOT EXISTS job_raw_scrape (
   AUTO_INCREMENT=1000
   DEFAULT CHARSET=utf8mb4
   COLLATE=utf8mb4_unicode_ci;
+
+SET FOREIGN_KEY_CHECKS = @OLD_FOREIGN_KEY_CHECKS;

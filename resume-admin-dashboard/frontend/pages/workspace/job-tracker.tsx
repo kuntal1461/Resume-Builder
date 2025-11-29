@@ -1,15 +1,20 @@
 import Head from 'next/head';
 import Link from 'next/link';
+import type { GetServerSideProps } from 'next';
 import { ChangeEvent, FormEvent, useMemo, useRef, useState } from 'react';
 import { type SidebarProfile } from '../../lib/sidebarProfile';
 import { useSidebarProfile } from '../../lib/useSidebarProfile';
+import type { EnumOptionRecord, JobSourceMetadataResponse } from '../../lib/types/jobSources';
 import layoutStyles from '../../styles/admin/AdminView.module.css';
 import styles from '../../styles/admin/AdminJobTracker.module.css';
 
-type CadenceOption = 'Hourly' | 'Daily' | 'Weekly';
+type CadenceOption = string;
 type QueueStatus = 'running' | 'scheduled' | 'pending';
 type BannerState = { type: 'success' | 'error'; message: string } | null;
-type SourceType = 'LinkedIn' | 'Career page';
+type SourceType = string;
+type ScrapeTypeOption = string;
+
+type AdminJobTrackerPageProps = JobSourceMetadataResponse;
 
 type QueueEntry = {
   id: string;
@@ -17,6 +22,10 @@ type QueueEntry = {
   sourceType: SourceType;
   url: string;
   cadence: CadenceOption;
+  scrapeType: ScrapeTypeOption;
+  apiEndpoint: string;
+  apiKey: string;
+  enabledForScrapping: boolean;
   status: QueueStatus;
   nextRun: string;
   owner: string;
@@ -36,8 +45,19 @@ type Job = {
 };
 
 const HERO_PILLS = ['Scrape approvals', 'Queue orchestration', 'Workspace integrations'];
-const CADENCE_OPTIONS: CadenceOption[] = ['Hourly', 'Daily', 'Weekly'];
-const SOURCE_OPTIONS: SourceType[] = ['LinkedIn', 'Career page'];
+const FALLBACK_SOURCE_OPTIONS: EnumOptionRecord[] = [
+  { code: 1000, label: 'LinkedIn' },
+  { code: 1001, label: 'Career page' },
+];
+const FALLBACK_SCRAPE_TYPE_OPTIONS: EnumOptionRecord[] = [
+  { code: 2000, label: 'HTML' },
+  { code: 2001, label: 'API' },
+];
+const FALLBACK_CADENCE_OPTIONS: EnumOptionRecord[] = [
+  { code: 3000, label: 'Daily' },
+  { code: 3001, label: 'Weekly' },
+  { code: 3002, label: 'Monthly' },
+];
 
 type LinkRow = {
   id: string;
@@ -45,14 +65,28 @@ type LinkRow = {
   sourceType: SourceType;
   url: string;
   cadence: CadenceOption;
+  scrapeType: ScrapeTypeOption;
+  apiEndpoint: string;
+  apiKey: string;
+  enabledForScrapping: boolean;
 };
 
-const createLinkRow = (id: string): LinkRow => ({
+type DefaultSelections = {
+  sourceType: SourceType;
+  cadence: CadenceOption;
+  scrapeType: ScrapeTypeOption;
+};
+
+const createLinkRow = (id: string, defaults: DefaultSelections): LinkRow => ({
   id,
   company: '',
-  sourceType: 'LinkedIn',
+  sourceType: defaults.sourceType ?? '',
   url: '',
-  cadence: 'Daily',
+  cadence: defaults.cadence ?? '',
+  scrapeType: defaults.scrapeType ?? '',
+  apiEndpoint: '',
+  apiKey: '',
+  enabledForScrapping: true,
 });
 
 const DEFAULT_SIDEBAR_PROFILE: SidebarProfile = {
@@ -79,10 +113,15 @@ const DATE_WITH_TIME = new Intl.DateTimeFormat('en-US', {
 
 const buildNextRunLabel = (cadence: CadenceOption, baseDate = new Date()) => {
   const nextRun = new Date(baseDate);
-  if (cadence === 'Hourly') {
+  const normalized = cadence?.toLowerCase?.() ?? '';
+  if (normalized === 'hourly') {
     nextRun.setHours(nextRun.getHours() + 1);
-  } else if (cadence === 'Daily') {
+  } else if (normalized === 'daily') {
     nextRun.setDate(nextRun.getDate() + 1);
+  } else if (normalized === 'weekly') {
+    nextRun.setDate(nextRun.getDate() + 7);
+  } else if (normalized === 'monthly') {
+    nextRun.setMonth(nextRun.getMonth() + 1);
   } else {
     nextRun.setDate(nextRun.getDate() + 7);
   }
@@ -97,6 +136,10 @@ const INITIAL_QUEUE: QueueEntry[] = [
     url: 'https://boards.greenhouse.io/example-ai',
     cadence: 'Hourly',
     status: 'running',
+    scrapeType: 'HTML',
+    apiEndpoint: '',
+    apiKey: '',
+    enabledForScrapping: true,
     owner: 'Automation bot',
     submittedAt: 'Synced 4m ago',
     nextRun: buildNextRunLabel('Hourly'),
@@ -109,6 +152,10 @@ const INITIAL_QUEUE: QueueEntry[] = [
     url: 'https://jobs.lever.co/example-ml',
     cadence: 'Daily',
     status: 'scheduled',
+    scrapeType: 'API',
+    apiEndpoint: 'https://api.example.com/jobs',
+    apiKey: 'sk_live_example',
+    enabledForScrapping: true,
     owner: 'N. Walton',
     submittedAt: 'Added today · 09:15',
     nextRun: buildNextRunLabel('Daily'),
@@ -121,6 +168,10 @@ const INITIAL_QUEUE: QueueEntry[] = [
     url: 'https://careers.gov/apprenticeships',
     cadence: 'Weekly',
     status: 'pending',
+    scrapeType: 'HTML',
+    apiEndpoint: '',
+    apiKey: '',
+    enabledForScrapping: true,
     owner: 'Manual review',
     submittedAt: 'Awaiting compliance review',
     nextRun: buildNextRunLabel('Weekly'),
@@ -133,6 +184,10 @@ const INITIAL_QUEUE: QueueEntry[] = [
     url: 'https://nimbus.ai/careers/research',
     cadence: 'Weekly',
     status: 'scheduled',
+    scrapeType: 'HTML',
+    apiEndpoint: '',
+    apiKey: '',
+    enabledForScrapping: false,
     owner: 'Automation bot',
     submittedAt: 'Added yesterday · 17:45',
     nextRun: buildNextRunLabel('Weekly'),
@@ -258,10 +313,25 @@ const isValidUrl = (value: string) => {
   }
 };
 
-export default function AdminJobTrackerPage() {
+export default function AdminJobTrackerPage({
+  sources,
+  scrapeCadences,
+  scrapeTypes,
+}: AdminJobTrackerPageProps) {
+  const sourceOptions = sources.length ? sources : FALLBACK_SOURCE_OPTIONS;
+  const cadenceOptions = scrapeCadences.length ? scrapeCadences : FALLBACK_CADENCE_OPTIONS;
+  const scrapeTypeOptions = scrapeTypes.length ? scrapeTypes : FALLBACK_SCRAPE_TYPE_OPTIONS;
   const sidebarProfile = useSidebarProfile(DEFAULT_SIDEBAR_PROFILE);
+  const defaultSelections = useMemo<DefaultSelections>(
+    () => ({
+      sourceType: sourceOptions[0]?.label ?? '',
+      cadence: cadenceOptions[0]?.label ?? '',
+      scrapeType: scrapeTypeOptions[0]?.label ?? '',
+    }),
+    [sourceOptions, cadenceOptions, scrapeTypeOptions],
+  );
   const [queue, setQueue] = useState<QueueEntry[]>(INITIAL_QUEUE);
-  const [linkRows, setLinkRows] = useState<LinkRow[]>([createLinkRow('row-0')]);
+  const [linkRows, setLinkRows] = useState<LinkRow[]>(() => [createLinkRow('row-0', defaultSelections)]);
   const [banner, setBanner] = useState<BannerState>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [expandedCompanies, setExpandedCompanies] = useState<Record<string, boolean>>({});
@@ -293,28 +363,16 @@ export default function AdminJobTrackerPage() {
     return Object.values(groups).sort((a, b) => a.company.localeCompare(b.company));
   }, [queue]);
 
-  const handleRowChange = (index: number, field: 'company' | 'url' | 'cadence' | 'sourceType', value: string) => {
+  const updateLinkRow = <K extends keyof LinkRow>(index: number, field: K, value: LinkRow[K]) => {
     setLinkRows((previous) =>
-      previous.map((row, rowIndex) =>
-        rowIndex === index
-          ? {
-            ...row,
-            [field]:
-              field === 'cadence'
-                ? (value as CadenceOption)
-                : field === 'sourceType'
-                  ? (value as SourceType)
-                  : value,
-          }
-          : row,
-      ),
+      previous.map((row, rowIndex) => (rowIndex === index ? { ...row, [field]: value } : row)),
     );
   };
 
   const addLinkRow = () => {
     const nextId = `row-${rowIdRef.current}`;
     rowIdRef.current += 1;
-    setLinkRows((previous) => [...previous, createLinkRow(nextId)]);
+    setLinkRows((previous) => [...previous, createLinkRow(nextId, defaultSelections)]);
   };
 
   const removeLinkRow = (index: number) => {
@@ -340,6 +398,20 @@ export default function AdminJobTrackerPage() {
         setBanner({ type: 'error', message: `Enter a valid job board URL on row ${index + 1}.` });
         return;
       }
+      if (row.scrapeType === 'API') {
+        if (!row.apiEndpoint.trim()) {
+          setBanner({ type: 'error', message: `Provide an API endpoint on row ${index + 1}.` });
+          return;
+        }
+        if (!isValidUrl(row.apiEndpoint.trim())) {
+          setBanner({ type: 'error', message: `Enter a valid API endpoint URL on row ${index + 1}.` });
+          return;
+        }
+        if (!row.apiKey.trim()) {
+          setBanner({ type: 'error', message: `Provide an API key on row ${index + 1}.` });
+          return;
+        }
+      }
     }
 
     setIsSubmitting(true);
@@ -353,6 +425,10 @@ export default function AdminJobTrackerPage() {
       sourceType: row.sourceType,
       url: row.url.trim(),
       cadence: row.cadence,
+      scrapeType: row.scrapeType,
+      apiEndpoint: row.scrapeType === 'API' ? row.apiEndpoint.trim() : '',
+      apiKey: row.scrapeType === 'API' ? row.apiKey.trim() : '',
+      enabledForScrapping: row.enabledForScrapping,
       status: 'pending' as QueueStatus,
       owner: 'Manual review',
       submittedAt: 'Just added',
@@ -371,7 +447,7 @@ export default function AdminJobTrackerPage() {
     setLinkRows(() => {
       const nextId = `row-${rowIdRef.current}`;
       rowIdRef.current += 1;
-      return [createLinkRow(nextId)];
+      return [createLinkRow(nextId, defaultSelections)];
     });
     setBanner({
       type: 'success',
@@ -511,69 +587,126 @@ export default function AdminJobTrackerPage() {
                 <div className={styles.multiInput}>
                   {linkRows.map((row, index) => (
                     <div key={row.id} className={styles.linkRow}>
-                      <label className={styles.linkField}>
-                        <span>Company name</span>
-                        <input
-                          type="text"
-                          placeholder="Example: Nimbus Labs"
-                          value={row.company}
-                          onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                            handleRowChange(index, 'company', event.target.value)
-                          }
-                          required
-                        />
-                      </label>
-                      <label className={styles.linkFieldSmall}>
-                        <span>Source</span>
-                        <select
-                          value={row.sourceType}
-                          onChange={(event: ChangeEvent<HTMLSelectElement>) =>
-                            handleRowChange(index, 'sourceType', event.target.value)
-                          }
-                        >
-                          {SOURCE_OPTIONS.map((option) => (
-                            <option key={option} value={option}>
-                              {option}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                      <label className={styles.linkField}>
-                        <span>Job board URL</span>
-                        <input
-                          type="url"
-                          placeholder="https://jobs.example.com/open-roles"
-                          value={row.url}
-                          onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                            handleRowChange(index, 'url', event.target.value)
-                          }
-                          required
-                        />
-                      </label>
-                      <label className={styles.linkFieldSmall}>
-                        <span>Scrape cadence</span>
-                        <select
-                          value={row.cadence}
-                          onChange={(event: ChangeEvent<HTMLSelectElement>) =>
-                            handleRowChange(index, 'cadence', event.target.value)
-                          }
-                        >
-                          {CADENCE_OPTIONS.map((option) => (
-                            <option key={option} value={option}>
-                              {option}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                      {linkRows.length > 1 ? (
-                        <button
-                          type="button"
-                          className={styles.removeRowButton}
-                          onClick={() => removeLinkRow(index)}
-                          aria-label={`Remove row ${index + 1}`}
-                        >
-                          ×
-                        </button>
+                      <div className={styles.rowPrimary}>
+                        <label className={styles.linkField}>
+                          <span>Company name</span>
+                          <input
+                            type="text"
+                            placeholder="Example: Nimbus Labs"
+                            value={row.company}
+                            onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                              updateLinkRow(index, 'company', event.target.value)
+                            }
+                            required
+                          />
+                        </label>
+                        <label className={styles.linkField}>
+                          <span>Job source URL</span>
+                          <input
+                            type="url"
+                            placeholder="https://jobs.example.com/open-roles"
+                            value={row.url}
+                            onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                              updateLinkRow(index, 'url', event.target.value)
+                            }
+                            required
+                          />
+                        </label>
+                      </div>
+                      <div className={styles.rowMeta}>
+                        <label className={styles.linkFieldSmall}>
+                          <span>Source</span>
+                          <select
+                            value={row.sourceType}
+                            onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+                              updateLinkRow(index, 'sourceType', event.target.value)
+                            }
+                          >
+                            {sourceOptions.map((option) => (
+                              <option key={option.code} value={option.label}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                        <label className={styles.linkFieldSmall}>
+                          <span>Scrape cadence</span>
+                          <select
+                            value={row.cadence}
+                            onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+                              updateLinkRow(index, 'cadence', event.target.value)
+                            }
+                          >
+                            {cadenceOptions.map((option) => (
+                              <option key={option.code} value={option.label}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                        <label className={styles.linkFieldSmall}>
+                          <span>Scrape type</span>
+                          <select
+                            value={row.scrapeType}
+                            onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+                              updateLinkRow(index, 'scrapeType', event.target.value)
+                            }
+                          >
+                            {scrapeTypeOptions.map((option) => (
+                              <option key={option.code} value={option.label}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                        <label className={styles.checkboxField}>
+                          <input
+                            type="checkbox"
+                            checked={row.enabledForScrapping}
+                            onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                              updateLinkRow(index, 'enabledForScrapping', event.target.checked)
+                            }
+                          />
+                          <span>Enabled for scraping</span>
+                        </label>
+                        {linkRows.length > 1 ? (
+                          <button
+                            type="button"
+                            className={styles.removeRowButton}
+                            onClick={() => removeLinkRow(index)}
+                            aria-label={`Remove row ${index + 1}`}
+                          >
+                            Remove
+                          </button>
+                        ) : null}
+                      </div>
+                      {row.scrapeType === 'API' ? (
+                        <div className={styles.apiCredentials}>
+                          <label className={styles.linkField}>
+                            <span>API endpoint</span>
+                            <input
+                              type="url"
+                              placeholder="https://api.example.com/jobs"
+                              value={row.apiEndpoint}
+                              onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                                updateLinkRow(index, 'apiEndpoint', event.target.value)
+                              }
+                              required
+                            />
+                          </label>
+                          <label className={styles.linkField}>
+                            <span>API key</span>
+                            <input
+                              type="text"
+                              placeholder="Provide a token with read scope"
+                              value={row.apiKey}
+                              onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                                updateLinkRow(index, 'apiKey', event.target.value)
+                              }
+                              required
+                            />
+                          </label>
+                        </div>
                       ) : null}
                     </div>
                   ))}
@@ -742,3 +875,20 @@ export default function AdminJobTrackerPage() {
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps<AdminJobTrackerPageProps> = async () => {
+  try {
+    const { fetchJobSourceMetadata } = await import('../../lib/server/jobSources');
+    const metadata = await fetchJobSourceMetadata();
+    return { props: metadata };
+  } catch (error) {
+    console.error('Failed to fetch job source metadata', error);
+    return {
+      props: {
+        sources: FALLBACK_SOURCE_OPTIONS,
+        scrapeCadences: FALLBACK_CADENCE_OPTIONS,
+        scrapeTypes: FALLBACK_SCRAPE_TYPE_OPTIONS,
+      },
+    };
+  }
+};

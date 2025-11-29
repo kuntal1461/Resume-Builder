@@ -7,9 +7,13 @@ from .ResumeTemplateController import (
 from .AdminProfileController import (
     router as admin_profile_router,
 )
+from .JobSourceMetaController import (
+    router as job_source_meta_router,
+)
 
 __all__ = [
     "template_categories_router",
     "template_mutation_router",
     "admin_profile_router",
+    "job_source_meta_router",
 ]

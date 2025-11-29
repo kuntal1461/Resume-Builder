@@ -164,7 +164,7 @@ CREATE TABLE IF NOT EXISTS user_resume_version (
 
 DROP TABLE IF EXISTS company_master;
 CREATE TABLE IF NOT EXISTS company_master (
-  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   company_name VARCHAR(255) NOT NULL,
   domain VARCHAR(255) NULL,
   logo_url TEXT NULL,
@@ -192,7 +192,7 @@ CREATE TABLE IF NOT EXISTS job_master (
   job_url              TEXT NOT NULL,
   source_id            BIGINT UNSIGNED NOT NULL,
   title                VARCHAR(255) NOT NULL,
-  company_id           BIGINT UNSIGNED NULL,
+  company_id           BIGINT NULL,
   location             VARCHAR(255) NULL,
   employment_type      BIGINT UNSIGNED NULL,
   experience_required  VARCHAR(255) NULL,

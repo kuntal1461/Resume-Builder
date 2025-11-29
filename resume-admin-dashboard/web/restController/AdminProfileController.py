@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+import os
+
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
 
@@ -18,6 +20,19 @@ class AdminProfileResponse(BaseModel):
     isAdmin: bool = True
 
 
+def _fallback_profile() -> AdminProfileResponse:
+    fallback_email = os.getenv("ADMIN_PROFILE_EMAIL", "admin@example.com")
+    fallback_username = os.getenv("ADMIN_PROFILE_USERNAME", "admin")
+    return AdminProfileResponse(
+        id=0,
+        email=fallback_email,
+        username=fallback_username,
+        firstName=os.getenv("ADMIN_PROFILE_FIRST_NAME", "Admin"),
+        lastName=os.getenv("ADMIN_PROFILE_LAST_NAME", "User"),
+        isAdmin=True,
+    )
+
+
 @router.get("/current", response_model=AdminProfileResponse)
 def get_current_admin_profile(
     db: Session = Depends(get_db),
@@ -25,7 +40,17 @@ def get_current_admin_profile(
     repository = AdminUserRepository(db)
     admin = repository.find_first_admin()
     if admin is None:
-        raise HTTPException(status_code=404, detail="Admin profile not found.")
+        admin_email = os.getenv("ADMIN_PROFILE_EMAIL", "admin@example.com")
+        admin_username = os.getenv("ADMIN_PROFILE_USERNAME", "admin")
+        admin_first_name = os.getenv("ADMIN_PROFILE_FIRST_NAME", "Admin")
+        admin_last_name = os.getenv("ADMIN_PROFILE_LAST_NAME", "User")
+        admin = repository.create_admin(
+            email=admin_email,
+            username=admin_username,
+            first_name=admin_first_name,
+            last_name=admin_last_name,
+            is_admin=True,
+        )
 
     return AdminProfileResponse(
         id=int(admin.id),

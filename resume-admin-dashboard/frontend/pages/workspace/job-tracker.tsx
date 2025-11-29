@@ -4,7 +4,12 @@ import type { GetServerSideProps } from 'next';
 import { ChangeEvent, FormEvent, useMemo, useRef, useState } from 'react';
 import { type SidebarProfile } from '../../lib/sidebarProfile';
 import { useSidebarProfile } from '../../lib/useSidebarProfile';
-import type { EnumOptionRecord, JobSourceMetadataResponse } from '../../lib/types/jobSources';
+import type {
+  EnumOptionRecord,
+  JobSourceMetadataResponse,
+  JobSourceQueueRequest,
+  JobSourceQueueResponse,
+} from '../../lib/types/jobSources';
 import layoutStyles from '../../styles/admin/AdminView.module.css';
 import styles from '../../styles/admin/AdminJobTracker.module.css';
 
@@ -126,6 +131,14 @@ const buildNextRunLabel = (cadence: CadenceOption, baseDate = new Date()) => {
     nextRun.setDate(nextRun.getDate() + 7);
   }
   return DATE_WITH_TIME.format(nextRun);
+};
+
+const resolveOptionCode = (options: EnumOptionRecord[], label: string | undefined) => {
+  if (!label) {
+    return undefined;
+  }
+  const match = options.find((option) => option.label === label);
+  return match?.code;
 };
 
 const INITIAL_QUEUE: QueueEntry[] = [
@@ -416,25 +429,102 @@ export default function AdminJobTrackerPage({
 
     setIsSubmitting(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 600));
+    const jobSourcePayload: JobSourceQueueRequest = {
+      entries: linkRows.map((row) => ({
+        company: row.company.trim(),
+        sourceType: row.sourceType,
+        sourceNameId: resolveOptionCode(sourceOptions, row.sourceType) ?? null,
+        scrapeType: row.scrapeType,
+        scrapeTypeId: resolveOptionCode(scrapeTypeOptions, row.scrapeType) ?? null,
+        cadence: row.cadence,
+        cadenceId: resolveOptionCode(cadenceOptions, row.cadence) ?? null,
+        url: row.url.trim(),
+        enabledForScrapping: row.enabledForScrapping,
+        apiEndpoint: row.scrapeType === 'API' ? row.apiEndpoint.trim() : null,
+        apiKey: row.scrapeType === 'API' ? row.apiKey.trim() : null,
+      })),
+    };
+
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+    let queueResponse: JobSourceQueueResponse | null = null;
+    try {
+      const response = await fetch(`${basePath}/api/job-sources/queue`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify(jobSourcePayload),
+      });
+      const payloadText = await response.text();
+      let result: JobSourceQueueResponse | { error?: string } | null = null;
+      if (payloadText) {
+        try {
+          result = JSON.parse(payloadText);
+        } catch {
+          result = { error: payloadText };
+        }
+      }
+      if (!response.ok || !result || !('success' in result) || !result.success) {
+        const message =
+          (result && 'error' in result && result.error) ||
+          payloadText ||
+          'Failed to queue job sources.';
+        throw new Error(message);
+      }
+      queueResponse = result as JobSourceQueueResponse;
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Unable to queue job sources. Try again.';
+      setBanner({ type: 'error', message });
+      setIsSubmitting(false);
+      return;
+    }
+
+    const responseEntries =
+      queueResponse?.scrapperSources?.map((record) => {
+        const cadenceLabel = record.scrapingSchedule || 'Weekly';
+        const scrapeTypeLabel = record.scrapeType || 'HTML';
+        return {
+          id: `scraper-${record.id}`,
+          company: record.companyName || 'New job source',
+          sourceType: record.sourceName,
+          url: record.sourceUrl || '',
+          cadence: cadenceLabel,
+          scrapeType: scrapeTypeLabel,
+          apiEndpoint: record.apiEndpoint || '',
+          apiKey: record.apiKey || '',
+          enabledForScrapping: record.enabledForScrapping,
+          status: 'pending' as QueueStatus,
+          owner: 'Automation bot',
+          submittedAt: 'Just queued',
+          nextRun: buildNextRunLabel(cadenceLabel),
+          jobCount: 0,
+        };
+      }) ?? [];
 
     const submissionTimestamp = Date.now();
-    const newEntries = linkRows.map((row, index) => ({
-      id: `queue-${submissionTimestamp}-${index}`,
-      company: row.company.trim(),
-      sourceType: row.sourceType,
-      url: row.url.trim(),
-      cadence: row.cadence,
-      scrapeType: row.scrapeType,
-      apiEndpoint: row.scrapeType === 'API' ? row.apiEndpoint.trim() : '',
-      apiKey: row.scrapeType === 'API' ? row.apiKey.trim() : '',
-      enabledForScrapping: row.enabledForScrapping,
-      status: 'pending' as QueueStatus,
-      owner: 'Manual review',
-      submittedAt: 'Just added',
-      nextRun: buildNextRunLabel(row.cadence),
-      jobCount: 0,
-    }));
+    const fallbackEntries =
+      responseEntries.length > 0
+        ? []
+        : linkRows.map((row, index) => ({
+            id: `queue-${submissionTimestamp}-${index}`,
+            company: row.company.trim(),
+            sourceType: row.sourceType,
+            url: row.url.trim(),
+            cadence: row.cadence,
+            scrapeType: row.scrapeType,
+            apiEndpoint: row.scrapeType === 'API' ? row.apiEndpoint.trim() : '',
+            apiKey: row.scrapeType === 'API' ? row.apiKey.trim() : '',
+            enabledForScrapping: row.enabledForScrapping,
+            status: 'pending' as QueueStatus,
+            owner: 'Manual review',
+            submittedAt: 'Just added',
+            nextRun: buildNextRunLabel(row.cadence),
+            jobCount: 0,
+          }));
+
+    const newEntries = responseEntries.length ? responseEntries : fallbackEntries;
 
     setQueue((previous) => [...newEntries, ...previous]);
     setExpandedCompanies((previous) => {
@@ -451,7 +541,9 @@ export default function AdminJobTrackerPage({
     });
     setBanner({
       type: 'success',
-      message: `${newEntries.length} source${newEntries.length === 1 ? '' : 's'} queued. The ingestion worker will verify authentication before scraping.`,
+      message: `${
+        queueResponse?.queuedCount ?? newEntries.length
+      } source${(queueResponse?.queuedCount ?? newEntries.length) === 1 ? '' : 's'} queued. The ingestion worker will verify authentication before scraping.`,
     });
     setIsSubmitting(false);
   };

@@ -26,6 +26,28 @@ class AdminUserRepository:
         result = self._session.execute(stmt)
         return result.scalars().first()
 
+    def create_admin(
+        self,
+        *,
+        email: str,
+        username: str,
+        first_name: str | None = None,
+        last_name: str | None = None,
+        is_admin: bool = True,
+    ) -> AdminUserEntity:
+        entity = AdminUserEntity(
+            email=email,
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
+            is_admin=is_admin,
+            is_active=True,
+        )
+        self._session.add(entity)
+        self._session.commit()
+        self._session.refresh(entity)
+        return entity
+
     def fetch_by_ids(
         self, user_ids: Iterable[int]
     ) -> Dict[int, AdminUserEntity]:

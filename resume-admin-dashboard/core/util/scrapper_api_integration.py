@@ -55,46 +55,39 @@ class ScrapperApiError(RuntimeError):
 @dataclass(frozen=True)
 class JobSourceRecord:
     id: int
+    company_name: Optional[str]
     source_name_id: int
     source_name: str
     source_url: Optional[str]
     enabled_for_scrapping: bool
+    scrape_type_id: Optional[int]
+    scrape_type_label: Optional[str]
+    scraping_schedule_id: Optional[int]
+    scraping_schedule_label: Optional[str]
+    api_endpoint: Optional[str]
+    api_key: Optional[str]
 
     @classmethod
     def from_payload(cls, payload: Dict[str, Any]) -> "JobSourceRecord":
         return cls(
             id=int(payload["id"]),
+            company_name=payload.get("companyName"),
             source_name_id=int(payload["sourceNameId"]),
             source_name=str(payload.get("sourceName", "")),
             source_url=payload.get("sourceUrl"),
             enabled_for_scrapping=bool(payload.get("enabledForScrapping", False)),
-        )
-
-
-@dataclass(frozen=True)
-class JobRawScrapeRecord:
-    id: int
-    source_id: int
-    job_url: str
-    status_code: Optional[int]
-    status_label: Optional[str]
-    raw_content: Optional[str]
-    error_message: Optional[str]
-    logged_in_time: Optional[str]
-    last_update_time: Optional[str]
-
-    @classmethod
-    def from_payload(cls, payload: Dict[str, Any]) -> "JobRawScrapeRecord":
-        return cls(
-            id=int(payload["id"]),
-            source_id=int(payload["sourceId"]),
-            job_url=str(payload.get("jobUrl", "")),
-            status_code=payload.get("statusCode"),
-            status_label=payload.get("statusLabel"),
-            raw_content=payload.get("rawContent"),
-            error_message=payload.get("errorMessage"),
-            logged_in_time=payload.get("loggedInTime"),
-            last_update_time=payload.get("lastUpdateTime"),
+            scrape_type_id=(
+                int(payload["scrapeTypeId"]) if payload.get("scrapeTypeId") is not None else None
+            ),
+            scrape_type_label=payload.get("scrapeType"),
+            scraping_schedule_id=(
+                int(payload["scrapingScheduleId"])
+                if payload.get("scrapingScheduleId") is not None
+                else None
+            ),
+            scraping_schedule_label=payload.get("scrapingSchedule"),
+            api_endpoint=payload.get("apiEndpoint"),
+            api_key=payload.get("apiKey"),
         )
 
 
@@ -142,80 +135,40 @@ class ScrapperApiClient:
             return {}
         return response.json()
 
-    def list_job_sources(self, *, include_disabled: bool = False) -> list[JobSourceRecord]:
-        payloads = self._request(
-            "GET",
-            "/job-sources",
-            params={"includeDisabled": "true" if include_disabled else "false"},
-        )
-        if not isinstance(payloads, list):
-            raise ScrapperApiError(
-                "Unexpected payload while listing job sources.",
-                500,
-                str(payloads),
-            )
-        return [JobSourceRecord.from_payload(item) for item in payloads]
-
     def create_job_source(
         self,
         *,
         source_name: int,
         source_url: Optional[str] = None,
         enabled_for_scrapping: bool = True,
+        scrape_type_id: Optional[int] = None,
+        scraping_schedule_id: Optional[int] = None,
+        api_endpoint: Optional[str] = None,
+        api_key: Optional[str] = None,
+        company_name: Optional[str] = None,
     ) -> JobSourceRecord:
-        payload = self._request(
-            "POST",
-            "/job-sources",
-            json={
-                "sourceName": source_name,
-                "sourceUrl": source_url,
-                "enabledForScrapping": enabled_for_scrapping,
-            },
-        )
+        json_body: Dict[str, Any] = {
+            "sourceName": source_name,
+            "sourceUrl": source_url,
+            "enabledForScrapping": enabled_for_scrapping,
+        }
+        if scrape_type_id is not None:
+            json_body["scrapeTypeId"] = scrape_type_id
+        if scraping_schedule_id is not None:
+            json_body["scrapingScheduleId"] = scraping_schedule_id
+        if api_endpoint is not None:
+            json_body["apiEndpoint"] = api_endpoint
+        if api_key is not None:
+            json_body["apiKey"] = api_key
+        if company_name:
+            json_body["companyName"] = company_name
+
+        payload = self._request("POST", "/job-sources", json=json_body)
         return JobSourceRecord.from_payload(payload)
-
-    def create_job_raw_scrape(
-        self,
-        *,
-        source_id: int,
-        job_url: str,
-        raw_content: Optional[str] = None,
-        status_code: Optional[int] = None,
-        error_message: Optional[str] = None,
-    ) -> JobRawScrapeRecord:
-        payload = self._request(
-            "POST",
-            "/raw-scrapes",
-            json={
-                "sourceId": source_id,
-                "jobUrl": job_url,
-                "rawContent": raw_content,
-                "status": status_code,
-                "errorMessage": error_message,
-            },
-        )
-        return JobRawScrapeRecord.from_payload(payload)
-
-    def fetch_latest_raw_scrape(
-        self,
-        *,
-        job_url: str,
-        only_successful: bool = True,
-    ) -> JobRawScrapeRecord:
-        payload = self._request(
-            "GET",
-            "/raw-scrapes/latest",
-            params={
-                "jobUrl": job_url,
-                "onlySuccessful": "true" if only_successful else "false",
-            },
-        )
-        return JobRawScrapeRecord.from_payload(payload)
 
 
 __all__ = [
     "ScrapperApiClient",
     "ScrapperApiError",
     "JobSourceRecord",
-    "JobRawScrapeRecord",
 ]

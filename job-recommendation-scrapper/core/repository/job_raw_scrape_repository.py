@@ -20,11 +20,17 @@ class JobRawScrapeRepository:
         self.db.refresh(scrape)
         return scrape
 
-    def fetch_latest_successful_by_url(self, job_url: str) -> Optional[JobRawScrapeEntity]:
-        query = (
-            self.db.query(JobRawScrapeEntity)
-            .filter(JobRawScrapeEntity.job_url == job_url)
-            .filter(JobRawScrapeEntity.status == JobRawScrapeStatus.SUCCESS.value)
-            .order_by(JobRawScrapeEntity.loggedInTime.desc())
-        )
+    def fetch_latest_by_url(
+        self,
+        job_url: str,
+        *,
+        only_successful: bool = False,
+    ) -> Optional[JobRawScrapeEntity]:
+        query = self.db.query(JobRawScrapeEntity).filter(JobRawScrapeEntity.job_url == job_url)
+        if only_successful:
+            query = query.filter(JobRawScrapeEntity.status == JobRawScrapeStatus.SUCCESS.value)
+        query = query.order_by(JobRawScrapeEntity.loggedInTime.desc())
         return query.first()
+
+    def fetch_latest_successful_by_url(self, job_url: str) -> Optional[JobRawScrapeEntity]:
+        return self.fetch_latest_by_url(job_url, only_successful=True)

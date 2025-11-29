@@ -14,6 +14,12 @@ class JobSourceRepository:
     def __init__(self, session: Session):
         self._session = session
 
+    def create(self, source: JobSourceEntity) -> JobSourceEntity:
+        self._session.add(source)
+        self._session.commit()
+        self._session.refresh(source)
+        return source
+
     def list_sources(self, *, only_enabled: bool = True) -> List[JobSourceEntity]:
         query = self._session.query(JobSourceEntity)
         if only_enabled:

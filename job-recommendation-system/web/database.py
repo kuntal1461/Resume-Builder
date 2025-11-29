@@ -1,4 +1,4 @@
-from core.baseEntity.baseEntity import Base, CommonEntity
+from core.baseEntity.baseEntity import BaseEntity
 import core.entity.UserEntity  # noqa: F401  # ensure models are registered
 import core.entity.UserResumeEntity  # noqa: F401
 import core.entity.UserResumeVersionEntity  # noqa: F401
@@ -18,11 +18,11 @@ engine = create_engine_from_env(
 )
 
 SessionLocal = create_session_factory(engine)
-register_soft_delete_filter(SessionLocal, CommonEntity)
+register_soft_delete_filter(SessionLocal, BaseEntity)
 
 
 def init_db() -> None:
-    Base.metadata.create_all(bind=engine)
+    BaseEntity.metadata.create_all(bind=engine)
 
 
 get_db = get_db_dependency(SessionLocal)

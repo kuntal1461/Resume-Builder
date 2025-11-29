@@ -132,10 +132,12 @@ services:
       MYSQL_USER: root
       MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
       MYSQL_DB: ${MYSQL_DB:-resumes}
+      SCRAPER_SQL_ROOT: /seed/scraper-sql
     volumes:
       - ./docker/db-seed.sh:/seed/db-seed.sh:ro
       - ./job-recommendation-system/data/sql:/seed/sql:ro
       - ./resume-admin-dashboard/data/sql:/seed/admin-sql:ro
+      - ./job-recommendation-scrapper/data/sql:/seed/scraper-sql:ro
     entrypoint: ["/bin/bash", "/seed/db-seed.sh"]
     restart: "no"
 

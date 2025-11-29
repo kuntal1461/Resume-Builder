@@ -3,20 +3,16 @@ from datetime import datetime
 from sqlalchemy import Column, String, BigInteger, DateTime
 
 
-class CommonEntityMixin:
+class BaseEntityMixin:
   """
   Reusable mixin for soft-delete + audit fields.
   Projects should define their own declarative Base and create a
-  local CommonEntity that extends this mixin to keep imports stable:
+  local BaseEntity that extends this mixin to keep imports stable:
 
       from sqlalchemy.orm import declarative_base
-      from backend_common.orm.common import CommonEntityMixin
+      from backend_common.orm.common import BaseEntityMixin
 
-      Base = declarative_base()
-
-      class CommonEntity(CommonEntityMixin):
-          __abstract__ = True
-          pass
+      BaseEntity = declarative_base(cls=BaseEntityMixin)
   """
 
   __abstract__ = True

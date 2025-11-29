@@ -1,4 +1,3 @@
-from .common import CommonEntityMixin
+from .common import BaseEntityMixin
 
-__all__ = ["CommonEntityMixin"]
-
+__all__ = ["BaseEntityMixin"]

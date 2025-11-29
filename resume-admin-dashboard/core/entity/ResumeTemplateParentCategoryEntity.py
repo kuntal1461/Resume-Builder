@@ -1,10 +1,10 @@
 from sqlalchemy import BigInteger, Column, Integer, String
 
-from core.baseEntity.baseEntity import Base, CommonEntity
+from core.baseEntity.baseEntity import BaseEntity
 from core.constants import TableConstant
 
 
-class ResumeTemplateParentCategoryEntity(Base, CommonEntity):
+class ResumeTemplateParentCategoryEntity(BaseEntity):
     __tablename__ = TableConstant.RESUME_TEMPLATE_PARENT_CATEGORY
     __tablename__ = TableConstant.RESUME_TEMPLATE_PARENT_CATEGORY
 

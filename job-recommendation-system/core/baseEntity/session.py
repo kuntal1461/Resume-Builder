@@ -2,7 +2,7 @@
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import Session, sessionmaker, with_loader_criteria
 
-from core.baseEntity.baseEntity import Base
+from core.baseEntity.baseEntity import BaseEntity
 from core.filters.rowstatus import RowStateFilterMixin
 
 # configure your DB

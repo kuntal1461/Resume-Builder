@@ -8,6 +8,7 @@ MYSQL_PASSWORD="${MYSQL_PASSWORD:?MYSQL_PASSWORD not set}"
 MYSQL_DB="${MYSQL_DB:-resumes}"
 SQL_ROOT="${SQL_ROOT:-/seed/sql}"
 ADMIN_SQL_ROOT="${ADMIN_SQL_ROOT:-/seed/admin-sql}"
+SCRAPER_SQL_ROOT="${SCRAPER_SQL_ROOT:-/seed/scraper-sql}"
 
 printf '>> Waiting for MySQL at %s:%s...\n' "$MYSQL_HOST" "$MYSQL_PORT"
 until mysqladmin ping \
@@ -105,5 +106,6 @@ SQL
 
 apply_sql_directory "$SQL_ROOT" "job_major"
 apply_sql_directory "$ADMIN_SQL_ROOT" "admin_major"
+apply_sql_directory "$SCRAPER_SQL_ROOT" "scraper_major"
 
 printf '>> All migrations complete.\n'

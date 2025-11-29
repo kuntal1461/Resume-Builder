@@ -1,8 +1,8 @@
 from sqlalchemy import Column, BigInteger, String, Boolean, DateTime
-from core.baseEntity.baseEntity import Base, CommonEntity
+from core.baseEntity.baseEntity import BaseEntity
 
 
-class UserEntity(Base, CommonEntity):
+class UserEntity(BaseEntity):
     __tablename__ = "users"  # Table name in DB
 
     # Primary Key with auto increment (same as @Id + @GeneratedValue in JPA)

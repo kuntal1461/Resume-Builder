@@ -1,10 +1,10 @@
 from sqlalchemy import BigInteger, Column, ForeignKey, String, Text
 
-from core.baseEntity.baseEntity import Base, CommonEntity
+from core.baseEntity.baseEntity import BaseEntity
 from core.constants import TableConstant
 
 
-class ResumeTemplateEntity(Base, CommonEntity):
+class ResumeTemplateEntity(BaseEntity):
     __tablename__ = TableConstant.RESUME_TEMPLATE
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)

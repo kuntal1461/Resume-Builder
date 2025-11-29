@@ -18,7 +18,7 @@ This sub-application powers the internal experience used to curate resume templa
 - `resume_template`: immutable template identity (owner, category, status, flags). Every edit keeps the same ID.
 - `resume_template_version`: child table storing LaTeX source + changelog. Each save appends a new record (`resume_template` → `resume_template_version` is `1:N`).
 
-Audit fields such as `loggedBy`, `lastUpdatedBy`, `loggedInTime`, and `lastUpdateTime` are enforced through the shared `CommonEntityMixin`.
+Audit fields such as `loggedBy`, `lastUpdatedBy`, `loggedInTime`, and `lastUpdateTime` are enforced through the shared `BaseEntityMixin`.
 
 ## Service Workflow
 

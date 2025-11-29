@@ -1,8 +1,4 @@
 from sqlalchemy.orm import declarative_base
-from backend_common.orm.common import CommonEntityMixin
+from backend_common.orm.common import BaseEntityMixin
 
-Base = declarative_base()
-
-class CommonEntity(CommonEntityMixin):
-    __abstract__ = True
-    pass
+BaseEntity = declarative_base(cls=BaseEntityMixin)

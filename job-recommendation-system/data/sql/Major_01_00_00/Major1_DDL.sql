@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS users (
   is_active     TINYINT(1)   NOT NULL DEFAULT 1,
   is_admin      TINYINT(1)   NOT NULL DEFAULT 0,
   signInBy      VARCHAR(64)  NULL,
-  -- CommonEntity fields
+  -- BaseEntity fields
   rowstate        INT NOT NULL DEFAULT 1,       -- 1 = active, other values = inactive/archived
   field1          VARCHAR(200) NULL,
   field2          VARCHAR(200) NULL,

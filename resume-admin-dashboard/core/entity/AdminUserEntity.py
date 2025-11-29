@@ -1,10 +1,10 @@
 from sqlalchemy import BigInteger, Column, String, Boolean
 
-from core.baseEntity.baseEntity import Base, CommonEntity
+from core.baseEntity.baseEntity import BaseEntity
 from core.constants import TableConstant
 
 
-class AdminUserEntity(Base, CommonEntity):
+class AdminUserEntity(BaseEntity):
     """Lightweight mapping to the shared users table for owner lookups."""
 
     __tablename__ = TableConstant.USERS

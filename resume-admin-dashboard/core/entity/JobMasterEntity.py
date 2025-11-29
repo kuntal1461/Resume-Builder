@@ -1,10 +1,10 @@
 from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Numeric, String, Text
 
-from core.baseEntity.baseEntity import Base, CommonEntity
+from core.baseEntity.baseEntity import BaseEntity
 from core.constants import TableConstant
 
 
-class JobMasterEntity(Base, CommonEntity):
+class JobMasterEntity(BaseEntity):
     """ORM mapping for job_master table."""
 
     __tablename__ = TableConstant.JOB_MASTER
@@ -12,11 +12,7 @@ class JobMasterEntity(Base, CommonEntity):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     external_job_id = Column(String(255), nullable=True)
     job_url = Column(Text, nullable=False)
-    source_id = Column(
-        BigInteger,
-        ForeignKey(f"{TableConstant.JOB_SOURCE}.id"),
-        nullable=False,
-    )
+    source_id = Column(BigInteger, nullable=False)
     title = Column(String(255), nullable=False)
     company_id = Column(
         BigInteger,

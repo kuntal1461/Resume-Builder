@@ -1,10 +1,10 @@
 from sqlalchemy import BigInteger, Column, String, Text
 
-from core.baseEntity.baseEntity import Base, CommonEntity
+from core.baseEntity.baseEntity import BaseEntity
 from core.constants import TableConstant
 
 
-class CompanyMasterEntity(Base, CommonEntity):
+class CompanyMasterEntity(BaseEntity):
     """ORM mapping for company_master table."""
 
     __tablename__ = TableConstant.COMPANY_MASTER

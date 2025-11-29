@@ -1,4 +1,4 @@
-from core.baseEntity.baseEntity import Base, CommonEntity
+from core.baseEntity.baseEntity import BaseEntity
 
 # Ensure models are registered with SQLAlchemy's metadata
 import core.entity.ResumeTemplateEntity  # noqa: F401
@@ -24,11 +24,11 @@ engine = create_engine_from_env(
 )
 
 SessionLocal = create_session_factory(engine)
-register_soft_delete_filter(SessionLocal, CommonEntity)
+register_soft_delete_filter(SessionLocal, BaseEntity)
 
 
 def init_db() -> None:
-    Base.metadata.create_all(bind=engine)
+    BaseEntity.metadata.create_all(bind=engine)
 
 
 get_db = get_db_dependency(SessionLocal)

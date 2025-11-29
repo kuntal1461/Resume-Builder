@@ -1,10 +1,10 @@
 from sqlalchemy import BigInteger, Column, ForeignKey, Integer, String
 
-from core.baseEntity.baseEntity import Base, CommonEntity
+from core.baseEntity.baseEntity import BaseEntity
 from core.constants import TableConstant
 
 
-class ResumeTemplateSubCategoryEntity(Base, CommonEntity):
+class ResumeTemplateSubCategoryEntity(BaseEntity):
     __tablename__ = TableConstant.RESUME_TEMPLATE_SUB_CATEGORY
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)

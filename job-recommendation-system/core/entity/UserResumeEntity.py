@@ -1,9 +1,9 @@
 from sqlalchemy import BigInteger, Column, ForeignKey, String
 
-from core.baseEntity.baseEntity import Base, CommonEntity
+from core.baseEntity.baseEntity import BaseEntity
 
 
-class UserResumeEntity(Base, CommonEntity):
+class UserResumeEntity(BaseEntity):
     __tablename__ = "user_resume"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)

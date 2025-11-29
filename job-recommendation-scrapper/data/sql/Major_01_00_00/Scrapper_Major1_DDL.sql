@@ -1,0 +1,45 @@
+DROP TABLE IF EXISTS job_source;
+CREATE TABLE IF NOT EXISTS job_source (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  source_name BIGINT UNSIGNED NOT NULL,
+  source_url TEXT NULL,
+  enabled_for_scrapping BOOLEAN NOT NULL DEFAULT TRUE,
+  -- BaseEntity fields
+  rowstate        INT NOT NULL DEFAULT 1,
+  field1          VARCHAR(200) NULL,
+  field2          VARCHAR(200) NULL,
+  field3          BIGINT NULL,
+  field4          BIGINT NULL,
+  loggedBy        BIGINT NOT NULL DEFAULT 0,
+  lastUpdatedBy   BIGINT NOT NULL DEFAULT 0,
+  loggedInTime    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  lastUpdateTime  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB
+  AUTO_INCREMENT=1000
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS job_raw_scrape;
+CREATE TABLE IF NOT EXISTS job_raw_scrape (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  source_id     BIGINT UNSIGNED NOT NULL,
+  job_url       TEXT NOT NULL,
+  raw_content   LONGTEXT NULL,
+  status        BIGINT UNSIGNED NULL,
+  error_message TEXT NULL,
+  -- BaseEntity fields
+  rowstate        INT NOT NULL DEFAULT 1,
+  field1          VARCHAR(200) NULL,
+  field2          VARCHAR(200) NULL,
+  field3          BIGINT NULL,
+  field4          BIGINT NULL,
+  loggedBy        BIGINT NOT NULL DEFAULT 0,
+  lastUpdatedBy   BIGINT NOT NULL DEFAULT 0,
+  loggedInTime    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  lastUpdateTime  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_job_raw_scrape_source
+    FOREIGN KEY (source_id) REFERENCES job_source (id)
+) ENGINE=InnoDB
+  AUTO_INCREMENT=1000
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;

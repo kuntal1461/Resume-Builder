@@ -1,4 +1,4 @@
-export type CanonicalEnvName = 'local' | 'staging' | 'production';
+export type CanonicalEnvName = "local" | "staging" | "production";
 
 export type ServerEnvironmentInfo = {
   envName: CanonicalEnvName;
@@ -9,8 +9,8 @@ export type ServerEnvironmentInfo = {
   renderServiceBaseUrl: string;
 };
 
-const DEFAULT_LOCAL_API = 'http://localhost:8000';
-const DEFAULT_LOCAL_RENDER_SERVICE = 'http://localhost:4100';
+const DEFAULT_LOCAL_API = "http://localhost:8000";
+const DEFAULT_LOCAL_RENDER_SERVICE = "http://localhost:4100";
 const envFromProcess =
   (
     globalThis as typeof globalThis & {
@@ -19,17 +19,17 @@ const envFromProcess =
   ).process?.env ?? {};
 
 const ENV_ALIAS_MAP: Record<CanonicalEnvName, string[]> = {
-  local: ['local', 'localhost', 'dev', 'development'],
-  staging: ['stage', 'staging', 'qa', 'test'],
-  production: ['prod', 'production', 'live'],
+  local: ["local", "localhost", "dev", "development"],
+  staging: ["stage", "staging", "qa", "test"],
+  production: ["prod", "production", "live"],
 };
 
-const DEFAULT_ENV: CanonicalEnvName = 'local';
+const DEFAULT_ENV: CanonicalEnvName = "local";
 
-const stripTrailingSlash = (value: string): string => value.replace(/\/+$/, '');
+const stripTrailingSlash = (value: string): string => value.replace(/\/+$/, "");
 
 function normalizeEnvName(raw?: string | null): CanonicalEnvName {
-  const candidate = (raw ?? '').trim().toLowerCase();
+  const candidate = (raw ?? "").trim().toLowerCase();
   if (!candidate) {
     return DEFAULT_ENV;
   }
@@ -41,7 +41,7 @@ function normalizeEnvName(raw?: string | null): CanonicalEnvName {
   }
 
   throw new Error(
-    `Unsupported SERVER_ENV '${raw}'. Expected one of: ${Object.keys(ENV_ALIAS_MAP).join(', ')}`
+    `Unsupported SERVER_ENV '${raw}'. Expected one of: ${Object.keys(ENV_ALIAS_MAP).join(", ")}`,
   );
 }
 
@@ -57,12 +57,12 @@ function resolveApiBaseUrl(envName: CanonicalEnvName): string {
     return stripTrailingSlash(explicitPublic);
   }
 
-  if (envName === 'local') {
+  if (envName === "local") {
     return DEFAULT_LOCAL_API;
   }
 
   throw new Error(
-    'API_BASE_URL is not configured. Set API_BASE_URL (or NEXT_PUBLIC_API_BASE_URL) for the frontend.'
+    "API_BASE_URL is not configured. Set API_BASE_URL (or NEXT_PUBLIC_API_BASE_URL) for the frontend.",
   );
 }
 
@@ -78,32 +78,37 @@ function resolveRenderServiceBaseUrl(envName: CanonicalEnvName): string {
     return stripTrailingSlash(explicitPublic);
   }
 
-  if (envName === 'local') {
+  if (envName === "local") {
     return DEFAULT_LOCAL_RENDER_SERVICE;
   }
 
   throw new Error(
-    'RENDER_SERVICE_BASE_URL is not configured. Set RENDER_SERVICE_BASE_URL (or NEXT_PUBLIC_RENDER_SERVICE_URL) for the frontend.'
+    "RENDER_SERVICE_BASE_URL is not configured. Set RENDER_SERVICE_BASE_URL (or NEXT_PUBLIC_RENDER_SERVICE_URL) for the frontend.",
   );
 }
 
 export function resolveServerEnvironment(
-  overrides?: Partial<{ apiBaseUrl: string; serverEnv: string; renderServiceBaseUrl: string }>
+  overrides?: Partial<{
+    apiBaseUrl: string;
+    serverEnv: string;
+    renderServiceBaseUrl: string;
+  }>,
 ): ServerEnvironmentInfo {
   const envName = normalizeEnvName(
     overrides?.serverEnv ??
       envFromProcess.SERVER_ENV ??
       envFromProcess.NEXT_PUBLIC_SERVER_ENV ??
-      envFromProcess.NODE_ENV
+      envFromProcess.NODE_ENV,
   );
   const apiBaseUrl = overrides?.apiBaseUrl ?? resolveApiBaseUrl(envName);
-  const renderServiceBaseUrl = overrides?.renderServiceBaseUrl ?? resolveRenderServiceBaseUrl(envName);
+  const renderServiceBaseUrl =
+    overrides?.renderServiceBaseUrl ?? resolveRenderServiceBaseUrl(envName);
 
   return {
     envName,
-    isProd: envName === 'production',
-    isLocal: envName === 'local',
-    isStaging: envName === 'staging',
+    isProd: envName === "production",
+    isLocal: envName === "local",
+    isStaging: envName === "staging",
     apiBaseUrl,
     renderServiceBaseUrl,
   };

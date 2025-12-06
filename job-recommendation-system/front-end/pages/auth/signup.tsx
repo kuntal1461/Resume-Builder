@@ -1,28 +1,28 @@
-import Link from 'next/link';
-import { ChangeEvent, FormEvent, useState } from 'react';
-import { getEnvironmentConfig } from '../../lib/runtimeConfig';
-import { describeNetworkError } from '../../lib/networkErrors';
+import Link from "next/link";
+import { ChangeEvent, FormEvent, useState } from "react";
+import { getEnvironmentConfig } from "../../lib/runtimeConfig";
+import { describeNetworkError } from "../../lib/networkErrors";
 
 const normalizeDetail = (detail: unknown, fallback: string) => {
   if (!detail) {
     return fallback;
   }
-  if (typeof detail === 'string') {
+  if (typeof detail === "string") {
     return detail;
   }
   if (Array.isArray(detail)) {
     const first = detail[0];
-    if (first && typeof first === 'object') {
-      if ('msg' in first && first.msg) {
+    if (first && typeof first === "object") {
+      if ("msg" in first && first.msg) {
         return String(first.msg);
       }
-      if ('message' in first && first.message) {
+      if ("message" in first && first.message) {
         return String(first.message);
       }
     }
-    return detail.join(', ');
+    return detail.join(", ");
   }
-  if (typeof detail === 'object') {
+  if (typeof detail === "object") {
     const record = detail as Record<string, unknown>;
     if (record.message) {
       return String(record.message);
@@ -33,18 +33,18 @@ const normalizeDetail = (detail: unknown, fallback: string) => {
 };
 
 type FlashState =
-  | { type: 'success'; message: string }
-  | { type: 'error'; message: string }
+  | { type: "success"; message: string }
+  | { type: "error"; message: string }
   | null;
 
 export default function SignupPage() {
   const [form, setForm] = useState({
-    username: '',
-    firstName: '',
-    lastName: '',
-    email: '',
-    phoneNumber: '',
-    password: '',
+    username: "",
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    password: "",
   });
   const [loading, setLoading] = useState(false);
   const [flash, setFlash] = useState<FlashState>(null);
@@ -64,50 +64,59 @@ export default function SignupPage() {
       first_name: form.firstName.trim(),
       last_name: form.lastName.trim(),
       email: form.email.trim(),
-      phone_number: form.phoneNumber.trim() === '' ? null : form.phoneNumber.trim(),
+      phone_number:
+        form.phoneNumber.trim() === "" ? null : form.phoneNumber.trim(),
       password: form.password,
     };
 
-    let apiBaseUrl = '';
+    let apiBaseUrl = "";
     try {
       const config = await getEnvironmentConfig();
       apiBaseUrl = config.apiBaseUrl;
 
       const response = await fetch(`${apiBaseUrl}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       const body = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        const message = normalizeDetail(body.detail, 'Unable to create the account. Please try again.');
+        const message = normalizeDetail(
+          body.detail,
+          "Unable to create the account. Please try again.",
+        );
         throw new Error(message);
       }
 
       setFlash({
-        type: 'success',
-        message: 'Account created successfully. You can now sign in with your credentials.',
+        type: "success",
+        message:
+          "Account created successfully. You can now sign in with your credentials.",
       });
       setForm({
-        username: '',
-        firstName: '',
-        lastName: '',
-        email: '',
-        phoneNumber: '',
-        password: '',
+        username: "",
+        firstName: "",
+        lastName: "",
+        email: "",
+        phoneNumber: "",
+        password: "",
       });
     } catch (error) {
-      console.error('Registration failed', error);
-      const { message } = describeNetworkError(error, 'Unable to create the account. Please try again later.', {
-        apiBaseUrl,
-        networkMessage: apiBaseUrl
-          ? `Cannot reach API at ${apiBaseUrl}. Ensure the backend is running and accessible.`
-          : 'Cannot reach the API. Ensure the backend is running and accessible.',
-      });
+      console.error("Registration failed", error);
+      const { message } = describeNetworkError(
+        error,
+        "Unable to create the account. Please try again later.",
+        {
+          apiBaseUrl,
+          networkMessage: apiBaseUrl
+            ? `Cannot reach API at ${apiBaseUrl}. Ensure the backend is running and accessible.`
+            : "Cannot reach the API. Ensure the backend is running and accessible.",
+        },
+      );
       setFlash({
-        type: 'error',
+        type: "error",
         message,
       });
     } finally {
@@ -120,9 +129,12 @@ export default function SignupPage() {
       <div className="auth-left">
         <div className="auth-logo">JM</div>
         <div>
-          <div className="auth-welcome-title">Let’s build your next chapter</div>
+          <div className="auth-welcome-title">
+            Let’s build your next chapter
+          </div>
           <div className="auth-welcome-desc">
-            Join JobMatch to unlock AI resume guidance, curated job matches, and recruiter-ready introductions.
+            Join JobMatch to unlock AI resume guidance, curated job matches, and
+            recruiter-ready introductions.
           </div>
         </div>
       </div>
@@ -130,7 +142,9 @@ export default function SignupPage() {
       <div className="auth-form-wrapper" role="main">
         <h1 className="auth-form-title">Create your JobMatch account</h1>
 
-        {flash && <div className={`auth-alert ${flash.type}`}>{flash.message}</div>}
+        {flash && (
+          <div className={`auth-alert ${flash.type}`}>{flash.message}</div>
+        )}
 
         <form onSubmit={handleSubmit} noValidate>
           <label className="auth-label" htmlFor="username">
@@ -225,14 +239,12 @@ export default function SignupPage() {
           />
 
           <button className="auth-primary-btn" type="submit" disabled={loading}>
-            {loading ? 'Creating your account…' : 'Sign up'}
+            {loading ? "Creating your account…" : "Sign up"}
           </button>
         </form>
 
-        
-
         <p className="auth-footer-link">
-          Already have an account?{' '}
+          Already have an account?{" "}
           <Link href="/auth/login" className="auth-forgot">
             Log in here
           </Link>

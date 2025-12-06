@@ -1,8 +1,10 @@
-import { useMemo } from 'react';
-import type { WorkspaceProfileFallback } from './profileFallback';
-import { useWorkspaceProfile } from './WorkspaceProfileProvider';
+import { useMemo } from "react";
+import type { WorkspaceProfileFallback } from "./profileFallback";
+import { useWorkspaceProfile } from "./WorkspaceProfileProvider";
 
-export function useWorkspaceShellProfile(baseProfile: WorkspaceProfileFallback): WorkspaceProfileFallback {
+export function useWorkspaceShellProfile(
+  baseProfile: WorkspaceProfileFallback,
+): WorkspaceProfileFallback {
   const { identity } = useWorkspaceProfile();
 
   return useMemo(
@@ -11,6 +13,6 @@ export function useWorkspaceShellProfile(baseProfile: WorkspaceProfileFallback):
       name: identity.name,
       initials: identity.initials,
     }),
-    [baseProfile, identity.name, identity.initials]
+    [baseProfile, identity.name, identity.initials],
   );
 }

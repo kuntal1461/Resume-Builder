@@ -2,10 +2,10 @@ import {
   resolveServerEnvironment as resolveSharedServerEnvironment,
   type CanonicalEnvName,
   type ServerEnvironmentInfo,
-} from '@frontend-common/environment';
+} from "@frontend-common/environment";
 
-const DEFAULT_ADMIN_API_BASE_URL = 'http://localhost:8100';
-const DEFAULT_ADMIN_RENDER_BASE_URL = 'http://localhost:4100';
+const DEFAULT_ADMIN_API_BASE_URL = "http://localhost:8100";
+const DEFAULT_ADMIN_RENDER_BASE_URL = "http://localhost:4100";
 
 type ResolveOverrides = Partial<{
   apiBaseUrl: string;
@@ -22,7 +22,9 @@ const pick = (...candidates: Array<string | undefined>): string | undefined => {
   return undefined;
 };
 
-export function resolveServerEnvironment(overrides?: ResolveOverrides): ServerEnvironmentInfo {
+export function resolveServerEnvironment(
+  overrides?: ResolveOverrides,
+): ServerEnvironmentInfo {
   const apiBaseOverride =
     pick(
       overrides?.apiBaseUrl,

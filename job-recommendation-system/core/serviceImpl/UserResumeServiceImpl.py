@@ -24,7 +24,9 @@ class UserResumeServiceImpl(UserResumeService):
         self.resume_repo = resume_repo
         self.version_repo = version_repo
 
-    def save_resume_draft(self, req: SaveResumeDraftRequestVO) -> SaveResumeDraftResponseVO:
+    def save_resume_draft(
+        self, req: SaveResumeDraftRequestVO
+    ) -> SaveResumeDraftResponseVO:
         resume = self.resume_repo.get_by_user_and_template(req.user_id, req.template_id)
 
         if not resume:
@@ -57,7 +59,11 @@ class UserResumeServiceImpl(UserResumeService):
         )
         saved_version = self.version_repo.create(version_entity)
 
-        timestamp = saved_version.lastUpdateTime or saved_version.loggedInTime or datetime.utcnow()
+        timestamp = (
+            saved_version.lastUpdateTime
+            or saved_version.loggedInTime
+            or datetime.utcnow()
+        )
 
         return SaveResumeDraftResponseVO(
             success=True,
@@ -67,7 +73,9 @@ class UserResumeServiceImpl(UserResumeService):
             saved_at=timestamp,
         )
 
-    def get_resume_draft(self, user_id: int, template_id: int) -> Optional[UserResumeDraftResponseVO]:
+    def get_resume_draft(
+        self, user_id: int, template_id: int
+    ) -> Optional[UserResumeDraftResponseVO]:
         resume = self.resume_repo.get_by_user_and_template(user_id, template_id)
         if not resume:
             return None
@@ -81,7 +89,11 @@ class UserResumeServiceImpl(UserResumeService):
         summary = self._safe_str(structured_data.get("summary"))
         notes = self._safe_str(structured_data.get("notes"))
 
-        timestamp = latest_version.lastUpdateTime or latest_version.loggedInTime or datetime.utcnow()
+        timestamp = (
+            latest_version.lastUpdateTime
+            or latest_version.loggedInTime
+            or datetime.utcnow()
+        )
 
         return UserResumeDraftResponseVO(
             resume_id=resume.id,

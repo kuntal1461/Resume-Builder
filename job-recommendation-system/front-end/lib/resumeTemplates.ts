@@ -47,37 +47,42 @@ export type ResumeTemplateParentCategoryListResponse = {
   categories: ResumeTemplateParentCategory[];
 };
 
-const ADMIN_ORIGIN =
-  (process.env.NEXT_PUBLIC_RESUME_ADMIN_DASHBOARD_ORIGIN ??
-    process.env.RESUME_ADMIN_DASHBOARD_ORIGIN ??
-    'http://localhost:3100') as string;
+const ADMIN_ORIGIN = (process.env.NEXT_PUBLIC_RESUME_ADMIN_DASHBOARD_ORIGIN ??
+  process.env.RESUME_ADMIN_DASHBOARD_ORIGIN ??
+  "http://localhost:3100") as string;
 
-const ADMIN_BASE = ADMIN_ORIGIN.replace(/\/$/, '');
+const ADMIN_BASE = ADMIN_ORIGIN.replace(/\/$/, "");
 
 export async function fetchPublishedResumeTemplates(): Promise<ResumeTemplateListResponse> {
   const url = `${ADMIN_BASE}/admin/api/templates?status=published`;
 
   const response = await fetch(url, {
-    headers: { Accept: 'application/json' },
+    headers: { Accept: "application/json" },
   });
 
   if (!response.ok) {
     const reason = await response.text();
-    throw new Error(`Failed to load resume templates (status ${response.status}): ${reason || 'unknown error'}`);
+    throw new Error(
+      `Failed to load resume templates (status ${response.status}): ${reason || "unknown error"}`,
+    );
   }
 
   return (await response.json()) as ResumeTemplateListResponse;
 }
 
-export async function fetchResumeTemplateDetail(templateId: number): Promise<ResumeTemplateDetailResponse> {
+export async function fetchResumeTemplateDetail(
+  templateId: number,
+): Promise<ResumeTemplateDetailResponse> {
   const url = `${ADMIN_BASE}/admin/api/templates/${templateId}`;
   const response = await fetch(url, {
-    headers: { Accept: 'application/json' },
+    headers: { Accept: "application/json" },
   });
 
   if (!response.ok) {
     const reason = await response.text();
-    throw new Error(`Failed to load template detail (status ${response.status}): ${reason || 'unknown error'}`);
+    throw new Error(
+      `Failed to load template detail (status ${response.status}): ${reason || "unknown error"}`,
+    );
   }
 
   return (await response.json()) as ResumeTemplateDetailResponse;
@@ -86,13 +91,13 @@ export async function fetchResumeTemplateDetail(templateId: number): Promise<Res
 export async function fetchResumeTemplateParentCategories(): Promise<ResumeTemplateParentCategoryListResponse> {
   const url = `${ADMIN_BASE}/admin/api/templates/parent-categories`;
   const response = await fetch(url, {
-    headers: { Accept: 'application/json' },
+    headers: { Accept: "application/json" },
   });
 
   if (!response.ok) {
     const reason = await response.text();
     throw new Error(
-      `Failed to load parent categories (status ${response.status}): ${reason || 'unknown error'}`,
+      `Failed to load parent categories (status ${response.status}): ${reason || "unknown error"}`,
     );
   }
 

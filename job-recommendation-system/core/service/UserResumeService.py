@@ -6,8 +6,10 @@ from core.responseVO.UserResumeDraftResponseVO import UserResumeDraftResponseVO
 
 
 class UserResumeService(Protocol):
-    def save_resume_draft(self, req: SaveResumeDraftRequestVO) -> SaveResumeDraftResponseVO:
-        ...
+    def save_resume_draft(
+        self, req: SaveResumeDraftRequestVO
+    ) -> SaveResumeDraftResponseVO: ...
 
-    def get_resume_draft(self, user_id: int, template_id: int) -> Optional[UserResumeDraftResponseVO]:
-        ...
+    def get_resume_draft(
+        self, user_id: int, template_id: int
+    ) -> Optional[UserResumeDraftResponseVO]: ...

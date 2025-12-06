@@ -20,7 +20,7 @@
 
 .hero::before,
 .hero::after {
-  content: '';
+  content: "";
   position: absolute;
   border-radius: 50%;
   filter: blur(0);
@@ -34,7 +34,11 @@
   height: 320px;
   bottom: -160px;
   left: -60px;
-  background: radial-gradient(circle at center, rgba(96, 255, 218, 0.26) 0%, rgba(96, 255, 218, 0) 68%);
+  background: radial-gradient(
+    circle at center,
+    rgba(96, 255, 218, 0.26) 0%,
+    rgba(96, 255, 218, 0) 68%
+  );
 }
 
 .hero::after {
@@ -42,7 +46,11 @@
   height: 280px;
   top: -120px;
   right: -40px;
-  background: radial-gradient(circle at center, rgba(255, 198, 105, 0.3) 0%, rgba(255, 198, 105, 0) 70%);
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 198, 105, 0.3) 0%,
+    rgba(255, 198, 105, 0) 70%
+  );
 }
 
 .heroContent {
@@ -102,7 +110,9 @@
   font-size: 14px;
   min-height: 92px;
   border: 1px solid rgba(255, 255, 255, 0.16);
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
 .heroHighlight:hover {
@@ -214,7 +224,9 @@
   font-weight: 600;
   font-size: 14px;
   text-decoration: none;
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
   border: none;
   cursor: pointer;
 }
@@ -334,7 +346,10 @@
   font-weight: 500;
   color: #10244c;
   background: rgba(244, 247, 255, 0.6);
-  transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+  transition:
+    border-color 0.16s ease,
+    box-shadow 0.16s ease,
+    background 0.16s ease;
 }
 
 .input:focus,
@@ -381,7 +396,9 @@
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
-  transition: transform 0.16s ease, box-shadow 0.16s ease;
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
 }
 
 .saveButton:hover {
@@ -410,7 +427,9 @@
   border-radius: 18px;
   border: 1px solid rgba(16, 36, 76, 0.08);
   background: rgba(248, 250, 255, 0.72);
-  transition: box-shadow 0.18s ease, transform 0.18s ease;
+  transition:
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
 }
 
 .socialItem:hover {
@@ -439,7 +458,7 @@
 }
 
 .socialIcon::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   opacity: 0.88;
@@ -460,7 +479,13 @@
 }
 
 .socialIcon.google::before {
-  background: linear-gradient(145deg, #4285f4 0%, #34a853 35%, #fbbc05 68%, #ea4335 100%);
+  background: linear-gradient(
+    145deg,
+    #4285f4 0%,
+    #34a853 35%,
+    #fbbc05 68%,
+    #ea4335 100%
+  );
 }
 
 .socialCopy {
@@ -505,7 +530,11 @@
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
-  transition: transform 0.16s ease, box-shadow 0.16s ease, color 0.16s ease, background 0.16s ease;
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease,
+    color 0.16s ease,
+    background 0.16s ease;
 }
 
 .linkButton:hover {
@@ -578,7 +607,7 @@
 }
 
 .toggle::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 3px;
   left: 3px;
@@ -599,7 +628,11 @@
 }
 
 .dangerCard {
-  background: linear-gradient(140deg, rgba(231, 63, 93, 0.12), rgba(231, 63, 93, 0.08));
+  background: linear-gradient(
+    140deg,
+    rgba(231, 63, 93, 0.12),
+    rgba(231, 63, 93, 0.08)
+  );
   border: 1px solid rgba(231, 63, 93, 0.22);
 }
 
@@ -619,7 +652,9 @@
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
-  transition: transform 0.16s ease, box-shadow 0.16s ease;
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
 }
 
 .deleteButton:hover {
@@ -642,7 +677,11 @@
 }
 
 .supportCard {
-  background: linear-gradient(135deg, rgba(92, 77, 253, 0.16), rgba(17, 35, 76, 0.08));
+  background: linear-gradient(
+    135deg,
+    rgba(92, 77, 253, 0.16),
+    rgba(17, 35, 76, 0.08)
+  );
   border: 1px solid rgba(92, 77, 253, 0.18);
 }
 

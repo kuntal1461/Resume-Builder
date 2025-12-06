@@ -1,14 +1,17 @@
-import Head from 'next/head';
-import AppShell from '../../../components/workspace/AppShell';
-import AppDashboardHeader from '../../../components/workspace/AppDashboardHeader';
-import { APP_MENU_ITEMS, DEFAULT_PROFILE_TASKS } from '../../../components/workspace/navigation';
-import { createGuestWorkspaceProfile } from '../../../components/workspace/profileFallback';
-import { useWorkspaceShellProfile } from '../../../components/workspace/useWorkspaceShellProfile';
-import styles from '../../../styles/workspace/WorkspaceLayout.module.css';
+import Head from "next/head";
+import AppShell from "../../../components/workspace/AppShell";
+import AppDashboardHeader from "../../../components/workspace/AppDashboardHeader";
+import {
+  APP_MENU_ITEMS,
+  DEFAULT_PROFILE_TASKS,
+} from "../../../components/workspace/navigation";
+import { createGuestWorkspaceProfile } from "../../../components/workspace/profileFallback";
+import { useWorkspaceShellProfile } from "../../../components/workspace/useWorkspaceShellProfile";
+import styles from "../../../styles/workspace/WorkspaceLayout.module.css";
 
 const PROFILE = createGuestWorkspaceProfile({
-  tagline: 'Set your target role',
-  progressLabel: '5%',
+  tagline: "Set your target role",
+  progressLabel: "5%",
 });
 
 export default function WorkspaceOverviewPage() {
@@ -17,37 +20,47 @@ export default function WorkspaceOverviewPage() {
     <>
       <Head>
         <title>JobMatch · Workspace Overview</title>
-        <meta name="description" content="Monitor your JobMatch workspace progress and jump into priority tasks." />
+        <meta
+          name="description"
+          content="Monitor your JobMatch workspace progress and jump into priority tasks."
+        />
       </Head>
-      <AppShell menuItems={APP_MENU_ITEMS} profileTasks={DEFAULT_PROFILE_TASKS} profile={shellProfile}>
+      <AppShell
+        menuItems={APP_MENU_ITEMS}
+        profileTasks={DEFAULT_PROFILE_TASKS}
+        profile={shellProfile}
+      >
         <AppDashboardHeader />
         <header className={styles.contentHeader}>
           <h1>Keep your search momentum going</h1>
           <p>
-            Pick a workspace module from the left navigation to keep building momentum on your job search journey.
-            We&apos;ve queued up your next best actions below.
+            Pick a workspace module from the left navigation to keep building
+            momentum on your job search journey. We&apos;ve queued up your next
+            best actions below.
           </p>
         </header>
         <div className={styles.contentBody}>
           <article className={styles.contentCard}>
             <h2>Confirm your target role</h2>
             <p>
-              Lock in the role you want so we can surface tailored resources, outreach scripts, and curated job matches
-              that align with your goals.
+              Lock in the role you want so we can surface tailored resources,
+              outreach scripts, and curated job matches that align with your
+              goals.
             </p>
           </article>
           <article className={styles.contentCard}>
             <h2>Update your experience</h2>
             <p>
-              Add your recent accomplishments to unlock smarter resume suggestions and highlight the wins recruiters are
-              looking for first.
+              Add your recent accomplishments to unlock smarter resume
+              suggestions and highlight the wins recruiters are looking for
+              first.
             </p>
           </article>
           <article className={styles.contentCard}>
             <h2>Preview job matches</h2>
             <p>
-              Review the latest recommendations, bookmark promising roles, and trigger Auto Apply for openings that
-              match 80%+ of your profile.
+              Review the latest recommendations, bookmark promising roles, and
+              trigger Auto Apply for openings that match 80%+ of your profile.
             </p>
           </article>
         </div>

@@ -1,0 +1,10 @@
+.next
+node_modules
+dist
+coverage
+*.log
+
+# Generated lockfiles get noisy when formatted
+package-lock.json
+pnpm-lock.yaml
+yarn.lock

@@ -22,6 +22,7 @@ This mirrors the pattern many backend services follow (for example, the
    `lib/server/environment.ts` inspects environment variables
    (`API_BASE_URL`, `IS_LOCAL`, `NODE_ENV`, etc.) and returns an object that
    describes the current environment:
+
    ```ts
    {
      envName: 'DEVHF' | 'QA' | 'PROD' | 'LOCALHOST' | …,
@@ -53,10 +54,10 @@ This mirrors the pattern many backend services follow (for example, the
 
 ## Configuration
 
-| Variable          | Purpose                                               | Typical value                      |
-| ----------------- | ----------------------------------------------------- | ---------------------------------- |
-| `API_BASE_URL`    | Real backend base URL (set per environment).          | `https://api.mycompany.com`        |
-| `IS_LOCAL`        | Optional flag for local stacks that use mocks/localhost.| `true` in local `.env` files       |
+| Variable       | Purpose                                                  | Typical value                |
+| -------------- | -------------------------------------------------------- | ---------------------------- |
+| `API_BASE_URL` | Real backend base URL (set per environment).             | `https://api.mycompany.com`  |
+| `IS_LOCAL`     | Optional flag for local stacks that use mocks/localhost. | `true` in local `.env` files |
 
 If neither variable is set and we are running in development, the system falls
 back to `http://localhost:8000`.

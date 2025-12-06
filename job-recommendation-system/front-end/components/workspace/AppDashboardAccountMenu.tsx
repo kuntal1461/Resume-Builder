@@ -1,8 +1,8 @@
-import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
-import styles from '../../styles/workspace/WorkspaceLayout.module.css';
-import { AccountSettingsIcon, FaqIcon, LogoutIcon } from './icons';
-import { useLogout } from '../../lib/hooks/useLogout';
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import styles from "../../styles/workspace/WorkspaceLayout.module.css";
+import { AccountSettingsIcon, FaqIcon, LogoutIcon } from "./icons";
+import { useLogout } from "../../lib/hooks/useLogout";
 
 type AccountMenuProps = {
   profile: {
@@ -15,7 +15,9 @@ type AccountMenuProps = {
 export default function AppDashboardAccountMenu({ profile }: AccountMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
-  const { logout, isLoggingOut, error, resetError } = useLogout({ redirectTo: '/' });
+  const { logout, isLoggingOut, error, resetError } = useLogout({
+    redirectTo: "/",
+  });
 
   useEffect(() => {
     if (!isOpen) {
@@ -29,17 +31,17 @@ export default function AppDashboardAccountMenu({ profile }: AccountMenuProps) {
     };
 
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         setIsOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleEscape);
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
     };
   }, [isOpen]);
 
@@ -74,7 +76,7 @@ export default function AppDashboardAccountMenu({ profile }: AccountMenuProps) {
       <div
         id="dashboard-account-menu"
         role="menu"
-        className={`${styles.accountMenu} ${isOpen ? styles.accountMenuOpen : ''}`}
+        className={`${styles.accountMenu} ${isOpen ? styles.accountMenuOpen : ""}`}
       >
         <div className={styles.accountMenuHeader}>
           <div className={styles.accountAvatar} aria-hidden="true">
@@ -83,17 +85,27 @@ export default function AppDashboardAccountMenu({ profile }: AccountMenuProps) {
           <div>
             <p className={styles.accountName}>{profile.name}</p>
             <p className={styles.accountEmail}>
-              {profile.email || 'Sign in to personalize your workspace'}
+              {profile.email || "Sign in to personalize your workspace"}
             </p>
           </div>
         </div>
 
         <nav aria-label="Account">
-          <Link href="/workspace/account-settings" role="menuitem" className={styles.accountMenuLink} onClick={() => setIsOpen(false)}>
+          <Link
+            href="/workspace/account-settings"
+            role="menuitem"
+            className={styles.accountMenuLink}
+            onClick={() => setIsOpen(false)}
+          >
             <AccountSettingsIcon aria-hidden="true" />
             <span>Account Settings</span>
           </Link>
-          <Link href="/workspace/help/faq" role="menuitem" className={styles.accountMenuLink} onClick={() => setIsOpen(false)}>
+          <Link
+            href="/workspace/help/faq"
+            role="menuitem"
+            className={styles.accountMenuLink}
+            onClick={() => setIsOpen(false)}
+          >
             <FaqIcon aria-hidden="true" />
             <span>FAQ</span>
           </Link>
@@ -105,7 +117,7 @@ export default function AppDashboardAccountMenu({ profile }: AccountMenuProps) {
             disabled={isLoggingOut}
           >
             <LogoutIcon aria-hidden="true" />
-            <span>{isLoggingOut ? 'Logging out…' : 'Log Out'}</span>
+            <span>{isLoggingOut ? "Logging out…" : "Log Out"}</span>
           </button>
         </nav>
 

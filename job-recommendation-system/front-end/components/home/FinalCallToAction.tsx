@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import styles from '../../styles/home/Home.module.css';
+import Link from "next/link";
+import styles from "../../styles/home/Home.module.css";
 
 export default function FinalCallToAction() {
   return (
@@ -7,8 +7,8 @@ export default function FinalCallToAction() {
       <div className={styles.finalCtaInner}>
         <h2>Ready to meet the roles made for you?</h2>
         <p>
-          Join JobMatch today and unlock AI-assisted resumes, curated job matches, and direct recruiter introductions in
-          minutes.
+          Join JobMatch today and unlock AI-assisted resumes, curated job
+          matches, and direct recruiter introductions in minutes.
         </p>
         <div className={styles.finalCtaActions}>
           <Link href="/auth/signup" className={styles.heroPrimary}>

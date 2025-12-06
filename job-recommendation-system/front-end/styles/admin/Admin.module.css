@@ -1,5 +1,10 @@
 .wrapper {
-  background: radial-gradient(circle at top, rgba(73, 108, 255, 0.12), transparent 60%) #040611;
+  background: radial-gradient(
+      circle at top,
+      rgba(73, 108, 255, 0.12),
+      transparent 60%
+    )
+    #040611;
   color: #f4f5ff;
   min-height: calc(100vh - 80px);
   padding: 4rem 1.5rem 6rem;
@@ -20,15 +25,24 @@
   border-radius: 2rem;
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: radial-gradient(circle at 20% 20%, rgba(108, 132, 255, 0.25), transparent 55%),
-    radial-gradient(circle at 75% 0%, rgba(118, 209, 255, 0.2), transparent 45%),
+  background:
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(108, 132, 255, 0.25),
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 75% 0%,
+      rgba(118, 209, 255, 0.2),
+      transparent 45%
+    ),
     rgba(8, 12, 27, 0.9);
   box-shadow: 0 35px 65px rgba(5, 7, 20, 0.55);
   overflow: hidden;
 }
 
 .hero::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
@@ -100,7 +114,11 @@
 .infoPanel {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 1.5rem;
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.08), rgba(12, 19, 39, 0.9));
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.08),
+    rgba(12, 19, 39, 0.9)
+  );
   padding: 2rem;
   display: flex;
   flex-direction: column;
@@ -193,7 +211,9 @@
   color: #a5afd8;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 
 .tabButtonActive {

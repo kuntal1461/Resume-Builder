@@ -17,7 +17,11 @@
   min-width: 220px;
   flex: 0 0 240px;
   background:
-    radial-gradient(circle at 0 0, rgba(108, 99, 255, 0.18) 0%, rgba(108, 99, 255, 0) 55%),
+    radial-gradient(
+      circle at 0 0,
+      rgba(108, 99, 255, 0.18) 0%,
+      rgba(108, 99, 255, 0) 55%
+    ),
     linear-gradient(185deg, #ffffff 0%, #f4f6ff 45%, #eef2ff 100%);
   border-right: 1px solid rgba(124, 93, 250, 0.14);
   display: flex;
@@ -71,7 +75,9 @@
   flex-direction: column;
   gap: 14px;
   box-shadow: 0 20px 36px rgba(93, 87, 166, 0.12);
-  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  transition:
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
 }
 
 .sidebarProfileCard:hover,
@@ -145,7 +151,10 @@
   font-size: 0.9rem;
   font-weight: 500;
   color: #2a2761;
-  transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
 .sidebarMenuLink:hover {
@@ -239,7 +248,10 @@
   border-color: rgba(255, 172, 172, 0.6);
   color: #ffe6eb;
   background: rgba(255, 107, 129, 0.18);
-  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .logoutActionButton:hover,
@@ -394,7 +406,9 @@
   padding: 8px 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 .queuePanelHideButton:hover {
@@ -636,7 +650,11 @@
   color: #f4f7ff;
   min-height: 40px;
   padding: 10px 16px;
-  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .queueGhostButtonCopied {
@@ -719,7 +737,11 @@
   padding: 36px;
   border-radius: 32px;
   background:
-    radial-gradient(circle at -20% -10%, rgba(161, 113, 255, 0.4), transparent 60%),
+    radial-gradient(
+      circle at -20% -10%,
+      rgba(161, 113, 255, 0.4),
+      transparent 60%
+    ),
     linear-gradient(135deg, #0c103f, #2d1b7c 55%, #5a46ff);
   color: #f5f6ff;
   box-shadow: 0 34px 60px rgba(5, 10, 40, 0.45);
@@ -819,7 +841,10 @@
   text-align: left;
   color: #1b1f3b;
   font-size: 0.85rem;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, border 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border 0.18s ease;
 }
 
 .savedTemplatesFilterButton strong {
@@ -839,7 +864,11 @@
 
 .savedTemplatesFilterButtonActive {
   border-color: rgba(108, 99, 255, 0.4);
-  background: linear-gradient(135deg, rgba(108, 99, 255, 0.14), rgba(108, 99, 255, 0.05));
+  background: linear-gradient(
+    135deg,
+    rgba(108, 99, 255, 0.14),
+    rgba(108, 99, 255, 0.05)
+  );
   box-shadow: 0 16px 40px rgba(108, 99, 255, 0.18);
 }
 
@@ -953,7 +982,9 @@
   padding: 12px 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
   background: linear-gradient(135deg, #ffe38d, #ffb347);
   color: #111a3d;
   box-shadow: 0 12px 24px rgba(255, 179, 71, 0.26);
@@ -1204,7 +1235,11 @@
   font-size: 0.85rem;
   color: #3b2b6b;
   cursor: pointer;
-  transition: background 0.2s ease, border 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border 0.2s ease,
+    box-shadow 0.2s ease,
+    color 0.2s ease;
 }
 
 .categoryChecklistOption:hover .categoryChipLabel {
@@ -1254,7 +1289,9 @@
   max-height: 420px;
   border-radius: 20px;
   background: #0b1437;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 20px 40px rgba(6, 13, 40, 0.6);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 20px 40px rgba(6, 13, 40, 0.6);
   overflow: hidden;
 }
 
@@ -1263,7 +1300,7 @@
   background: #060b23;
   color: #5865a5;
   font-size: 0.8rem;
-  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   line-height: 1.5;
   display: flex;
   flex-direction: column;
@@ -1282,7 +1319,7 @@
   min-height: 260px;
   border: none;
   padding: 18px;
-  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   font-size: 0.9rem;
   line-height: 1.5;
   background: transparent;
@@ -1356,7 +1393,7 @@
   margin: 8px 0 0;
   max-height: 180px;
   overflow: auto;
-  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   font-size: 0.85rem;
   line-height: 1.5;
   color: #e4e8ff;
@@ -1418,7 +1455,9 @@
   color: #1b103f;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .customSelectTrigger:hover,
@@ -1438,7 +1477,7 @@
   transition: transform 0.2s ease;
 }
 
-.customSelectTrigger[aria-expanded='true'] .customSelectCaret {
+.customSelectTrigger[aria-expanded="true"] .customSelectCaret {
   transform: rotate(180deg);
 }
 
@@ -1480,7 +1519,9 @@
   color: #1b103f;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -1527,7 +1568,11 @@
   background: #f7f6ff;
   color: #2a2156;
   font-size: 0.92rem;
-  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
   cursor: pointer;
 }
 
@@ -1546,7 +1591,7 @@
 }
 
 .customChipOption input:checked + span::before {
-  content: '✓';
+  content: "✓";
   display: inline-flex;
   width: 18px;
   height: 18px;
@@ -1619,8 +1664,14 @@
 }
 
 @keyframes dropdownIn {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .formHelperText {

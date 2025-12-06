@@ -1,4 +1,11 @@
-export type StageKey = 'Job Liked' | 'Shortlist' | 'Auto Apply' | 'Applied' | 'Interview' | 'Offer' | 'Rejected';
+export type StageKey =
+  | "Job Liked"
+  | "Shortlist"
+  | "Auto Apply"
+  | "Applied"
+  | "Interview"
+  | "Offer"
+  | "Rejected";
 
 export type AddJobSubmission = {
   stage: StageKey;

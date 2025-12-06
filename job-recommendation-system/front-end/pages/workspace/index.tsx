@@ -1,8 +1,8 @@
-import type { GetServerSideProps } from 'next';
+import type { GetServerSideProps } from "next";
 
 export const getServerSideProps: GetServerSideProps = async () => ({
   redirect: {
-    destination: '/workspace/overview',
+    destination: "/workspace/overview",
     permanent: false,
   },
 });

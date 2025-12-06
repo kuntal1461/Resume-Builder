@@ -1,9 +1,12 @@
-import { mkdtemp, writeFile, readFile, rm } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import path from 'node:path';
-import { spawn, spawnSync } from 'node:child_process';
+import { mkdtemp, writeFile, readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { spawn, spawnSync } from "node:child_process";
 
-const TEX_TIMEOUT_MS = Number.parseInt(process.env.RENDER_TIMEOUT_MS ?? '20000', 10);
+const TEX_TIMEOUT_MS = Number.parseInt(
+  process.env.RENDER_TIMEOUT_MS ?? "20000",
+  10,
+);
 
 let latexmkAvailable: boolean | null = null;
 
@@ -12,32 +15,41 @@ const ensureLatexmkAvailable = () => {
     return;
   }
 
-  const result = spawnSync('latexmk', ['-v'], { stdio: 'ignore' });
+  const result = spawnSync("latexmk", ["-v"], { stdio: "ignore" });
   latexmkAvailable = result.status === 0;
   if (!latexmkAvailable) {
-    throw new Error('latexmk command not found. Install TeX Live / latexmk in the renderer environment.');
+    throw new Error(
+      "latexmk command not found. Install TeX Live / latexmk in the renderer environment.",
+    );
   }
 };
 
 const runLatexmk = (workdir: string): Promise<string> => {
   return new Promise((resolve, reject) => {
-    const args = ['-pdf', '-interaction=nonstopmode', '-halt-on-error', 'main.tex'];
-    const child = spawn('latexmk', args, { cwd: workdir });
-    let log = '';
+    const args = [
+      "-pdf",
+      "-interaction=nonstopmode",
+      "-halt-on-error",
+      "main.tex",
+    ];
+    const child = spawn("latexmk", args, { cwd: workdir });
+    let log = "";
 
-    child.stdout.on('data', (chunk) => {
+    child.stdout.on("data", (chunk) => {
       log += chunk.toString();
     });
-    child.stderr.on('data', (chunk) => {
+    child.stderr.on("data", (chunk) => {
       log += chunk.toString();
     });
 
     const timeout = setTimeout(() => {
-      child.kill('SIGKILL');
-      reject(new Error(`Rendering timed out after ${TEX_TIMEOUT_MS}ms.\n${log}`));
+      child.kill("SIGKILL");
+      reject(
+        new Error(`Rendering timed out after ${TEX_TIMEOUT_MS}ms.\n${log}`),
+      );
     }, TEX_TIMEOUT_MS);
 
-    child.on('close', (code) => {
+    child.on("close", (code) => {
       clearTimeout(timeout);
       if (code === 0) {
         resolve(log);
@@ -46,7 +58,7 @@ const runLatexmk = (workdir: string): Promise<string> => {
       }
     });
 
-    child.on('error', (error) => {
+    child.on("error", (error) => {
       clearTimeout(timeout);
       reject(error);
     });
@@ -55,13 +67,13 @@ const runLatexmk = (workdir: string): Promise<string> => {
 
 export const compileLatexToPdf = async (latexSource: string) => {
   ensureLatexmkAvailable();
-  const tempDir = await mkdtemp(path.join(tmpdir(), 'latex-render-'));
-  const texPath = path.join(tempDir, 'main.tex');
-  await writeFile(texPath, latexSource, 'utf8');
+  const tempDir = await mkdtemp(path.join(tmpdir(), "latex-render-"));
+  const texPath = path.join(tempDir, "main.tex");
+  await writeFile(texPath, latexSource, "utf8");
 
   try {
     const log = await runLatexmk(tempDir);
-    const pdfPath = path.join(tempDir, 'main.pdf');
+    const pdfPath = path.join(tempDir, "main.pdf");
     const pdfBuffer = await readFile(pdfPath);
     return { pdfBuffer, log };
   } finally {

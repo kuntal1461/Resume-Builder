@@ -1,9 +1,11 @@
-import path from 'node:path';
-import type { NextConfig } from 'next';
+import path from "node:path";
+import type { NextConfig } from "next";
 
-const workspaceRoot = path.resolve(__dirname, '../..');
+const workspaceRoot = path.resolve(__dirname, "../..");
 
-const adminDashboardOrigin = (process.env.RESUME_ADMIN_DASHBOARD_ORIGIN ?? 'http://localhost:3100').replace(/\/$/, '');
+const adminDashboardOrigin = (
+  process.env.RESUME_ADMIN_DASHBOARD_ORIGIN ?? "http://localhost:3100"
+).replace(/\/$/, "");
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -14,7 +16,7 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: '/admin/:path*',
+        source: "/admin/:path*",
         destination: `${adminDashboardOrigin}/admin/:path*`,
       },
     ];
@@ -22,7 +24,11 @@ const nextConfig: NextConfig = {
   webpack(config) {
     type CssModuleOptions = {
       localIdentName?: string;
-      getLocalIdent?: (context: unknown, identifier: string, localName: string) => string;
+      getLocalIdent?: (
+        context: unknown,
+        identifier: string,
+        localName: string,
+      ) => string;
     };
 
     type CssLoaderUse = {
@@ -39,17 +45,22 @@ const nextConfig: NextConfig = {
 
     const rules = (config.module?.rules ?? []) as RuleLike[];
 
-    const isRuleWithOneOf = (rule: RuleLike): rule is RuleLike & { oneOf: RuleLike[] } => {
+    const isRuleWithOneOf = (
+      rule: RuleLike,
+    ): rule is RuleLike & { oneOf: RuleLike[] } => {
       return Array.isArray(rule.oneOf);
     };
 
     const isCssLoaderUse = (use: unknown): use is CssLoaderUse => {
-      if (typeof use !== 'object' || use === null) {
+      if (typeof use !== "object" || use === null) {
         return false;
       }
 
       const candidate = use as CssLoaderUse;
-      return typeof candidate.loader === 'string' && candidate.loader.includes('css-loader');
+      return (
+        typeof candidate.loader === "string" &&
+        candidate.loader.includes("css-loader")
+      );
     };
 
     rules.forEach((rule) => {
@@ -67,7 +78,7 @@ const nextConfig: NextConfig = {
             return;
           }
 
-          use.options.modules.localIdentName = '[local]';
+          use.options.modules.localIdentName = "[local]";
           use.options.modules.getLocalIdent = (
             _context: unknown,
             _identifier: string,

@@ -15,7 +15,9 @@ class UserResumeVersionRepository:
         self.db_session.refresh(entity)
         return entity
 
-    def get_latest_for_resume(self, user_resume_id: int) -> Optional[UserResumeVersionEntity]:
+    def get_latest_for_resume(
+        self, user_resume_id: int
+    ) -> Optional[UserResumeVersionEntity]:
         return (
             self.db_session.query(UserResumeVersionEntity)
             .filter(UserResumeVersionEntity.user_resume_id == user_resume_id)

@@ -1,26 +1,26 @@
-import styles from '../../styles/home/Home.module.css';
+import styles from "../../styles/home/Home.module.css";
 
 const STEPS = [
   {
-    title: 'Import & polish',
+    title: "Import & polish",
     description:
-      'Upload your existing resume or start fresh. Smart suggestions help you highlight measurable wins and project impact.',
-    metric: '7 min',
-    metricLabel: 'avg. to first draft',
+      "Upload your existing resume or start fresh. Smart suggestions help you highlight measurable wins and project impact.",
+    metric: "7 min",
+    metricLabel: "avg. to first draft",
   },
   {
-    title: 'Match intelligently',
+    title: "Match intelligently",
     description:
-      'Our graph pairs your profile with verified openings that align with your skills, values, and growth trajectory.',
-    metric: '12 roles',
-    metricLabel: 'average weekly matches',
+      "Our graph pairs your profile with verified openings that align with your skills, values, and growth trajectory.",
+    metric: "12 roles",
+    metricLabel: "average weekly matches",
   },
   {
-    title: 'Connect & iterate',
+    title: "Connect & iterate",
     description:
-      'Activate concierge intros or share tracked links. Built-in interview prep keeps feedback and coaching in one place.',
-    metric: '3.4×',
-    metricLabel: 'higher response rate',
+      "Activate concierge intros or share tracked links. Built-in interview prep keeps feedback and coaching in one place.",
+    metric: "3.4×",
+    metricLabel: "higher response rate",
   },
 ];
 
@@ -32,8 +32,9 @@ export default function WorkflowSection() {
           <span className={styles.sectionEyebrow}>How it works</span>
           <h2>From upload to offer—an end-to-end job search co-pilot.</h2>
           <p>
-            JobMatch orchestrates your search across research, applications, and networking. We keep progress visible so
-            you always know your next best move.
+            JobMatch orchestrates your search across research, applications, and
+            networking. We keep progress visible so you always know your next
+            best move.
           </p>
         </div>
         <div className={styles.workflowSteps}>

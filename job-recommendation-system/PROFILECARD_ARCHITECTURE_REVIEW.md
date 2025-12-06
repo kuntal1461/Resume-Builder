@@ -37,6 +37,7 @@ ProfileCard (renders in sidebar)
 ### 2. **Key Components**
 
 #### **WorkspaceProfileProvider** (`components/workspace/WorkspaceProfileProvider.tsx`)
+
 - **Purpose**: Global state management for user profile
 - **Lifecycle**: Mounted once in `_app.tsx`, persists across all pages
 - **Data Source**: localStorage (`jobmatch.workspaceProfile`)
@@ -47,6 +48,7 @@ ProfileCard (renders in sidebar)
   - Uses `useMemo` to prevent unnecessary re-renders
 
 **Key Code**:
+
 ```typescript
 export function WorkspaceProfileProvider({ children }: { children: ReactNode }) {
   const [identity, setIdentity] = useState<WorkspaceIdentity>(DEFAULT_IDENTITY);
@@ -84,13 +86,17 @@ export function WorkspaceProfileProvider({ children }: { children: ReactNode }) 
 ```
 
 #### **useWorkspaceShellProfile** (`components/workspace/useWorkspaceShellProfile.ts`)
+
 - **Purpose**: Provides profile data to page components
 - **Optimization**: Uses `useMemo` to prevent recalculation
 - **Returns**: Memoized profile object
 
 **Key Code**:
+
 ```typescript
-export function useWorkspaceShellProfile(baseProfile: WorkspaceProfileFallback): WorkspaceProfileFallback {
+export function useWorkspaceShellProfile(
+  baseProfile: WorkspaceProfileFallback,
+): WorkspaceProfileFallback {
   const { identity } = useWorkspaceProfile(); // Reads from Context
 
   return useMemo(
@@ -99,17 +105,19 @@ export function useWorkspaceShellProfile(baseProfile: WorkspaceProfileFallback):
       name: identity.name,
       initials: identity.initials,
     }),
-    [baseProfile, identity.name, identity.initials] // Only recomputes if these change
+    [baseProfile, identity.name, identity.initials], // Only recomputes if these change
   );
 }
 ```
 
 #### **AppShell** (`components/workspace/AppShell.tsx`)
+
 - **Purpose**: Layout component with sidebar and profileCard
 - **Data**: Receives profile as a **prop** (no fetching)
 - **Rendering**: Pure presentation component
 
 **Key Code**:
+
 ```typescript
 export default function AppShell({
   children,
@@ -122,7 +130,7 @@ export default function AppShell({
     <div className={styles.appShell}>
       <aside className={styles.sidebar}>
         {/* Brand */}
-        
+
         {/* ProfileCard - uses prop data */}
         <section className={styles.profileCard}>
           <div className={styles.profileHeader}>
@@ -139,7 +147,7 @@ export default function AppShell({
         {/* Navigation Menu */}
         <nav>{/* ... */}</nav>
       </aside>
-      
+
       <section className={styles.appContent}>{children}</section>
     </div>
   );
@@ -160,13 +168,13 @@ const PROFILE = createGuestWorkspaceProfile({
 
 export default function WorkspaceJobSearchPage() {
   const shellProfile = useWorkspaceShellProfile(PROFILE); // ← Gets data from Context
-  
+
   return (
     <>
       <Head>{/* ... */}</Head>
-      <AppShell 
-        menuItems={APP_MENU_ITEMS} 
-        profileTasks={DEFAULT_PROFILE_TASKS} 
+      <AppShell
+        menuItems={APP_MENU_ITEMS}
+        profileTasks={DEFAULT_PROFILE_TASKS}
         profile={shellProfile} // ← Passes memoized data
       >
         {/* Page content */}
@@ -181,21 +189,25 @@ export default function WorkspaceJobSearchPage() {
 ## Why ProfileCard Doesn't Reload on Menu Clicks
 
 ### **1. Context Persists Across Routes**
+
 - `WorkspaceProfileProvider` is mounted in `_app.tsx`
 - It wraps **all pages**, so the context state persists during navigation
 - When you click a menu item, Next.js changes the route, but the provider stays mounted
 
 ### **2. Data is Loaded Once**
+
 - Profile data is loaded from localStorage **once** when the app mounts
 - Subsequent page navigations reuse the same context data
 - No API calls or localStorage reads happen on menu clicks
 
 ### **3. Memoization Prevents Recalculation**
+
 - `useWorkspaceShellProfile` uses `useMemo`
 - Profile object is only recalculated if `identity.name` or `identity.initials` change
 - Menu clicks don't change these values, so no recalculation happens
 
 ### **4. AppShell is a Pure Component**
+
 - It receives profile data as a prop
 - It doesn't fetch, compute, or transform data
 - It just renders what it receives
@@ -204,13 +216,13 @@ export default function WorkspaceJobSearchPage() {
 
 ## Performance Characteristics
 
-| Event | Profile Data Action | Performance Impact |
-|-------|-------------------|-------------------|
-| **App Mount** | Load from localStorage once | ✅ Minimal (one-time) |
-| **Menu Click** | None (reuses context) | ✅ Zero overhead |
-| **Page Navigation** | None (reuses context) | ✅ Zero overhead |
-| **Tab Switch** | Sync from localStorage (if changed) | ✅ Minimal (event-driven) |
-| **Manual Refresh** | Reload from localStorage | ✅ Minimal (user-triggered) |
+| Event               | Profile Data Action                 | Performance Impact          |
+| ------------------- | ----------------------------------- | --------------------------- |
+| **App Mount**       | Load from localStorage once         | ✅ Minimal (one-time)       |
+| **Menu Click**      | None (reuses context)               | ✅ Zero overhead            |
+| **Page Navigation** | None (reuses context)               | ✅ Zero overhead            |
+| **Tab Switch**      | Sync from localStorage (if changed) | ✅ Minimal (event-driven)   |
+| **Manual Refresh**  | Reload from localStorage            | ✅ Minimal (user-triggered) |
 
 ---
 
@@ -223,7 +235,7 @@ To verify that the profileCard is NOT reloading on menu clicks, you can add cons
 ```typescript
 // In WorkspaceProfileProvider.tsx
 const loadIdentity = useCallback(() => {
-  console.log('🔄 Loading profile identity from localStorage');
+  console.log("🔄 Loading profile identity from localStorage");
   const loaded = loadWorkspaceProfile();
   setSnapshot(loaded);
   setIdentity(buildWorkspaceIdentity(DEFAULT_IDENTITY, loaded));
@@ -237,11 +249,13 @@ const loadIdentity = useCallback(() => {
 
 ```typescript
 // In useWorkspaceShellProfile.ts
-export function useWorkspaceShellProfile(baseProfile: WorkspaceProfileFallback): WorkspaceProfileFallback {
+export function useWorkspaceShellProfile(
+  baseProfile: WorkspaceProfileFallback,
+): WorkspaceProfileFallback {
   const { identity } = useWorkspaceProfile();
 
   return useMemo(() => {
-    console.log('🎨 Computing shell profile', identity.name);
+    console.log("🎨 Computing shell profile", identity.name);
     return {
       ...baseProfile,
       name: identity.name,
@@ -252,6 +266,7 @@ export function useWorkspaceShellProfile(baseProfile: WorkspaceProfileFallback):
 ```
 
 **Expected Result**: You should see "🎨 Computing shell profile" only when:
+
 - The page first renders
 - The identity actually changes (e.g., after login)
 
@@ -263,13 +278,13 @@ NOT on every menu click.
 
 The job-recommendation-system implementation is **more modular** than the resume-admin-dashboard:
 
-| Feature | Job Recommendation System | Resume Admin Dashboard |
-|---------|--------------------------|----------------------|
-| **Global State** | ✅ React Context Provider | ❌ Hook in each page |
-| **Data Loading** | ✅ Once on app mount | ⚠️ On every page mount |
-| **Memoization** | ✅ useMemo in hook | ⚠️ Limited |
-| **Cross-tab Sync** | ✅ Storage event listener | ❌ No sync |
-| **API Calls** | ✅ Only on login | ⚠️ On every page load |
+| Feature            | Job Recommendation System | Resume Admin Dashboard |
+| ------------------ | ------------------------- | ---------------------- |
+| **Global State**   | ✅ React Context Provider | ❌ Hook in each page   |
+| **Data Loading**   | ✅ Once on app mount      | ⚠️ On every page mount |
+| **Memoization**    | ✅ useMemo in hook        | ⚠️ Limited             |
+| **Cross-tab Sync** | ✅ Storage event listener | ❌ No sync             |
+| **API Calls**      | ✅ Only on login          | ⚠️ On every page load  |
 
 ---
 
@@ -278,6 +293,7 @@ The job-recommendation-system implementation is **more modular** than the resume
 ### ✅ **Current Implementation is Excellent**
 
 The job-recommendation-system already follows best practices:
+
 1. **Single source of truth** (Context Provider)
 2. **Load once, use everywhere** (localStorage + Context)
 3. **Memoization** (useMemo prevents unnecessary recalculation)

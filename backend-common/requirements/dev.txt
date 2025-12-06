@@ -1,0 +1,4 @@
+# Developer tooling pinned for reproducible CI
+black==24.10.0
+pytest==8.3.3
+ruff==0.7.4

@@ -1,23 +1,23 @@
-import styles from '../../styles/home/Home.module.css';
+import styles from "../../styles/home/Home.module.css";
 
 const TESTIMONIALS = [
   {
     quote:
-      'Within a week my resume score jumped from 63 to 92, and the matches I received were spot-on. Landed two onsite interviews in 10 days.',
-    name: 'Priya Sharma',
-    title: 'Senior Product Manager · HexaCloud',
+      "Within a week my resume score jumped from 63 to 92, and the matches I received were spot-on. Landed two onsite interviews in 10 days.",
+    name: "Priya Sharma",
+    title: "Senior Product Manager · HexaCloud",
   },
   {
     quote:
-      'The recruiter handoff was seamless. JobMatch surfaced a role at a company I never would have found, then tailored my bullet points to the JD.',
-    name: 'Luis Martinez',
-    title: 'Staff ML Engineer · RedSky Robotics',
+      "The recruiter handoff was seamless. JobMatch surfaced a role at a company I never would have found, then tailored my bullet points to the JD.",
+    name: "Luis Martinez",
+    title: "Staff ML Engineer · RedSky Robotics",
   },
   {
     quote:
-      'I loved having personalized interview briefs fed from my resume. The insights turned a cold outreach into a signed offer.',
-    name: 'Monica Allen',
-    title: 'Revenue Operations Lead · Brightside',
+      "I loved having personalized interview briefs fed from my resume. The insights turned a cold outreach into a signed offer.",
+    name: "Monica Allen",
+    title: "Revenue Operations Lead · Brightside",
   },
 ];
 
@@ -28,8 +28,8 @@ export default function TestimonialsSection() {
         <span className={styles.sectionEyebrow}>Success stories</span>
         <h2>Real candidates. Real offers. Happier Mondays.</h2>
         <p>
-          Thousands of global professionals rely on JobMatch to navigate career pivots, promotions, and relocations with
-          confidence.
+          Thousands of global professionals rely on JobMatch to navigate career
+          pivots, promotions, and relocations with confidence.
         </p>
       </div>
       <div className={styles.testimonialsGrid}>

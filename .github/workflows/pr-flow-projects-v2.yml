@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [opened, ready_for_review]
   workflow_run:
-    workflows: ["CI"]     # must match your CI workflow name
+    workflows: ["CI"] # must match your CI workflow name
     types: [completed]
   pull_request_review:
     types: [submitted]
@@ -15,7 +15,7 @@ permissions:
   contents: write
   pull-requests: write
   issues: write
-  repository-projects: write   # not used for user-owned projects, but harmless
+  repository-projects: write # not used for user-owned projects, but harmless
 
 env:
   # User-owned Project v2 (requires PAT with repo, project scopes)
@@ -75,7 +75,7 @@ jobs:
       - name: Find PR → add to Project → set Status=Code Review Request → request reviewers
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GH_PAT }}   # PAT required for user-owned Project v2
+          github-token: ${{ secrets.GH_PAT }} # PAT required for user-owned Project v2
           script: |
             const run = context.payload.workflow_run;
             const { owner, repo } = context.repo;
@@ -163,7 +163,7 @@ jobs:
       - name: Set Status=In Review (or back to Code Review Request) & notify author
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GH_PAT }}   # PAT required
+          github-token: ${{ secrets.GH_PAT }} # PAT required
           script: |
             const { owner, repo } = context.repo;
             const pr = context.payload.pull_request;
@@ -218,7 +218,7 @@ jobs:
       - name: Merge if approved & green; then set Status=Done
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GH_PAT }}   # PAT required for Project v2 step; REST calls also work with PAT
+          github-token: ${{ secrets.GH_PAT }} # PAT required for Project v2 step; REST calls also work with PAT
           script: |
             const { owner, repo } = context.repo;
 

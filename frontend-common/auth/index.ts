@@ -7,4 +7,4 @@ export type StoredAdminProfile = {
   isAdmin?: boolean | null;
 };
 
-export const ADMIN_PROFILE_STORAGE_KEY = 'jobmatch.adminProfile';
+export const ADMIN_PROFILE_STORAGE_KEY = "jobmatch.adminProfile";

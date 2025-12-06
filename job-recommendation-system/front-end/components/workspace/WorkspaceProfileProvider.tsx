@@ -1,16 +1,23 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import type { ReactNode } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import type { ReactNode } from "react";
 import {
   WORKSPACE_PROFILE_STORAGE_KEY,
   buildWorkspaceIdentity,
   loadWorkspaceProfile,
   type WorkspaceProfileSnapshot,
-} from '../../lib/workspaceProfileStorage';
+} from "../../lib/workspaceProfileStorage";
 
 const DEFAULT_IDENTITY = {
-  name: 'Guest',
-  initials: 'GU',
-  email: '',
+  name: "Guest",
+  initials: "GU",
+  email: "",
 };
 
 type WorkspaceIdentity = typeof DEFAULT_IDENTITY;
@@ -22,11 +29,19 @@ type WorkspaceProfileContextValue = {
   refresh: () => void;
 };
 
-const WorkspaceProfileContext = createContext<WorkspaceProfileContextValue | undefined>(undefined);
+const WorkspaceProfileContext = createContext<
+  WorkspaceProfileContextValue | undefined
+>(undefined);
 
-export function WorkspaceProfileProvider({ children }: { children: ReactNode }) {
+export function WorkspaceProfileProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const [identity, setIdentity] = useState<WorkspaceIdentity>(DEFAULT_IDENTITY);
-  const [snapshot, setSnapshot] = useState<WorkspaceProfileSnapshot | null>(null);
+  const [snapshot, setSnapshot] = useState<WorkspaceProfileSnapshot | null>(
+    null,
+  );
   const [isLoaded, setIsLoaded] = useState(false);
 
   const loadIdentity = useCallback(() => {
@@ -41,7 +56,7 @@ export function WorkspaceProfileProvider({ children }: { children: ReactNode }) 
   }, [loadIdentity]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return;
     }
 
@@ -52,22 +67,28 @@ export function WorkspaceProfileProvider({ children }: { children: ReactNode }) 
       loadIdentity();
     };
 
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
   }, [loadIdentity]);
 
   const value = useMemo(
     () => ({ identity, snapshot, isLoaded, refresh: loadIdentity }),
-    [identity, snapshot, isLoaded, loadIdentity]
+    [identity, snapshot, isLoaded, loadIdentity],
   );
 
-  return <WorkspaceProfileContext.Provider value={value}>{children}</WorkspaceProfileContext.Provider>;
+  return (
+    <WorkspaceProfileContext.Provider value={value}>
+      {children}
+    </WorkspaceProfileContext.Provider>
+  );
 }
 
 export function useWorkspaceProfile(): WorkspaceProfileContextValue {
   const context = useContext(WorkspaceProfileContext);
   if (!context) {
-    throw new Error('useWorkspaceProfile must be used within a WorkspaceProfileProvider');
+    throw new Error(
+      "useWorkspaceProfile must be used within a WorkspaceProfileProvider",
+    );
   }
   return context;
 }

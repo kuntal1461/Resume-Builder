@@ -107,7 +107,10 @@ def get_user_profile(
     service: UserService = Depends(get_user_service),
 ):
     if not email and not username:
-        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Provide an email or username to look up the profile.")
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            "Provide an email or username to look up the profile.",
+        )
 
     try:
         profile = service.get_user_profile(email=email, username=username)
@@ -118,7 +121,8 @@ def get_user_profile(
 
 @router.post("/token", response_model=TokenResponse)
 def login_for_access_token(
-    form_data: OAuth2PasswordRequestForm = Depends(), service: UserService = Depends(get_user_service)
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    service: UserService = Depends(get_user_service),
 ):
     return _issue_token_response(form_data.username, form_data.password, service)
 

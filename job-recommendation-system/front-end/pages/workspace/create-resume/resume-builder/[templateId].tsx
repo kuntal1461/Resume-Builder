@@ -1,20 +1,29 @@
-import Head from 'next/head';
-import Link from 'next/link';
-import { useEffect, useState, type FormEvent } from 'react';
-import type { GetServerSideProps } from 'next';
-import AppShell from '../../../../components/workspace/AppShell';
-import { APP_MENU_ITEMS, DEFAULT_PROFILE_TASKS } from '../../../../components/workspace/navigation';
-import { useWorkspaceShellProfile } from '../../../../components/workspace/useWorkspaceShellProfile';
-import { createGuestWorkspaceProfile } from '../../../../components/workspace/profileFallback';
-import styles from '../../../../styles/workspace/ResumeBuilder.module.css';
-import { fetchResumeTemplateDetail, type ResumeTemplateDetailResponse } from '../../../../lib/resumeTemplates';
-import { requestLatexPreview } from '../../../../lib/renderPreview';
-import { fetchResumeDraft, saveResumeDraft } from '../../../../lib/resumeDrafts';
-import { loadAccessToken } from '../../../../lib/authTokenStorage';
+import Head from "next/head";
+import Link from "next/link";
+import { useEffect, useState, type FormEvent } from "react";
+import type { GetServerSideProps } from "next";
+import AppShell from "../../../../components/workspace/AppShell";
+import {
+  APP_MENU_ITEMS,
+  DEFAULT_PROFILE_TASKS,
+} from "../../../../components/workspace/navigation";
+import { useWorkspaceShellProfile } from "../../../../components/workspace/useWorkspaceShellProfile";
+import { createGuestWorkspaceProfile } from "../../../../components/workspace/profileFallback";
+import styles from "../../../../styles/workspace/ResumeBuilder.module.css";
+import {
+  fetchResumeTemplateDetail,
+  type ResumeTemplateDetailResponse,
+} from "../../../../lib/resumeTemplates";
+import { requestLatexPreview } from "../../../../lib/renderPreview";
+import {
+  fetchResumeDraft,
+  saveResumeDraft,
+} from "../../../../lib/resumeDrafts";
+import { loadAccessToken } from "../../../../lib/authTokenStorage";
 
 const PROFILE = createGuestWorkspaceProfile({
-  tagline: 'Set your target role',
-  progressLabel: '5%',
+  tagline: "Set your target role",
+  progressLabel: "5%",
 });
 
 type TemplateEditorProps = {
@@ -23,15 +32,17 @@ type TemplateEditorProps = {
 
 const toTitle = (value?: string | null) => {
   if (!value) {
-    return 'Workspace template';
+    return "Workspace template";
   }
   return value
     .split(/[-_]/)
     .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
-    .join(' ');
+    .join(" ");
 };
 
-export const getServerSideProps: GetServerSideProps<TemplateEditorProps> = async ({ params }) => {
+export const getServerSideProps: GetServerSideProps<
+  TemplateEditorProps
+> = async ({ params }) => {
   const rawId = params?.templateId;
   const idNumber = Number(Array.isArray(rawId) ? rawId[0] : rawId);
 
@@ -43,7 +54,7 @@ export const getServerSideProps: GetServerSideProps<TemplateEditorProps> = async
     const template = await fetchResumeTemplateDetail(idNumber);
     return { props: { template } };
   } catch (error) {
-    console.error('Failed to fetch template detail', error);
+    console.error("Failed to fetch template detail", error);
     return { notFound: true };
   }
 };
@@ -51,17 +62,19 @@ export const getServerSideProps: GetServerSideProps<TemplateEditorProps> = async
 export default function TemplateEditorPage({ template }: TemplateEditorProps) {
   const shellProfile = useWorkspaceShellProfile(PROFILE);
   const [draftTitle, setDraftTitle] = useState(`${template.title} Resume`);
-  const [draftRole, setDraftRole] = useState('');
-  const [draftSummary, setDraftSummary] = useState('');
-  const [draftNotes, setDraftNotes] = useState('');
-  const [latexDraft, setLatexDraft] = useState(template.latex_source ?? '');
+  const [draftRole, setDraftRole] = useState("");
+  const [draftSummary, setDraftSummary] = useState("");
+  const [draftNotes, setDraftNotes] = useState("");
+  const [latexDraft, setLatexDraft] = useState(template.latex_source ?? "");
   const [editorMessage, setEditorMessage] = useState<string | null>(null);
   const [editorError, setEditorError] = useState<string | null>(null);
   const [renderingPreview, setRenderingPreview] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewExcerpt, setPreviewExcerpt] = useState<string | null>(null);
-  const categoryLabel = toTitle(template.child_category_slug ?? template.parent_category_slug);
+  const categoryLabel = toTitle(
+    template.child_category_slug ?? template.parent_category_slug,
+  );
   const templateId = template.template_id;
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [loadingDraft, setLoadingDraft] = useState(false);
@@ -71,7 +84,7 @@ export default function TemplateEditorPage({ template }: TemplateEditorProps) {
     const token = loadAccessToken();
     setAccessToken(token);
     if (!token) {
-      setEditorMessage('Sign in to your workspace to save resume progress.');
+      setEditorMessage("Sign in to your workspace to save resume progress.");
     } else {
       setEditorMessage(null);
     }
@@ -93,23 +106,28 @@ export default function TemplateEditorPage({ template }: TemplateEditorProps) {
         }
 
         if (!draft) {
-          setEditorMessage('No saved draft yet. Start customizing to create one.');
+          setEditorMessage(
+            "No saved draft yet. Start customizing to create one.",
+          );
           setEditorError(null);
           return;
         }
 
         setDraftTitle(draft.title || `${template.title} Resume`);
-        setDraftRole(draft.targetRole || '');
-        setDraftSummary(draft.summary || '');
-        setDraftNotes(draft.notes || '');
-        setLatexDraft(draft.latexSource || template.latex_source || '');
-        setEditorMessage('Restored your last saved draft from your workspace.');
+        setDraftRole(draft.targetRole || "");
+        setDraftSummary(draft.summary || "");
+        setDraftNotes(draft.notes || "");
+        setLatexDraft(draft.latexSource || template.latex_source || "");
+        setEditorMessage("Restored your last saved draft from your workspace.");
         setEditorError(null);
       } catch (error) {
         if (cancelled) {
           return;
         }
-        const message = error instanceof Error ? error.message : 'Unable to load your saved draft.';
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Unable to load your saved draft.";
         setEditorError(message);
       } finally {
         if (!cancelled) {
@@ -127,7 +145,7 @@ export default function TemplateEditorPage({ template }: TemplateEditorProps) {
   const handleSave = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!accessToken) {
-      setEditorError('Sign in to your workspace to save changes.');
+      setEditorError("Sign in to your workspace to save changes.");
       return;
     }
 
@@ -146,18 +164,24 @@ export default function TemplateEditorPage({ template }: TemplateEditorProps) {
           templateVersionLabel: template.version_label ?? null,
           templateVersionNumber: template.version_number ?? null,
         },
-        accessToken
+        accessToken,
       );
       const savedTime = response.savedAt
-        ? new Date(response.savedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        ? new Date(response.savedAt).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })
         : null;
       setEditorMessage(
         savedTime
           ? `Draft saved to your workspace at ${savedTime}. Download or copy the LaTeX when you are ready.`
-          : 'Draft saved to your workspace.'
+          : "Draft saved to your workspace.",
       );
     } catch (saveError) {
-      const message = saveError instanceof Error ? saveError.message : 'Unable to save your changes.';
+      const message =
+        saveError instanceof Error
+          ? saveError.message
+          : "Unable to save your changes.";
       setEditorError(message);
     } finally {
       setSavingDraft(false);
@@ -166,35 +190,35 @@ export default function TemplateEditorPage({ template }: TemplateEditorProps) {
 
   const handleDownloadLatex = () => {
     if (!latexDraft.trim()) {
-      setEditorError('Nothing to download yet. Try editing the LaTeX first.');
+      setEditorError("Nothing to download yet. Try editing the LaTeX first.");
       return;
     }
 
-    const blob = new Blob([latexDraft], { type: 'text/plain;charset=utf-8' });
-    const link = document.createElement('a');
+    const blob = new Blob([latexDraft], { type: "text/plain;charset=utf-8" });
+    const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = `${template.title}.tex`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(link.href);
-    setEditorMessage('Downloaded a fresh .tex file with your changes.');
+    setEditorMessage("Downloaded a fresh .tex file with your changes.");
   };
 
   const handleCopyLatex = async () => {
     try {
       await navigator.clipboard.writeText(latexDraft);
-      setEditorMessage('LaTeX copied to clipboard.');
+      setEditorMessage("LaTeX copied to clipboard.");
       setEditorError(null);
     } catch (copyError) {
-      console.error('Unable to copy LaTeX source', copyError);
-      setEditorError('Unable to copy text. Please copy manually.');
+      console.error("Unable to copy LaTeX source", copyError);
+      setEditorError("Unable to copy text. Please copy manually.");
     }
   };
 
   const handleRenderPreview = async () => {
     if (!latexDraft.trim()) {
-      setPreviewError('Add LaTeX content before rendering a preview.');
+      setPreviewError("Add LaTeX content before rendering a preview.");
       return;
     }
 
@@ -207,15 +231,22 @@ export default function TemplateEditorPage({ template }: TemplateEditorProps) {
         latexSource: latexDraft,
         tokens: {
           candidate: draftTitle || template.title,
-          role: draftRole || template.child_category_slug || template.parent_category_slug || 'Target Role',
-          workspace: 'JobMatch Workspace',
+          role:
+            draftRole ||
+            template.child_category_slug ||
+            template.parent_category_slug ||
+            "Target Role",
+          workspace: "JobMatch Workspace",
         },
       });
       setPreviewUrl(preview.pdfDataUrl);
       setPreviewExcerpt(preview.excerpt);
-      setEditorMessage('Preview refreshed.');
+      setEditorMessage("Preview refreshed.");
     } catch (renderError) {
-      const message = renderError instanceof Error ? renderError.message : 'Unable to render preview.';
+      const message =
+        renderError instanceof Error
+          ? renderError.message
+          : "Unable to render preview.";
       setPreviewError(message);
     } finally {
       setRenderingPreview(false);
@@ -227,24 +258,36 @@ export default function TemplateEditorPage({ template }: TemplateEditorProps) {
       <Head>
         <title>JobMatch · Edit {template.title}</title>
       </Head>
-      <AppShell menuItems={APP_MENU_ITEMS} profileTasks={DEFAULT_PROFILE_TASKS} profile={shellProfile}>
+      <AppShell
+        menuItems={APP_MENU_ITEMS}
+        profileTasks={DEFAULT_PROFILE_TASKS}
+        profile={shellProfile}
+      >
         <div className={styles.page}>
           <section className={styles.templateHero}>
             <div className={styles.templateHeroContent}>
               <p className={styles.heroTag}>{categoryLabel}</p>
               <h1>{template.title}</h1>
               <p>
-                Customize the LaTeX blueprint curated by the JobMatch admin team. Edit copy, add your own metrics, and
-                render a pixel-perfect PDF before you export.
+                Customize the LaTeX blueprint curated by the JobMatch admin
+                team. Edit copy, add your own metrics, and render a
+                pixel-perfect PDF before you export.
               </p>
               <div className={styles.heroMeta}>
                 <div>
                   <span>Owner</span>
-                  <strong>{template.owner_name || template.owner_email || 'JobMatch Admin'}</strong>
+                  <strong>
+                    {template.owner_name ||
+                      template.owner_email ||
+                      "JobMatch Admin"}
+                  </strong>
                 </div>
                 <div>
                   <span>Version</span>
-                  <strong>{template.version_label ?? `v${template.version_number ?? 1}`}</strong>
+                  <strong>
+                    {template.version_label ??
+                      `v${template.version_number ?? 1}`}
+                  </strong>
                 </div>
                 <div>
                   <span>Status</span>
@@ -253,11 +296,19 @@ export default function TemplateEditorPage({ template }: TemplateEditorProps) {
               </div>
             </div>
             <div className={styles.heroActionsStack}>
-              <Link href="/workspace/create-resume/resume-builder" className={styles.secondaryAction}>
+              <Link
+                href="/workspace/create-resume/resume-builder"
+                className={styles.secondaryAction}
+              >
                 ← Back to gallery
               </Link>
-              <button type="button" className={styles.primaryAction} onClick={handleRenderPreview} disabled={renderingPreview}>
-                {renderingPreview ? 'Rendering preview…' : 'Render preview'}
+              <button
+                type="button"
+                className={styles.primaryAction}
+                onClick={handleRenderPreview}
+                disabled={renderingPreview}
+              >
+                {renderingPreview ? "Rendering preview…" : "Render preview"}
               </button>
             </div>
           </section>
@@ -271,7 +322,9 @@ export default function TemplateEditorPage({ template }: TemplateEditorProps) {
                 </div>
               </header>
               <p className={styles.editorIntro}>
-                Update metadata, jot notes for AI rewrites, and edit the raw LaTeX source. Changes stay local until you download or copy the template.
+                Update metadata, jot notes for AI rewrites, and edit the raw
+                LaTeX source. Changes stay local until you download or copy the
+                template.
               </p>
               {editorError ? (
                 <p className={styles.templatesError} role="alert">
@@ -333,16 +386,26 @@ export default function TemplateEditorPage({ template }: TemplateEditorProps) {
                     className={styles.primaryAction}
                     disabled={savingDraft || loadingDraft || !accessToken}
                   >
-                    {savingDraft ? 'Saving…' : 'Save changes'}
+                    {savingDraft ? "Saving…" : "Save changes"}
                   </button>
-                  <button type="button" className={styles.editorButton} onClick={handleDownloadLatex}>
+                  <button
+                    type="button"
+                    className={styles.editorButton}
+                    onClick={handleDownloadLatex}
+                  >
                     Download .tex
                   </button>
-                  <button type="button" className={styles.editorButton} onClick={handleCopyLatex}>
+                  <button
+                    type="button"
+                    className={styles.editorButton}
+                    onClick={handleCopyLatex}
+                  >
                     Copy LaTeX
                   </button>
                 </div>
-                {editorMessage ? <p className={styles.editorMessage}>{editorMessage}</p> : null}
+                {editorMessage ? (
+                  <p className={styles.editorMessage}>{editorMessage}</p>
+                ) : null}
               </form>
             </section>
 
@@ -350,7 +413,9 @@ export default function TemplateEditorPage({ template }: TemplateEditorProps) {
               <div className={styles.previewSidebarHeader}>
                 <p className={styles.sectionTag}>Live PDF preview</p>
                 <p>
-                  Render your LaTeX to a PDF to confirm spacing and typography before exporting. We&apos;ll show a quick excerpt for reference.
+                  Render your LaTeX to a PDF to confirm spacing and typography
+                  before exporting. We&apos;ll show a quick excerpt for
+                  reference.
                 </p>
               </div>
               {previewError ? (
@@ -360,14 +425,27 @@ export default function TemplateEditorPage({ template }: TemplateEditorProps) {
               ) : null}
               {previewUrl ? (
                 <>
-                  {previewExcerpt ? <p className={styles.previewExcerpt}>{previewExcerpt}</p> : null}
-                  <iframe title="Resume PDF preview" src={previewUrl} className={styles.previewFrame} />
+                  {previewExcerpt ? (
+                    <p className={styles.previewExcerpt}>{previewExcerpt}</p>
+                  ) : null}
+                  <iframe
+                    title="Resume PDF preview"
+                    src={previewUrl}
+                    className={styles.previewFrame}
+                  />
                 </>
               ) : (
                 <div className={styles.previewPlaceholder}>
-                  <p>Render the PDF preview to visualize your template instantly.</p>
-                  <button type="button" className={styles.primaryAction} onClick={handleRenderPreview} disabled={renderingPreview}>
-                    {renderingPreview ? 'Rendering preview…' : 'Render preview'}
+                  <p>
+                    Render the PDF preview to visualize your template instantly.
+                  </p>
+                  <button
+                    type="button"
+                    className={styles.primaryAction}
+                    onClick={handleRenderPreview}
+                    disabled={renderingPreview}
+                  >
+                    {renderingPreview ? "Rendering preview…" : "Render preview"}
                   </button>
                 </div>
               )}

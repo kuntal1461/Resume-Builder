@@ -1,5 +1,5 @@
-import { getEnvironmentConfig } from './runtimeConfig';
-import { describeNetworkError } from './networkErrors';
+import { getEnvironmentConfig } from "./runtimeConfig";
+import { describeNetworkError } from "./networkErrors";
 
 export type SaveResumeDraftPayload = {
   templateId: number;
@@ -35,10 +35,10 @@ export type ResumeDraftSnapshot = {
 
 export async function saveResumeDraft(
   payload: SaveResumeDraftPayload,
-  accessToken: string
+  accessToken: string,
 ): Promise<SaveResumeDraftResult> {
   if (!accessToken) {
-    throw new Error('Sign in to your workspace to save a draft.');
+    throw new Error("Sign in to your workspace to save a draft.");
   }
 
   const config = await getEnvironmentConfig();
@@ -46,9 +46,9 @@ export async function saveResumeDraft(
 
   try {
     const response = await fetch(`${apiBaseUrl}/workspace/resumes/draft`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({
@@ -66,33 +66,40 @@ export async function saveResumeDraft(
 
     if (!response.ok) {
       const detail = await response.text();
-      throw new Error(detail || 'Unable to save your resume draft.');
+      throw new Error(detail || "Unable to save your resume draft.");
     }
 
     return (await response.json()) as SaveResumeDraftResult;
   } catch (error) {
-    const { message } = describeNetworkError(error, 'Unable to save your resume draft. Please try again.', {
-      apiBaseUrl,
-    });
+    const { message } = describeNetworkError(
+      error,
+      "Unable to save your resume draft. Please try again.",
+      {
+        apiBaseUrl,
+      },
+    );
     throw new Error(message);
   }
 }
 
 export async function fetchResumeDraft(
   templateId: number,
-  accessToken: string
+  accessToken: string,
 ): Promise<ResumeDraftSnapshot | null> {
   if (!accessToken) {
-    throw new Error('Sign in to your workspace to load drafts.');
+    throw new Error("Sign in to your workspace to load drafts.");
   }
 
   const config = await getEnvironmentConfig();
   const apiBaseUrl = config.apiBaseUrl;
 
   try {
-    const response = await fetch(`${apiBaseUrl}/workspace/resumes/draft?templateId=${encodeURIComponent(templateId)}`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
+    const response = await fetch(
+      `${apiBaseUrl}/workspace/resumes/draft?templateId=${encodeURIComponent(templateId)}`,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      },
+    );
 
     if (response.status === 404) {
       return null;
@@ -100,12 +107,16 @@ export async function fetchResumeDraft(
 
     if (!response.ok) {
       const detail = await response.text();
-      throw new Error(detail || 'Unable to load your saved resume draft.');
+      throw new Error(detail || "Unable to load your saved resume draft.");
     }
 
     return (await response.json()) as ResumeDraftSnapshot;
   } catch (error) {
-    const { message } = describeNetworkError(error, 'Unable to load your saved resume draft.', { apiBaseUrl });
+    const { message } = describeNetworkError(
+      error,
+      "Unable to load your saved resume draft.",
+      { apiBaseUrl },
+    );
     throw new Error(message);
   }
 }

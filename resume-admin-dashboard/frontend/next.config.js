@@ -1,8 +1,8 @@
-const path = require('node:path');
+const path = require("node:path");
 
-const workspaceRoot = path.resolve(__dirname, '../..');
+const workspaceRoot = path.resolve(__dirname, "../..");
 
-const basePath = '/admin';
+const basePath = "/admin";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -19,7 +19,8 @@ const nextConfig = {
   webpack(config) {
     const rules = config.module?.rules ?? [];
 
-    const ensureArray = (value) => (Array.isArray(value) ? value : value ? [value] : []);
+    const ensureArray = (value) =>
+      Array.isArray(value) ? value : value ? [value] : [];
 
     const visitRule = (rule) => {
       if (rule.oneOf && Array.isArray(rule.oneOf)) {
@@ -28,15 +29,15 @@ const nextConfig = {
       }
 
       ensureArray(rule.use).forEach((use) => {
-        if (!use || typeof use !== 'object') return;
-        if (typeof use.loader !== 'string') return;
-        if (!use.loader.includes('css-loader')) return;
+        if (!use || typeof use !== "object") return;
+        if (typeof use.loader !== "string") return;
+        if (!use.loader.includes("css-loader")) return;
         if (!use.options || !use.options.modules) return;
 
         use.options.modules = {
           ...use.options.modules,
-          exportLocalsConvention: 'asIs',
-          mode: 'local',
+          exportLocalsConvention: "asIs",
+          mode: "local",
           getLocalIdent: (_context, _identifier, localName) => localName,
         };
       });
@@ -46,9 +47,12 @@ const nextConfig = {
 
     config.resolve = config.resolve || {};
     config.resolve.alias = config.resolve.alias || {};
-    config.resolve.alias['@frontend-common'] = path.join(workspaceRoot, 'frontend-common');
-    config.resolve.alias['lib'] = path.join(__dirname, 'lib');
-    config.resolve.alias['styles'] = path.join(__dirname, 'styles');
+    config.resolve.alias["@frontend-common"] = path.join(
+      workspaceRoot,
+      "frontend-common",
+    );
+    config.resolve.alias["lib"] = path.join(__dirname, "lib");
+    config.resolve.alias["styles"] = path.join(__dirname, "styles");
 
     return config;
   },

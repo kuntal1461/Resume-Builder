@@ -1,4 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from "next";
 
 import {
   fetchTemplateDetail,
@@ -6,7 +6,7 @@ import {
   type ResumeTemplateDetailResponse,
   type UpdateTemplateRequest,
   type CreateTemplateResponse,
-} from '../../../../lib/server/resumeTemplates';
+} from "../../../../lib/server/resumeTemplates";
 
 type ErrorResponse = { error: string };
 type SuccessResponse = ResumeTemplateDetailResponse | CreateTemplateResponse;
@@ -20,33 +20,35 @@ export default async function handler(
   const idNumber = normalized ? Number(normalized) : NaN;
 
   if (!Number.isFinite(idNumber)) {
-    res.status(400).json({ error: 'Invalid template id' });
+    res.status(400).json({ error: "Invalid template id" });
     return;
   }
 
-  if (req.method === 'GET') {
+  if (req.method === "GET") {
     try {
       const response = await fetchTemplateDetail(idNumber);
       res.status(200).json(response);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unable to load template';
+      const message =
+        error instanceof Error ? error.message : "Unable to load template";
       res.status(502).json({ error: message });
     }
     return;
   }
 
-  if (req.method === 'PUT') {
+  if (req.method === "PUT") {
     const payload = req.body as UpdateTemplateRequest;
     try {
       const response = await updateTemplate(idNumber, payload);
       res.status(200).json(response);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unable to update template';
+      const message =
+        error instanceof Error ? error.message : "Unable to update template";
       res.status(502).json({ error: message });
     }
     return;
   }
 
-  res.setHeader('Allow', 'GET, PUT');
-  res.status(405).json({ error: 'Method not allowed' });
+  res.setHeader("Allow", "GET, PUT");
+  res.status(405).json({ error: "Method not allowed" });
 }

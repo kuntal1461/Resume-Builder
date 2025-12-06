@@ -1,14 +1,14 @@
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import styles from '../../styles/home/Home.module.css';
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import styles from "../../styles/home/Home.module.css";
 
 const NAV_LINKS = [
-  { href: '#features', label: 'Features' },
-  { href: '#workflow', label: 'How it works' },
-  { href: '#testimonials', label: 'Success stories' },
-  { href: '#pricing', label: 'Plans' },
-  { href: '#faq', label: 'FAQ' },
+  { href: "#features", label: "Features" },
+  { href: "#workflow", label: "How it works" },
+  { href: "#testimonials", label: "Success stories" },
+  { href: "#pricing", label: "Plans" },
+  { href: "#faq", label: "FAQ" },
 ];
 
 export default function SiteHeader() {
@@ -20,8 +20,8 @@ export default function SiteHeader() {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 12);
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
@@ -33,30 +33,32 @@ export default function SiteHeader() {
         setIsMobileMenuOpen(false);
       }
     };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [isMobileMenuOpen]);
 
   const toggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
   const handleBrandClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
     closeMobileMenu();
-    if (router.pathname === '/') {
-      if (typeof window !== 'undefined') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (router.pathname === "/") {
+      if (typeof window !== "undefined") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
       return;
     }
     event.preventDefault();
-    if (typeof window !== 'undefined') {
-      window.location.href = '/';
+    if (typeof window !== "undefined") {
+      window.location.href = "/";
     } else {
-      router.push('/');
+      router.push("/");
     }
   };
 
   return (
-    <header className={`${styles.header} ${isScrolled ? styles.headerScrolled : ''}`}>
+    <header
+      className={`${styles.header} ${isScrolled ? styles.headerScrolled : ""}`}
+    >
       <div className={styles.headerInner}>
         <Link href="/" className={styles.brand} onClick={handleBrandClick}>
           <span className={styles.brandMark}>JR</span>
@@ -87,7 +89,9 @@ export default function SiteHeader() {
           onClick={toggleMobileMenu}
           className={styles.mobileToggle}
           aria-expanded={isMobileMenuOpen}
-          aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-label={
+            isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"
+          }
           aria-controls="mobile-nav"
         >
           <span />
@@ -98,21 +102,34 @@ export default function SiteHeader() {
 
       <nav
         id="mobile-nav"
-        className={`${styles.navMobile} ${isMobileMenuOpen ? styles.navMobileOpen : ''}`}
+        className={`${styles.navMobile} ${isMobileMenuOpen ? styles.navMobileOpen : ""}`}
         aria-label="Mobile primary"
       >
         <div className={styles.navMobileLinks}>
           {NAV_LINKS.map((link) => (
-            <a key={link.href} href={link.href} className={styles.navMobileLink} onClick={closeMobileMenu}>
+            <a
+              key={link.href}
+              href={link.href}
+              className={styles.navMobileLink}
+              onClick={closeMobileMenu}
+            >
               {link.label}
             </a>
           ))}
         </div>
         <div className={styles.navMobileCtas}>
-          <Link href="/auth/login" className={styles.secondaryCta} onClick={closeMobileMenu}>
+          <Link
+            href="/auth/login"
+            className={styles.secondaryCta}
+            onClick={closeMobileMenu}
+          >
             Sign in
           </Link>
-          <Link href="/auth/signup" className={styles.primaryCta} onClick={closeMobileMenu}>
+          <Link
+            href="/auth/signup"
+            className={styles.primaryCta}
+            onClick={closeMobileMenu}
+          >
             Create free account
           </Link>
         </div>

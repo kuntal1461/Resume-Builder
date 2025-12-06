@@ -26,7 +26,7 @@
 }
 
 .jobSearchHero::before {
-  content: '';
+  content: "";
   position: absolute;
   width: 220px;
   height: 220px;
@@ -34,21 +34,29 @@
   pointer-events: none;
   top: -60px;
   right: -30px;
-  background: radial-gradient(circle at center, rgba(255, 198, 105, 0.3) 0%, rgba(255, 198, 105, 0) 70%);
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 198, 105, 0.3) 0%,
+    rgba(255, 198, 105, 0) 70%
+  );
 }
 
 .jobSearchHero::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 220px;
   height: 220px;
   border-radius: 50%;
   bottom: -40px;
   left: -20px;
-  background: radial-gradient(circle at center, rgba(96, 255, 218, 0.26) 0%, rgba(96, 255, 218, 0) 68%);
+  background: radial-gradient(
+    circle at center,
+    rgba(96, 255, 218, 0.26) 0%,
+    rgba(96, 255, 218, 0) 68%
+  );
 }
 
-.jobSearchHero>* {
+.jobSearchHero > * {
   position: relative;
   z-index: 1;
 }
@@ -203,10 +211,14 @@
 }
 
 .jobSearchEmptyState::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 85% 10%, rgba(88, 197, 255, 0.15), transparent 55%);
+  background: radial-gradient(
+    circle at 85% 10%,
+    rgba(88, 197, 255, 0.15),
+    transparent 55%
+  );
   pointer-events: none;
 }
 
@@ -308,7 +320,7 @@
 }
 
 .jobSearchEmptyList li::before {
-  content: '';
+  content: "";
   width: 6px;
   height: 6px;
   border-radius: 50%;
@@ -364,7 +376,7 @@
 }
 
 .jobSearchSelectWrap::after {
-  content: '';
+  content: "";
   position: absolute;
   right: 18px;
   top: 50%;
@@ -418,7 +430,9 @@
   background: rgba(92, 76, 253, 0.04);
   text-align: left;
   cursor: pointer;
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .jobSearchExperienceCard p {
@@ -485,7 +499,10 @@
   align-items: center;
   gap: 6px;
   cursor: pointer;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
 }
 
 .jobSearchChipActive {
@@ -512,7 +529,9 @@
   color: #fff;
   cursor: pointer;
   box-shadow: 0 20px 40px rgba(88, 197, 255, 0.35);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .jobSearchPrimaryButton:disabled {
@@ -555,7 +574,6 @@
 }
 
 @keyframes jobSearchBlink {
-
   0%,
   80%,
   100% {
@@ -854,7 +872,9 @@
   opacity: 0;
   pointer-events: none;
   transform: translateY(-8px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
 }
 
 .jobSearchActionMenuItem {
@@ -870,7 +890,9 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  transition: transform 0.2s ease, background 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
 }
 
 .jobSearchActionMenuItem svg {
@@ -905,7 +927,9 @@
   font-weight: 600;
   cursor: pointer;
   align-self: flex-start;
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
   box-shadow: 0 14px 28px rgba(255, 107, 147, 0.35);
 }
 
@@ -998,7 +1022,7 @@
 }
 
 .jobDetailsList li::before {
-  content: '✓';
+  content: "✓";
   position: absolute;
   left: -1.25rem;
   color: #10b981;

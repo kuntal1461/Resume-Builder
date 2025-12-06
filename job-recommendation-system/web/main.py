@@ -18,9 +18,7 @@ server_env = get_server_environment()
 primary_frontend_origin = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")
 extra_origins_env = os.getenv("CORS_EXTRA_ORIGINS", "")
 extra_origins: List[str] = [
-    origin.strip()
-    for origin in extra_origins_env.split(",")
-    if origin.strip()
+    origin.strip() for origin in extra_origins_env.split(",") if origin.strip()
 ]
 
 allowed_origins = {primary_frontend_origin, *extra_origins}

@@ -1,47 +1,46 @@
-import Link from 'next/link';
-import { useMemo } from 'react';
-import AppDashboardAccountMenu from './AppDashboardAccountMenu';
-import styles from '../../styles/workspace/WorkspaceLayout.module.css';
-import { ArrowIcon, SparkIcon, UnlimitedLearningIcon } from './icons';
-import {
-  getWorkspaceFirstName,
-} from '../../lib/workspaceProfileStorage';
-import { useWorkspaceProfile } from './WorkspaceProfileProvider';
+import Link from "next/link";
+import { useMemo } from "react";
+import AppDashboardAccountMenu from "./AppDashboardAccountMenu";
+import styles from "../../styles/workspace/WorkspaceLayout.module.css";
+import { ArrowIcon, SparkIcon, UnlimitedLearningIcon } from "./icons";
+import { getWorkspaceFirstName } from "../../lib/workspaceProfileStorage";
+import { useWorkspaceProfile } from "./WorkspaceProfileProvider";
 
 const HERO = {
-  greeting: 'Good afternoon',
-  badge: 'Fresh this week',
-  title: 'Level up your JobMatch workspace',
+  greeting: "Good afternoon",
+  badge: "Fresh this week",
+  title: "Level up your JobMatch workspace",
   subtitle:
-    'Upgrade to unlock autopilot applications, unlimited ATS scans, and guided learning journeys tailored to your target role.',
+    "Upgrade to unlock autopilot applications, unlimited ATS scans, and guided learning journeys tailored to your target role.",
   primaryCta: {
-    label: 'Upgrade now',
-    href: '/workspace/billing/plans',
+    label: "Upgrade now",
+    href: "/workspace/billing/plans",
   },
   secondaryCta: {
-    label: 'Explore learning catalog',
-    href: '/workspace/unlimited-learning',
+    label: "Explore learning catalog",
+    href: "/workspace/unlimited-learning",
   },
 };
 
 const INSIGHT = {
-  label: 'Profile completeness',
-  value: '45%',
-  description: 'Finish your checklist to boost match quality and outreach wins.',
+  label: "Profile completeness",
+  value: "45%",
+  description:
+    "Finish your checklist to boost match quality and outreach wins.",
   action: {
-    label: 'Complete profile',
-    href: '/workspace/career-profile/profile',
+    label: "Complete profile",
+    href: "/workspace/career-profile/profile",
   },
 };
 
 const GUEST_ACCOUNT_PROFILE = {
-  name: 'Guest',
-  email: '',
-  initials: 'GU',
+  name: "Guest",
+  email: "",
+  initials: "GU",
 };
 
-const GREETING_PREFIX = HERO.greeting.includes(',')
-  ? HERO.greeting.split(',')[0]?.trim() ?? HERO.greeting
+const GREETING_PREFIX = HERO.greeting.includes(",")
+  ? (HERO.greeting.split(",")[0]?.trim() ?? HERO.greeting)
   : HERO.greeting;
 
 export default function AppDashboardHeader() {
@@ -53,18 +52,23 @@ export default function AppDashboardHeader() {
       email: identity.email || GUEST_ACCOUNT_PROFILE.email,
       initials: identity.initials || GUEST_ACCOUNT_PROFILE.initials,
     }),
-    [identity.email, identity.initials, identity.name]
+    [identity.email, identity.initials, identity.name],
   );
 
   const heroGreeting = useMemo(() => {
     if (!isLoaded) {
-      return '';
+      return "";
     }
 
-    const fallbackFirst = accountProfile.name.split(' ')[0] ?? accountProfile.name;
+    const fallbackFirst =
+      accountProfile.name.split(" ")[0] ?? accountProfile.name;
     const preferredFirstName = getWorkspaceFirstName(snapshot, fallbackFirst);
-    const greetingName = snapshot ? preferredFirstName || accountProfile.name : '';
-    return greetingName ? `${GREETING_PREFIX}, ${greetingName}`.trim() : GREETING_PREFIX;
+    const greetingName = snapshot
+      ? preferredFirstName || accountProfile.name
+      : "";
+    return greetingName
+      ? `${GREETING_PREFIX}, ${greetingName}`.trim()
+      : GREETING_PREFIX;
   }, [accountProfile.name, isLoaded, snapshot]);
 
   return (
@@ -76,7 +80,7 @@ export default function AppDashboardHeader() {
           <span
             aria-hidden="true"
             className={`${styles.dashboardGreeting} ${styles.dashboardSkeleton} ${styles.dashboardSkeletonText}`}
-            style={{ width: '160px' }}
+            style={{ width: "160px" }}
           />
         )}
         <span className={styles.dashboardHeaderBadge}>
@@ -86,11 +90,17 @@ export default function AppDashboardHeader() {
         <h2 className={styles.dashboardHeaderTitle}>{HERO.title}</h2>
         <p className={styles.dashboardHeaderSubtitle}>{HERO.subtitle}</p>
         <div className={styles.dashboardHeaderCtas}>
-          <Link href={HERO.primaryCta.href} className={styles.dashboardPrimaryAction}>
+          <Link
+            href={HERO.primaryCta.href}
+            className={styles.dashboardPrimaryAction}
+          >
             <span>{HERO.primaryCta.label}</span>
             <ArrowIcon aria-hidden="true" />
           </Link>
-          <Link href={HERO.secondaryCta.href} className={styles.dashboardSecondaryAction}>
+          <Link
+            href={HERO.secondaryCta.href}
+            className={styles.dashboardSecondaryAction}
+          >
             <UnlimitedLearningIcon aria-hidden="true" />
             <span>{HERO.secondaryCta.label}</span>
           </Link>
@@ -101,8 +111,13 @@ export default function AppDashboardHeader() {
         <article className={styles.dashboardInsightCard} aria-live="polite">
           <span className={styles.dashboardInsightLabel}>{INSIGHT.label}</span>
           <span className={styles.dashboardInsightValue}>{INSIGHT.value}</span>
-          <span className={styles.dashboardInsightMeta}>{INSIGHT.description}</span>
-          <Link className={styles.dashboardInsightLink} href={INSIGHT.action.href}>
+          <span className={styles.dashboardInsightMeta}>
+            {INSIGHT.description}
+          </span>
+          <Link
+            className={styles.dashboardInsightLink}
+            href={INSIGHT.action.href}
+          >
             {INSIGHT.action.label}
           </Link>
         </article>

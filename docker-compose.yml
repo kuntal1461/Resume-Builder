@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  api:
+  backend:
     build:
       context: .
       dockerfile: docker/Dockerfile.api
@@ -19,7 +19,7 @@ services:
       - ./backend-common:/backend_common:rw,cached
       - ./backend-common:/backend-common:rw,cached
     working_dir: /app
-    user: "1000:1000"  # non-root runtime
+    user: "1000:1000" # non-root runtime
   frontend:
     build:
       context: .
@@ -118,7 +118,11 @@ services:
     volumes:
       - mysqldata:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h localhost -p$${MYSQL_ROOT_PASSWORD} --silent",
+        ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -208,8 +212,6 @@ services:
       - redis
       - mysql
     restart: unless-stopped
-
-
 
 volumes:
   mysqldata:

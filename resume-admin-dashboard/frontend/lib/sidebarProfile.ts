@@ -1,4 +1,4 @@
-export const ADMIN_PROFILE_STORAGE_KEY = 'jobmatch.adminProfile';
+export const ADMIN_PROFILE_STORAGE_KEY = "jobmatch.adminProfile";
 
 type StoredAdminProfile = {
   userId?: number | null;
@@ -16,7 +16,7 @@ export type SidebarProfile = {
   email: string;
 };
 
-const ADMIN_TAGLINE = 'Administrator';
+const ADMIN_TAGLINE = "Administrator";
 
 const computeInitials = (name: string): string => {
   return (
@@ -24,16 +24,19 @@ const computeInitials = (name: string): string => {
       .split(/\s+/)
       .filter(Boolean)
       .slice(0, 2)
-      .map((part) => part[0]?.toUpperCase() ?? '')
-      .join('') || ''
+      .map((part) => part[0]?.toUpperCase() ?? "")
+      .join("") || ""
   );
 };
 
 const safeTrim = (value: unknown): string => {
-  return typeof value === 'string' ? value.trim() : '';
+  return typeof value === "string" ? value.trim() : "";
 };
 
-const buildName = (stored: StoredAdminProfile, fallbackName: string): string => {
+const buildName = (
+  stored: StoredAdminProfile,
+  fallbackName: string,
+): string => {
   const first = safeTrim(stored.firstName);
   const last = safeTrim(stored.lastName);
   const combined = `${first} ${last}`.trim();
@@ -54,12 +57,17 @@ const buildName = (stored: StoredAdminProfile, fallbackName: string): string => 
   return fallbackName;
 };
 
-const buildEmail = (stored: StoredAdminProfile, fallbackEmail: string): string => {
+const buildEmail = (
+  stored: StoredAdminProfile,
+  fallbackEmail: string,
+): string => {
   return safeTrim(stored.email) || fallbackEmail;
 };
 
-export function resolveSidebarProfile(defaultProfile: SidebarProfile): SidebarProfile {
-  if (typeof window === 'undefined') {
+export function resolveSidebarProfile(
+  defaultProfile: SidebarProfile,
+): SidebarProfile {
+  if (typeof window === "undefined") {
     return defaultProfile;
   }
 
@@ -70,7 +78,7 @@ export function resolveSidebarProfile(defaultProfile: SidebarProfile): SidebarPr
     }
 
     const parsed = JSON.parse(raw) as StoredAdminProfile | null;
-    if (!parsed || typeof parsed !== 'object') {
+    if (!parsed || typeof parsed !== "object") {
       return defaultProfile;
     }
 
@@ -86,19 +94,19 @@ export function resolveSidebarProfile(defaultProfile: SidebarProfile): SidebarPr
       initials,
     };
   } catch (error) {
-    console.warn('Failed to hydrate admin sidebar profile from storage', error);
+    console.warn("Failed to hydrate admin sidebar profile from storage", error);
     return defaultProfile;
   }
 }
 
 export function clearStoredSidebarProfile(): void {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return;
   }
 
   try {
     window.localStorage.removeItem(ADMIN_PROFILE_STORAGE_KEY);
   } catch (error) {
-    console.warn('Failed to clear admin profile from storage', error);
+    console.warn("Failed to clear admin profile from storage", error);
   }
 }

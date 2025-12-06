@@ -1,31 +1,31 @@
-import Link from 'next/link';
-import { useState } from 'react';
-import { useRouter } from 'next/router';
-import { getEnvironmentConfig } from '../../lib/runtimeConfig';
-import { describeNetworkError } from '../../lib/networkErrors';
-import { persistWorkspaceProfile } from '../../lib/workspaceProfileStorage';
-import { persistAccessToken } from '../../lib/authTokenStorage';
+import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/router";
+import { getEnvironmentConfig } from "../../lib/runtimeConfig";
+import { describeNetworkError } from "../../lib/networkErrors";
+import { persistWorkspaceProfile } from "../../lib/workspaceProfileStorage";
+import { persistAccessToken } from "../../lib/authTokenStorage";
 
 const normalizeDetail = (detail: unknown, fallback: string) => {
   if (!detail) {
     return fallback;
   }
-  if (typeof detail === 'string') {
+  if (typeof detail === "string") {
     return detail;
   }
   if (Array.isArray(detail)) {
     const first = detail[0];
-    if (first && typeof first === 'object') {
-      if ('msg' in first && first.msg) {
+    if (first && typeof first === "object") {
+      if ("msg" in first && first.msg) {
         return String(first.msg);
       }
-      if ('message' in first && first.message) {
+      if ("message" in first && first.message) {
         return String(first.message);
       }
     }
-    return detail.join(', ');
+    return detail.join(", ");
   }
-  if (typeof detail === 'object') {
+  if (typeof detail === "object") {
     const record = detail as Record<string, unknown>;
     if (record.message) {
       return String(record.message);
@@ -51,14 +51,17 @@ type LoginResponsePayload = {
 
 export default function LoginPage() {
   const router = useRouter();
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
-  const [flash, setFlash] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [flash, setFlash] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
 
   const highlights = [
-    'AI resume rewrite insights in one click',
-    'Curated job matches updated daily',
-    'Interview prep workspace & outreach scripts',
+    "AI resume rewrite insights in one click",
+    "Curated job matches updated daily",
+    "Interview prep workspace & outreach scripts",
   ];
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,26 +74,28 @@ export default function LoginPage() {
     setLoading(true);
     setFlash(null);
 
-    let apiBaseUrl = '';
+    let apiBaseUrl = "";
     try {
       const config = await getEnvironmentConfig();
       apiBaseUrl = config.apiBaseUrl;
 
       const response = await fetch(`${apiBaseUrl}/auth/token`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({
           username: form.email,
           password: form.password,
         }).toString(),
       });
 
-      const payload: LoginResponsePayload = await response.json().catch(() => ({} as LoginResponsePayload));
+      const payload: LoginResponsePayload = await response
+        .json()
+        .catch(() => ({}) as LoginResponsePayload);
 
       if (!response.ok || !payload?.access_token || !payload.user) {
         const message = normalizeDetail(
           payload?.detail,
-          'Unable to log in. Please check your credentials and try again.'
+          "Unable to log in. Please check your credentials and try again.",
         );
         throw new Error(message);
       }
@@ -105,22 +110,26 @@ export default function LoginPage() {
       });
 
       setFlash({
-        type: 'success',
-        message: `Welcome back, ${payload.user.username ?? payload.user.email ?? 'candidate'}!`,
+        type: "success",
+        message: `Welcome back, ${payload.user.username ?? payload.user.email ?? "candidate"}!`,
       });
 
       // Navigate to the authenticated home after successful login
-      router.push('/workspace/overview');
+      router.push("/workspace/overview");
     } catch (error) {
-      console.error('Login failed', error);
-      const { message } = describeNetworkError(error, 'Unable to log in. Please try again later.', {
-        apiBaseUrl,
-        networkMessage: apiBaseUrl
-          ? `Cannot reach API at ${apiBaseUrl}. Ensure the backend is running and accessible.`
-          : 'Cannot reach the API. Ensure the backend is running and accessible.',
-      });
+      console.error("Login failed", error);
+      const { message } = describeNetworkError(
+        error,
+        "Unable to log in. Please try again later.",
+        {
+          apiBaseUrl,
+          networkMessage: apiBaseUrl
+            ? `Cannot reach API at ${apiBaseUrl}. Ensure the backend is running and accessible.`
+            : "Cannot reach the API. Ensure the backend is running and accessible.",
+        },
+      );
       setFlash({
-        type: 'error',
+        type: "error",
         message,
       });
     } finally {
@@ -136,14 +145,18 @@ export default function LoginPage() {
             <span className="auth-brand-mark">JM</span>
             <div className="auth-brand-meta">
               <span className="auth-brand-label">JobMatch</span>
-              <span className="auth-brand-tagline">Personal career co-pilot</span>
+              <span className="auth-brand-tagline">
+                Personal career co-pilot
+              </span>
             </div>
           </div>
 
-          <h1 className="auth-hero-title">Welcome back, we saved your progress.</h1>
+          <h1 className="auth-hero-title">
+            Welcome back, we saved your progress.
+          </h1>
           <p className="auth-hero-copy">
-            Pick up where you left off with tailored job leads, recruiter-ready messaging, and automation that keeps your
-            search moving.
+            Pick up where you left off with tailored job leads, recruiter-ready
+            messaging, and automation that keeps your search moving.
           </p>
 
           <ul className="auth-highlight-list">
@@ -156,13 +169,21 @@ export default function LoginPage() {
           </ul>
         </section>
 
-        <section className="auth-card" role="main" aria-labelledby="auth-card-title">
+        <section
+          className="auth-card"
+          role="main"
+          aria-labelledby="auth-card-title"
+        >
           <div className="auth-card-header">
             <h2 id="auth-card-title">Sign in</h2>
             <p>Use your JobMatch credentials to continue.</p>
           </div>
 
-          {flash ? <div className={`auth-banner auth-banner-${flash.type}`}>{flash.message}</div> : null}
+          {flash ? (
+            <div className={`auth-banner auth-banner-${flash.type}`}>
+              {flash.message}
+            </div>
+          ) : null}
 
           <form className="auth-form" onSubmit={handleSubmit} noValidate>
             <div className="auth-field">
@@ -209,13 +230,17 @@ export default function LoginPage() {
               </a>
             </div>
 
-            <button className="auth-primary-btn" type="submit" disabled={loading}>
-              {loading ? 'Signing you in…' : 'Sign in'}
+            <button
+              className="auth-primary-btn"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? "Signing you in…" : "Sign in"}
             </button>
           </form>
 
           <p className="auth-secondary-text">
-            New to JobMatch?{' '}
+            New to JobMatch?{" "}
             <Link href="/auth/signup" className="auth-link">
               Create a free account
             </Link>

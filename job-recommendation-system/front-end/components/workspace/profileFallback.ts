@@ -6,14 +6,14 @@ export type WorkspaceProfileFallback = {
 };
 
 const GUEST_BASE_PROFILE: WorkspaceProfileFallback = {
-  name: 'Guest',
-  tagline: 'Personalize your JobMatch workspace',
-  initials: 'GU',
-  progressLabel: '0%',
+  name: "Guest",
+  tagline: "Personalize your JobMatch workspace",
+  initials: "GU",
+  progressLabel: "0%",
 };
 
 export const createGuestWorkspaceProfile = (
-  overrides?: Partial<WorkspaceProfileFallback>
+  overrides?: Partial<WorkspaceProfileFallback>,
 ): WorkspaceProfileFallback => ({
   ...GUEST_BASE_PROFILE,
   ...overrides,

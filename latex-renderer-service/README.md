@@ -44,12 +44,12 @@ The service remains stateless—every request writes to an isolated temp directo
 
 ## Scripts
 
-| Command | Purpose |
-| --- | --- |
-| `npm run dev` | Run the service with `ts-node` for local development. |
+| Command         | Purpose                                                         |
+| --------------- | --------------------------------------------------------------- |
+| `npm run dev`   | Run the service with `ts-node` for local development.           |
 | `npm run build` | Compile TypeScript to `dist/` (includes `.d.ts` for consumers). |
-| `npm start` | Start the compiled service from `dist/main.js`. |
-| `npm run lint` | Lint the TypeScript sources with ESLint. |
+| `npm start`     | Start the compiled service from `dist/main.js`.                 |
+| `npm run lint`  | Lint the TypeScript sources with ESLint.                        |
 
 ---
 

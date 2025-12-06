@@ -14,10 +14,12 @@ export async function getEnvironmentConfig(): Promise<EnvironmentConfig> {
     return cachedConfig;
   }
 
-  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
   const response = await fetch(`${basePath}/api/env-config`);
   if (!response.ok) {
-    throw new Error(`Failed to load environment config (status ${response.status})`);
+    throw new Error(
+      `Failed to load environment config (status ${response.status})`,
+    );
   }
 
   const data: EnvironmentConfig = await response.json();

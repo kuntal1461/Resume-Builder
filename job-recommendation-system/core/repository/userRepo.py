@@ -3,6 +3,7 @@ from typing import Optional
 from core.entity.UserEntity import UserEntity
 from sqlalchemy.orm import Session
 
+
 class UserRepository:
 
     def __init__(self, db_session: Session):
@@ -15,13 +16,13 @@ class UserRepository:
         return user
 
     def get_user(self, user_id: int) -> UserEntity:
-        return self.db_session.query(UserEntity).filter(UserEntity.id == user_id).first()
+        return (
+            self.db_session.query(UserEntity).filter(UserEntity.id == user_id).first()
+        )
 
     def get_user_by_email(self, email: str) -> Optional[UserEntity]:
         return (
-            self.db_session.query(UserEntity)
-            .filter(UserEntity.email == email)
-            .first()
+            self.db_session.query(UserEntity).filter(UserEntity.email == email).first()
         )
 
     def get_user_by_username(self, username: str) -> Optional[UserEntity]:
@@ -64,4 +65,3 @@ class UserRepository:
             user.is_active = False
             self.db_session.commit()
         return user
-    

@@ -1,4 +1,4 @@
-import { resolveServerEnvironment } from './environment';
+import { resolveServerEnvironment } from "./environment";
 
 export type ParentCategoryRecord = {
   id: number;
@@ -26,7 +26,7 @@ export type ChildCategoryListResponse = {
   categories: ChildCategoryRecord[];
 };
 
-export type TemplateStatus = 'draft' | 'published' | 'archive';
+export type TemplateStatus = "draft" | "published" | "archive";
 
 export type CreateTemplateRequest = {
   name: string;
@@ -111,19 +111,19 @@ export async function fetchParentCategories(
   includeInactive = false,
 ): Promise<ParentCategoryListResponse> {
   const { apiBaseUrl } = resolveServerEnvironment();
-  const url = new URL('/templates/parent-categories', apiBaseUrl);
+  const url = new URL("/templates/parent-categories", apiBaseUrl);
   if (includeInactive) {
-    url.searchParams.set('includeInactive', 'true');
+    url.searchParams.set("includeInactive", "true");
   }
 
   const response = await fetch(url.toString(), {
-    headers: { Accept: 'application/json' },
+    headers: { Accept: "application/json" },
   });
 
   if (!response.ok) {
     const reason = await response.text();
     throw new Error(
-      `Parent category fetch failed (status ${response.status}): ${reason || 'unknown error'}`,
+      `Parent category fetch failed (status ${response.status}): ${reason || "unknown error"}`,
     );
   }
 
@@ -135,20 +135,20 @@ export async function fetchChildCategories(
   includeInactive = false,
 ): Promise<ChildCategoryListResponse> {
   const { apiBaseUrl } = resolveServerEnvironment();
-  const url = new URL('/templates/child-categories', apiBaseUrl);
-  url.searchParams.set('parentId', String(parentId));
+  const url = new URL("/templates/child-categories", apiBaseUrl);
+  url.searchParams.set("parentId", String(parentId));
   if (includeInactive) {
-    url.searchParams.set('includeInactive', 'true');
+    url.searchParams.set("includeInactive", "true");
   }
 
   const response = await fetch(url.toString(), {
-    headers: { Accept: 'application/json' },
+    headers: { Accept: "application/json" },
   });
 
   if (!response.ok) {
     const reason = await response.text();
     throw new Error(
-      `Child category fetch failed (status ${response.status}): ${reason || 'unknown error'}`,
+      `Child category fetch failed (status ${response.status}): ${reason || "unknown error"}`,
     );
   }
 
@@ -159,13 +159,13 @@ export async function createTemplate(
   payload: CreateTemplateRequest,
 ): Promise<CreateTemplateResponse> {
   const { apiBaseUrl } = resolveServerEnvironment();
-  const url = new URL('/templates', apiBaseUrl);
+  const url = new URL("/templates", apiBaseUrl);
 
   const response = await fetch(url.toString(), {
-    method: 'POST',
+    method: "POST",
     headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
+      Accept: "application/json",
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
   });
@@ -173,7 +173,7 @@ export async function createTemplate(
   if (!response.ok) {
     const reason = await response.text();
     throw new Error(
-      `Template create failed (status ${response.status}): ${reason || 'unknown error'}`,
+      `Template create failed (status ${response.status}): ${reason || "unknown error"}`,
     );
   }
 
@@ -181,22 +181,22 @@ export async function createTemplate(
 }
 
 export async function fetchTemplatesByStatus(
-  status = 'draft',
+  status = "draft",
 ): Promise<ResumeTemplateListResponse> {
   const { apiBaseUrl } = resolveServerEnvironment();
-  const url = new URL('/templates', apiBaseUrl);
+  const url = new URL("/templates", apiBaseUrl);
   if (status) {
-    url.searchParams.set('status', status);
+    url.searchParams.set("status", status);
   }
 
   const response = await fetch(url.toString(), {
-    headers: { Accept: 'application/json' },
+    headers: { Accept: "application/json" },
   });
 
   if (!response.ok) {
     const reason = await response.text();
     throw new Error(
-      `Template list failed (status ${response.status}): ${reason || 'unknown error'}`,
+      `Template list failed (status ${response.status}): ${reason || "unknown error"}`,
     );
   }
 
@@ -210,13 +210,13 @@ export async function fetchTemplateDetail(
   const url = new URL(`/templates/${templateId}`, apiBaseUrl);
 
   const response = await fetch(url.toString(), {
-    headers: { Accept: 'application/json' },
+    headers: { Accept: "application/json" },
   });
 
   if (!response.ok) {
     const reason = await response.text();
     throw new Error(
-      `Template fetch failed (status ${response.status}): ${reason || 'unknown error'}`,
+      `Template fetch failed (status ${response.status}): ${reason || "unknown error"}`,
     );
   }
 
@@ -231,10 +231,10 @@ export async function updateTemplate(
   const url = new URL(`/templates/${templateId}`, apiBaseUrl);
 
   const response = await fetch(url.toString(), {
-    method: 'PUT',
+    method: "PUT",
     headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
+      Accept: "application/json",
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
   });
@@ -242,7 +242,7 @@ export async function updateTemplate(
   if (!response.ok) {
     const reason = await response.text();
     throw new Error(
-      `Template update failed (status ${response.status}): ${reason || 'unknown error'}`,
+      `Template update failed (status ${response.status}): ${reason || "unknown error"}`,
     );
   }
 
@@ -256,13 +256,13 @@ export async function fetchTemplateVersions(
   const url = new URL(`/templates/${templateId}/versions`, apiBaseUrl);
 
   const response = await fetch(url.toString(), {
-    headers: { Accept: 'application/json' },
+    headers: { Accept: "application/json" },
   });
 
   if (!response.ok) {
     const reason = await response.text();
     throw new Error(
-      `Template versions fetch failed (status ${response.status}): ${reason || 'unknown error'}`,
+      `Template versions fetch failed (status ${response.status}): ${reason || "unknown error"}`,
     );
   }
 

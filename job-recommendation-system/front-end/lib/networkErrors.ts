@@ -4,29 +4,35 @@ export type NetworkErrorDescription = {
 };
 
 const NETWORK_ERROR_PATTERNS = [
-  'failed to fetch',
-  'fetch failed',
-  'network request failed',
-  'networkerror when attempting to fetch resource',
-  'load failed',
-  'network connection lost',
+  "failed to fetch",
+  "fetch failed",
+  "network request failed",
+  "networkerror when attempting to fetch resource",
+  "load failed",
+  "network connection lost",
 ];
 
 const isLikelyNetworkError = (error: unknown): boolean => {
-  if (!error || typeof error !== 'object') {
+  if (!error || typeof error !== "object") {
     return false;
   }
 
-  const name = 'name' in error ? String((error as { name?: unknown }).name ?? '') : '';
-  const message = 'message' in error ? String((error as { message?: unknown }).message ?? '') : '';
+  const name =
+    "name" in error ? String((error as { name?: unknown }).name ?? "") : "";
+  const message =
+    "message" in error
+      ? String((error as { message?: unknown }).message ?? "")
+      : "";
   const loweredName = name.trim().toLowerCase();
   const loweredMessage = message.trim().toLowerCase();
 
-  if (loweredName === 'typeerror') {
-    return NETWORK_ERROR_PATTERNS.some((pattern) => loweredMessage.includes(pattern));
+  if (loweredName === "typeerror") {
+    return NETWORK_ERROR_PATTERNS.some((pattern) =>
+      loweredMessage.includes(pattern),
+    );
   }
 
-  if (loweredName === 'domexception' && loweredMessage.includes('aborted')) {
+  if (loweredName === "domexception" && loweredMessage.includes("aborted")) {
     return true;
   }
 
@@ -41,14 +47,14 @@ type DescribeNetworkErrorOptions = {
 export function describeNetworkError(
   error: unknown,
   fallbackMessage: string,
-  options: DescribeNetworkErrorOptions = {}
+  options: DescribeNetworkErrorOptions = {},
 ): NetworkErrorDescription {
   const { apiBaseUrl, networkMessage } = options;
 
   if (isLikelyNetworkError(error)) {
     const defaultMessage = apiBaseUrl
       ? `Unable to reach the API at ${apiBaseUrl}. Please ensure the backend is running.`
-      : 'Unable to reach the API. Please ensure the backend is running.';
+      : "Unable to reach the API. Please ensure the backend is running.";
 
     return {
       isNetworkError: true,

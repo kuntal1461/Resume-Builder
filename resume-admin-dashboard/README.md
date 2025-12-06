@@ -4,14 +4,14 @@ This sub-application powers the internal experience used to curate resume templa
 
 ## High-Level Components
 
-| Layer | Responsibility | Key Modules |
-| --- | --- | --- |
-| Database | Persists template metadata + every LaTeX version. | `data/sql/Major_01_00_00/*.sql` |
-| ORM Entities | SQLAlchemy models that expose soft-delete + audit fields. | `core/entity/*.py`, `backend-common/orm/common.py` |
-| Repository + Service layer | Encapsulates queries and business rules (validation, transactions). | `core/repository`, `core/serviceImpl` |
-| FastAPI controllers | HTTP contract for templates, categories, versions. | `web/restController/*.py` |
-| Next.js API routes | Frontend-friendly proxy that resolves env vars and handles cookies. | `frontend/pages/api/templates/*` |
-| React/Next.js pages | Admin UI (template queue, saved space, LaTeX editor). | `frontend/pages/view/templates/*` |
+| Layer                      | Responsibility                                                      | Key Modules                                        |
+| -------------------------- | ------------------------------------------------------------------- | -------------------------------------------------- |
+| Database                   | Persists template metadata + every LaTeX version.                   | `data/sql/Major_01_00_00/*.sql`                    |
+| ORM Entities               | SQLAlchemy models that expose soft-delete + audit fields.           | `core/entity/*.py`, `backend-common/orm/common.py` |
+| Repository + Service layer | Encapsulates queries and business rules (validation, transactions). | `core/repository`, `core/serviceImpl`              |
+| FastAPI controllers        | HTTP contract for templates, categories, versions.                  | `web/restController/*.py`                          |
+| Next.js API routes         | Frontend-friendly proxy that resolves env vars and handles cookies. | `frontend/pages/api/templates/*`                   |
+| React/Next.js pages        | Admin UI (template queue, saved space, LaTeX editor).               | `frontend/pages/view/templates/*`                  |
 
 ## Data Model
 
@@ -41,7 +41,7 @@ Audit fields such as `loggedBy`, `lastUpdatedBy`, `loggedInTime`, and `lastUpdat
 
 ### Next.js API Proxy
 
-- All admin pages call `/api/templates/*` routes under `frontend/pages/api`.  
+- All admin pages call `/api/templates/*` routes under `frontend/pages/api`.
 - These proxy to FastAPI via `frontend/lib/server/resumeTemplates.ts`, reusing the same environment resolution helper so deployments only configure base URLs in one place.
 
 ### LaTeX Upload (`view/templates/latex-upload.tsx`)

@@ -1,10 +1,10 @@
-import { useCallback, useState } from 'react';
-import { useRouter } from 'next/router';
-import { getEnvironmentConfig } from '../runtimeConfig';
-import { clearAdminProfile } from '../adminProfileStorage';
-import { clearWorkspaceProfile } from '../workspaceProfileStorage';
-import { clearAccessToken } from '../authTokenStorage';
-import { describeNetworkError } from '../networkErrors';
+import { useCallback, useState } from "react";
+import { useRouter } from "next/router";
+import { getEnvironmentConfig } from "../runtimeConfig";
+import { clearAdminProfile } from "../adminProfileStorage";
+import { clearWorkspaceProfile } from "../workspaceProfileStorage";
+import { clearAccessToken } from "../authTokenStorage";
+import { describeNetworkError } from "../networkErrors";
 
 type UseLogoutOptions = {
   redirectTo?: string;
@@ -17,10 +17,10 @@ type UseLogoutResult = {
   resetError: () => void;
 };
 
-const DEFAULT_ERROR_MESSAGE = 'Unable to log out. Please try again.';
+const DEFAULT_ERROR_MESSAGE = "Unable to log out. Please try again.";
 
 export function useLogout(options: UseLogoutOptions = {}): UseLogoutResult {
-  const { redirectTo = '/' } = options;
+  const { redirectTo = "/" } = options;
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +37,7 @@ export function useLogout(options: UseLogoutOptions = {}): UseLogoutResult {
     setIsLoggingOut(true);
     setError(null);
 
-    let apiBaseUrl = '';
+    let apiBaseUrl = "";
 
     const performClientLogout = async () => {
       clearAdminProfile();
@@ -50,9 +50,9 @@ export function useLogout(options: UseLogoutOptions = {}): UseLogoutResult {
       const config = await getEnvironmentConfig();
       apiBaseUrl = config.apiBaseUrl;
       const response = await fetch(`${apiBaseUrl}/auth/logout`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({}),
       });
 
@@ -64,9 +64,9 @@ export function useLogout(options: UseLogoutOptions = {}): UseLogoutResult {
 
         let message = DEFAULT_ERROR_MESSAGE;
         const payload = await response.json().catch(() => null);
-        if (payload && typeof payload === 'object') {
+        if (payload && typeof payload === "object") {
           const detail = (payload as { detail?: unknown }).detail;
-          if (typeof detail === 'string' && detail.trim()) {
+          if (typeof detail === "string" && detail.trim()) {
             message = detail;
           }
         }
@@ -77,10 +77,17 @@ export function useLogout(options: UseLogoutOptions = {}): UseLogoutResult {
       await performClientLogout();
       return true;
     } catch (caughtError) {
-      console.error('Logout failed', caughtError);
-      const description = describeNetworkError(caughtError, DEFAULT_ERROR_MESSAGE, { apiBaseUrl });
+      console.error("Logout failed", caughtError);
+      const description = describeNetworkError(
+        caughtError,
+        DEFAULT_ERROR_MESSAGE,
+        { apiBaseUrl },
+      );
       if (description.isNetworkError) {
-        console.warn('API unreachable during logout, clearing local session.', caughtError);
+        console.warn(
+          "API unreachable during logout, clearing local session.",
+          caughtError,
+        );
         await performClientLogout();
         return true;
       }

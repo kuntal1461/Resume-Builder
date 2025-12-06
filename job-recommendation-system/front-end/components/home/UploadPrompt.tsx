@@ -1,16 +1,16 @@
-import { FormEvent, useEffect, useRef, useState } from 'react';
-import styles from '../../styles/home/Home.module.css';
+import { FormEvent, useEffect, useRef, useState } from "react";
+import styles from "../../styles/home/Home.module.css";
 
 interface UploadState {
   fileName: string;
-  status: 'idle' | 'processing' | 'success' | 'error';
+  status: "idle" | "processing" | "success" | "error";
   message: string;
 }
 
 const INITIAL_STATE: UploadState = {
-  fileName: '',
-  status: 'idle',
-  message: '',
+  fileName: "",
+  status: "idle",
+  message: "",
 };
 
 export default function UploadPrompt() {
@@ -24,19 +24,19 @@ export default function UploadPrompt() {
         timeoutRef.current = null;
       }
     },
-    []
+    [],
   );
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
     const formData = new FormData(form);
-    const file = formData.get('resume') as File | null;
+    const file = formData.get("resume") as File | null;
     if (!file || file.size === 0) {
       setState({
-        fileName: '',
-        status: 'error',
-        message: 'Attach your resume to receive a personalized skills report.',
+        fileName: "",
+        status: "error",
+        message: "Attach your resume to receive a personalized skills report.",
       });
       return;
     }
@@ -44,14 +44,19 @@ export default function UploadPrompt() {
       window.clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
-    setState({ fileName: file.name, status: 'processing', message: 'Analyzing resume skills graph…' });
+    setState({
+      fileName: file.name,
+      status: "processing",
+      message: "Analyzing resume skills graph…",
+    });
 
     // Simulate async call to demonstrate flow for now.
     timeoutRef.current = window.setTimeout(() => {
       setState({
         fileName: file.name,
-        status: 'success',
-        message: 'Great news! We found 12 open roles that match your skillset this week.',
+        status: "success",
+        message:
+          "Great news! We found 12 open roles that match your skillset this week.",
       });
       form.reset();
       timeoutRef.current = null;
@@ -59,13 +64,13 @@ export default function UploadPrompt() {
   };
 
   const statusClass =
-    state.status === 'success'
+    state.status === "success"
       ? styles.uploadStatusSuccess
-      : state.status === 'error'
-      ? styles.uploadStatusError
-      : state.status === 'processing'
-      ? styles.uploadStatusProcessing
-      : '';
+      : state.status === "error"
+        ? styles.uploadStatusError
+        : state.status === "processing"
+          ? styles.uploadStatusProcessing
+          : "";
 
   return (
     <section id="upload" className={styles.uploadSection}>
@@ -73,8 +78,9 @@ export default function UploadPrompt() {
         <div className={styles.uploadCopy}>
           <h2>Upload your resume, we’ll do the matchmaking.</h2>
           <p>
-            Our parser reads beyond keywords. Get a breakdown of role recommendations, seniority alignment, and growth
-            gaps—in under 30 seconds.
+            Our parser reads beyond keywords. Get a breakdown of role
+            recommendations, seniority alignment, and growth gaps—in under 30
+            seconds.
           </p>
           <ul className={styles.uploadBullets}>
             <li>Deep parsing across 42 skill clusters</li>
@@ -85,7 +91,12 @@ export default function UploadPrompt() {
         <div className={styles.uploadCard}>
           <form className={styles.uploadForm} onSubmit={handleSubmit}>
             <label htmlFor="resume-upload" className={styles.uploadDropzone}>
-              <input id="resume-upload" type="file" name="resume" accept=".pdf,.doc,.docx" />
+              <input
+                id="resume-upload"
+                type="file"
+                name="resume"
+                accept=".pdf,.doc,.docx"
+              />
               <span className={styles.uploadIcon} aria-hidden="true">
                 ⬆️
               </span>
@@ -94,13 +105,22 @@ export default function UploadPrompt() {
                 <small>Max 10MB • Secure & private</small>
               </span>
             </label>
-            <button type="submit" className={styles.uploadButton} disabled={state.status === 'processing'}>
-              {state.status === 'processing' ? 'Scanning…' : 'Get recommendations'}
+            <button
+              type="submit"
+              className={styles.uploadButton}
+              disabled={state.status === "processing"}
+            >
+              {state.status === "processing"
+                ? "Scanning…"
+                : "Get recommendations"}
             </button>
           </form>
-          {state.status !== 'idle' && (
-            <div className={`${styles.uploadStatus} ${statusClass}`} role="status">
-              <strong>{state.fileName || 'No file detected'}</strong>
+          {state.status !== "idle" && (
+            <div
+              className={`${styles.uploadStatus} ${statusClass}`}
+              role="status"
+            >
+              <strong>{state.fileName || "No file detected"}</strong>
               <p>{state.message}</p>
             </div>
           )}

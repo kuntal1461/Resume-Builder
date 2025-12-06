@@ -13,9 +13,11 @@ export async function getEnvironmentConfig(): Promise<EnvironmentConfig> {
     return cachedConfig;
   }
 
-  const response = await fetch('/api/env-config');
+  const response = await fetch("/api/env-config");
   if (!response.ok) {
-    throw new Error(`Failed to load environment config (status ${response.status})`);
+    throw new Error(
+      `Failed to load environment config (status ${response.status})`,
+    );
   }
 
   const data: EnvironmentConfig = await response.json();

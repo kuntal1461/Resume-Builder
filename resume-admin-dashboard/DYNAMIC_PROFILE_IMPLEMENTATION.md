@@ -1,11 +1,13 @@
 # Dynamic Sidebar Profile Implementation
 
 ## Overview
+
 The sidebar profile has been updated to dynamically fetch and display user data from the database instead of using static default values.
 
 ## How It Works
 
 ### Data Flow
+
 1. **Frontend Hook** (`useSidebarProfile.ts`):
    - Fetches user data from `/api/admins/current` endpoint
    - Processes the response to build the profile with name, email, initials, and tagline
@@ -30,27 +32,32 @@ The sidebar profile has been updated to dynamically fetch and display user data 
 The profile is built with the following priority:
 
 **Name Display:**
+
 1. First name + Last name (if both available)
 2. Username (if full name not available)
 3. Email (if username not available)
 4. Default profile name (fallback)
 
 **Initials:**
+
 - Computed from the display name
 - Takes first letter of first two words
 - Falls back to default initials if computation fails
 
 **Tagline:**
+
 - "Administrator" if `isAdmin` is true
 - Default tagline otherwise
 
 **Email:**
+
 - Uses email from database
 - Falls back to default email if not available
 
 ### LocalStorage Persistence
 
 User data is cached in localStorage under the key `jobmatch.adminProfile` with the following structure:
+
 ```json
 {
   "userId": 1,
@@ -80,16 +87,17 @@ All pages using the sidebar profile will now automatically display dynamic user 
 
 ```typescript
 const DEFAULT_SIDEBAR_PROFILE: SidebarProfile = {
-  name: 'Admin User',      // Fallback only
-  initials: 'AU',          // Fallback only
-  tagline: 'Lead Admin',   // Fallback only
-  email: 'admin@example.com', // Fallback only
+  name: "Admin User", // Fallback only
+  initials: "AU", // Fallback only
+  tagline: "Lead Admin", // Fallback only
+  email: "admin@example.com", // Fallback only
 };
 
 const sidebarProfile = useSidebarProfile(DEFAULT_SIDEBAR_PROFILE);
 ```
 
 The `DEFAULT_SIDEBAR_PROFILE` now serves only as a fallback when:
+
 - The API call fails
 - The user is not logged in
 - The database has no admin user
@@ -107,6 +115,7 @@ To test the dynamic profile:
 ## Database Requirements
 
 The `users` table should have the following structure:
+
 - `id` (BigInteger, Primary Key)
 - `email` (String, Required, Unique)
 - `username` (String, Required, Unique)

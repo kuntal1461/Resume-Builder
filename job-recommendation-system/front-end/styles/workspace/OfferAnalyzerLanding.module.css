@@ -27,7 +27,7 @@
 
 .offerHeroSection::before,
 .offerHeroSection::after {
-  content: '';
+  content: "";
   position: absolute;
   border-radius: 50%;
   pointer-events: none;
@@ -39,7 +39,11 @@
   height: 220px;
   top: -60px;
   right: -30px;
-  background: radial-gradient(circle at center, rgba(255, 198, 105, 0.3) 0%, rgba(255, 198, 105, 0) 70%);
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 198, 105, 0.3) 0%,
+    rgba(255, 198, 105, 0) 70%
+  );
 }
 
 .offerHeroSection::after {
@@ -48,7 +52,11 @@
   border-radius: 50%;
   bottom: -40px;
   left: -20px;
-  background: radial-gradient(circle at center, rgba(96, 255, 218, 0.26) 0%, rgba(96, 255, 218, 0) 68%);
+  background: radial-gradient(
+    circle at center,
+    rgba(96, 255, 218, 0.26) 0%,
+    rgba(96, 255, 218, 0) 68%
+  );
 }
 
 .offerHeroSection > * {

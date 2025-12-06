@@ -50,7 +50,9 @@ def save_resume_draft(
         notes=body.notes.strip() if body.notes else None,
         template_version_id=body.templateVersionId,
         template_version_number=body.templateVersionNumber,
-        template_version_label=body.templateVersionLabel.strip() if body.templateVersionLabel else None,
+        template_version_label=(
+            body.templateVersionLabel.strip() if body.templateVersionLabel else None
+        ),
     )
 
     response = service.save_resume_draft(request)
@@ -69,9 +71,14 @@ def get_resume_draft(
     service: UserResumeService = Depends(get_resume_service),
     current_user=Depends(get_current_user),
 ):
-    draft: Optional[UserResumeDraftResponseVO] = service.get_resume_draft(current_user.id, templateId)
+    draft: Optional[UserResumeDraftResponseVO] = service.get_resume_draft(
+        current_user.id, templateId
+    )
     if not draft:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No saved draft found for this template.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No saved draft found for this template.",
+        )
 
     return {
         "resumeId": draft.resume_id,

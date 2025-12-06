@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import styles from '../../styles/home/Home.module.css';
+import Link from "next/link";
+import styles from "../../styles/home/Home.module.css";
 
 export default function HeroSection() {
   return (
@@ -11,8 +11,9 @@ export default function HeroSection() {
             Build a resume, get matched, <span>love Mondays again.</span>
           </h1>
           <p className={styles.heroLead}>
-            JobMatch pairs a collaborative resume editor with a recommendation engine that reads your document,
-            learns your goals, and surfaces roles that fit—before they hit the job boards.
+            JobMatch pairs a collaborative resume editor with a recommendation
+            engine that reads your document, learns your goals, and surfaces
+            roles that fit—before they hit the job boards.
           </p>
           <div className={styles.heroActions}>
             <Link href="/auth/signup" className={styles.heroPrimary}>
@@ -45,27 +46,36 @@ export default function HeroSection() {
             </header>
             <ul>
               <li>
-                <span className={styles.cardCompany}>Product Designer · Aurora Labs</span>
+                <span className={styles.cardCompany}>
+                  Product Designer · Aurora Labs
+                </span>
                 <span className={styles.cardTag}>87% fit</span>
               </li>
               <li>
-                <span className={styles.cardCompany}>ML Engineer · ShiftWave</span>
+                <span className={styles.cardCompany}>
+                  ML Engineer · ShiftWave
+                </span>
                 <span className={styles.cardTag}>92% fit</span>
               </li>
               <li>
-                <span className={styles.cardCompany}>Data Analyst · Northwind</span>
+                <span className={styles.cardCompany}>
+                  Data Analyst · Northwind
+                </span>
                 <span className={styles.cardTag}>81% fit</span>
               </li>
             </ul>
             <footer>
               <p>
-                “Matched by experience, skill depth, and culture fit. Tap any role to tailor your resume in one click.”
+                “Matched by experience, skill depth, and culture fit. Tap any
+                role to tailor your resume in one click.”
               </p>
             </footer>
           </div>
           <div className={styles.heroBadge}>
             <strong>Trusted by 4,500+ hiring teams</strong>
-            <p>We partner directly with top employers to surface hidden roles.</p>
+            <p>
+              We partner directly with top employers to surface hidden roles.
+            </p>
           </div>
         </aside>
       </div>

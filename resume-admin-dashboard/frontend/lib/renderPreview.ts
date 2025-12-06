@@ -1,5 +1,5 @@
-import { generateLocalPreview } from './localPreview';
-import { getEnvironmentConfig } from './runtimeConfig';
+import { generateLocalPreview } from "./localPreview";
+import { getEnvironmentConfig } from "./runtimeConfig";
 
 type RenderPreviewPayload = {
   latexSource: string;
@@ -21,27 +21,33 @@ type RenderPreviewResponse = {
   log?: string;
 };
 
-export async function requestLatexPreview(payload: RenderPreviewPayload): Promise<RenderPreviewResponse> {
+export async function requestLatexPreview(
+  payload: RenderPreviewPayload,
+): Promise<RenderPreviewResponse> {
   try {
     const { renderServiceBaseUrl } = await getEnvironmentConfig();
     const response = await fetch(`${renderServiceBaseUrl}/render`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));
-      const reason = typeof data.error === 'string' ? data.error : 'Render service error';
+      const reason =
+        typeof data.error === "string" ? data.error : "Render service error";
       throw new Error(reason);
     }
 
     return (await response.json()) as RenderPreviewResponse;
   } catch (error) {
     if (error instanceof TypeError) {
-      console.warn('Render service unreachable, falling back to local generator', error);
+      console.warn(
+        "Render service unreachable, falling back to local generator",
+        error,
+      );
       return generateLocalPreview(payload.latexSource, payload.tokens);
     }
     throw error;

@@ -1,7 +1,7 @@
-import 'dotenv/config';
+import "dotenv/config";
 export declare const env: {
-    nodeEnv: string;
-    port: number;
-    logLevel: string;
+  nodeEnv: string;
+  port: number;
+  logLevel: string;
 };
 //# sourceMappingURL=environment.d.ts.map

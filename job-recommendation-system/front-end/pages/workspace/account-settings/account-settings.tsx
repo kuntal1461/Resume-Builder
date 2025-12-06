@@ -1,11 +1,14 @@
-import Head from 'next/head';
-import Link from 'next/link';
-import { ChangeEvent, FormEvent, useState } from 'react';
-import type { ReactElement } from 'react';
-import AppShell from '../../../components/workspace/AppShell';
-import { APP_MENU_ITEMS, DEFAULT_PROFILE_TASKS } from '../../../components/workspace/navigation';
-import { createGuestWorkspaceProfile } from '../../../components/workspace/profileFallback';
-import styles from '../../../styles/workspace/AccountSettings.module.css';
+import Head from "next/head";
+import Link from "next/link";
+import { ChangeEvent, FormEvent, useState } from "react";
+import type { ReactElement } from "react";
+import AppShell from "../../../components/workspace/AppShell";
+import {
+  APP_MENU_ITEMS,
+  DEFAULT_PROFILE_TASKS,
+} from "../../../components/workspace/navigation";
+import { createGuestWorkspaceProfile } from "../../../components/workspace/profileFallback";
+import styles from "../../../styles/workspace/AccountSettings.module.css";
 
 type FormState = {
   firstName: string;
@@ -15,14 +18,14 @@ type FormState = {
   location: string;
 };
 
-const PROFILE_TAGLINE = 'Set your target role';
-const PROFILE_PROGRESS_LABEL = '5%';
+const PROFILE_TAGLINE = "Set your target role";
+const PROFILE_PROGRESS_LABEL = "5%";
 const INITIAL_FORM_STATE: FormState = {
-  firstName: '',
-  lastName: '',
-  email: '',
-  headline: '',
-  location: '',
+  firstName: "",
+  lastName: "",
+  email: "",
+  headline: "",
+  location: "",
 };
 
 const GUEST_PROFILE = createGuestWorkspaceProfile({
@@ -36,7 +39,8 @@ const INITIAL_PROFILE_NAME = GUEST_PROFILE.name;
 const buildProfileCard = (data: FormState) => {
   const firstInitial = data.firstName.trim().charAt(0);
   const lastInitial = data.lastName.trim().charAt(0);
-  const initials = `${firstInitial}${lastInitial}`.toUpperCase() || FALLBACK_INITIALS;
+  const initials =
+    `${firstInitial}${lastInitial}`.toUpperCase() || FALLBACK_INITIALS;
 
   return {
     name: `${data.firstName} ${data.lastName}`.trim() || INITIAL_PROFILE_NAME,
@@ -46,38 +50,41 @@ const buildProfileCard = (data: FormState) => {
   };
 };
 
-type SocialProviderIcon = 'facebook' | 'linkedin' | 'google';
+type SocialProviderIcon = "facebook" | "linkedin" | "google";
 
 type SocialProvider = {
   id: string;
   name: string;
   description: string;
   icon: SocialProviderIcon;
-  status: 'connected' | 'disconnected';
+  status: "connected" | "disconnected";
   connectedDetail?: string;
 };
 
 const SOCIAL_PROVIDERS: SocialProvider[] = [
   {
-    id: 'facebook',
-    name: 'Facebook',
-    description: 'Keep your professional story consistent everywhere hiring teams discover you.',
-    icon: 'facebook',
-    status: 'disconnected',
+    id: "facebook",
+    name: "Facebook",
+    description:
+      "Keep your professional story consistent everywhere hiring teams discover you.",
+    icon: "facebook",
+    status: "disconnected",
   },
   {
-    id: 'linkedin',
-    name: 'LinkedIn',
-    description: 'Sync your headline, featured projects, and open-to-work signal with a single click.',
-    icon: 'linkedin',
-    status: 'disconnected',
+    id: "linkedin",
+    name: "LinkedIn",
+    description:
+      "Sync your headline, featured projects, and open-to-work signal with a single click.",
+    icon: "linkedin",
+    status: "disconnected",
   },
   {
-    id: 'google',
-    name: 'Google',
-    description: 'Use single sign-on and push resume exports to Drive without friction.',
-    icon: 'google',
-    status: 'connected',
+    id: "google",
+    name: "Google",
+    description:
+      "Use single sign-on and push resume exports to Drive without friction.",
+    icon: "google",
+    status: "connected",
     connectedDetail: undefined,
   },
 ];
@@ -91,47 +98,59 @@ type NotificationOption = {
 
 const NOTIFICATION_OPTIONS: NotificationOption[] = [
   {
-    id: 'updates',
-    title: 'Updates and offers',
-    description: 'Product drops, discounts, and feature spotlights tailored to your plan.',
+    id: "updates",
+    title: "Updates and offers",
+    description:
+      "Product drops, discounts, and feature spotlights tailored to your plan.",
     enabled: true,
   },
   {
-    id: 'analytics',
-    title: 'Resume analytics',
-    description: 'Weekly views, downloads, and match rates for each resume you share.',
+    id: "analytics",
+    title: "Resume analytics",
+    description:
+      "Weekly views, downloads, and match rates for each resume you share.",
     enabled: true,
   },
   {
-    id: 'newsletter',
-    title: 'Career playbook newsletter',
-    description: 'Every-other-week insights on landing offers faster with proven scripts.',
+    id: "newsletter",
+    title: "Career playbook newsletter",
+    description:
+      "Every-other-week insights on landing offers faster with proven scripts.",
     enabled: false,
   },
   {
-    id: 'careerPlans',
-    title: 'Career plans',
-    description: 'Get a heads-up when personalized career planning becomes available.',
+    id: "careerPlans",
+    title: "Career plans",
+    description:
+      "Get a heads-up when personalized career planning becomes available.",
     enabled: false,
   },
 ];
 
 const HERO_HIGHLIGHTS = [
-  { value: '92%', label: 'Profile power for curated matches' },
-  { value: '18 / week', label: 'New roles handpicked for you' },
-  { value: '3 of 5', label: 'Next actions to unlock autopilot' },
+  { value: "92%", label: "Profile power for curated matches" },
+  { value: "18 / week", label: "New roles handpicked for you" },
+  { value: "3 of 5", label: "Next actions to unlock autopilot" },
 ];
 
 const PLAN = {
-  name: 'Free account',
+  name: "Free account",
   description:
-    'You can save resumes, track applications, and receive tailored job recommendations. Upgrade any time to unlock AI autopilot and PDF exports.',
-  features: ['AI resume builder · 3 credits / month', 'Guided job tracker workspace', 'ATS insights and keyword prompts'],
+    "You can save resumes, track applications, and receive tailored job recommendations. Upgrade any time to unlock AI autopilot and PDF exports.",
+  features: [
+    "AI resume builder · 3 credits / month",
+    "Guided job tracker workspace",
+    "ATS insights and keyword prompts",
+  ],
 };
 
 const SOCIAL_ICON_ART: Record<SocialProviderIcon, ReactElement> = {
   facebook: (
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
       <path
         fill="currentColor"
         d="M15.765 8.417h-2.03v-1.31c0-.62.412-.767.703-.767h1.267V4.01L13.757 4c-2.281 0-2.79 1.735-2.79 2.844v1.573H9v2.223h1.967V20h2.768v-7.36h1.984l.046-2.223z"
@@ -139,7 +158,11 @@ const SOCIAL_ICON_ART: Record<SocialProviderIcon, ReactElement> = {
     </svg>
   ),
   linkedin: (
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
       <path
         fill="currentColor"
         d="M7.4 20.001H4.356V9.186H7.4zM5.878 7.748a1.776 1.776 0 1 1 0-3.553 1.776 1.776 0 0 1 0 3.553zM20 20.001h-3.043v-5.269c0-1.256-.024-2.869-1.748-2.869-1.748 0-2.017 1.366-2.017 2.778v5.36h-3.04V9.186h2.916v1.48h.042c.406-.768 1.397-1.58 2.876-1.58 3.074 0 3.645 2.025 3.645 4.656z"
@@ -147,7 +170,11 @@ const SOCIAL_ICON_ART: Record<SocialProviderIcon, ReactElement> = {
     </svg>
   ),
   google: (
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
       <path
         fill="currentColor"
         d="M21 12.23c0-.7-.06-1.36-.18-2H12v3.79h5.06c-.22 1.13-.9 2.09-1.93 2.73v2.26h3.12c1.83-1.68 2.88-4.16 2.88-6.78z"
@@ -171,16 +198,19 @@ const SOCIAL_ICON_ART: Record<SocialProviderIcon, ReactElement> = {
 export default function WorkspaceAccountSettingsPage() {
   const [formData, setFormData] = useState<FormState>(INITIAL_FORM_STATE);
   const [isSaving, setIsSaving] = useState(false);
-  const [saveState, setSaveState] = useState<'idle' | 'saved'>('idle');
-  const [socialConnections, setSocialConnections] = useState<SocialProvider[]>(SOCIAL_PROVIDERS);
-  const [notificationSettings, setNotificationSettings] = useState<NotificationOption[]>(NOTIFICATION_OPTIONS);
-  const [profileCard, setProfileCard] = useState(() => buildProfileCard(INITIAL_FORM_STATE));
+  const [saveState, setSaveState] = useState<"idle" | "saved">("idle");
+  const [socialConnections, setSocialConnections] =
+    useState<SocialProvider[]>(SOCIAL_PROVIDERS);
+  const [notificationSettings, setNotificationSettings] =
+    useState<NotificationOption[]>(NOTIFICATION_OPTIONS);
+  const [profileCard, setProfileCard] = useState(() =>
+    buildProfileCard(INITIAL_FORM_STATE),
+  );
 
   const handleFormChange =
-    (field: keyof FormState) =>
-    (event: ChangeEvent<HTMLInputElement>) => {
+    (field: keyof FormState) => (event: ChangeEvent<HTMLInputElement>) => {
       setFormData((previous) => ({ ...previous, [field]: event.target.value }));
-      setSaveState('idle');
+      setSaveState("idle");
     };
 
   const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -188,14 +218,16 @@ export default function WorkspaceAccountSettingsPage() {
     setIsSaving(true);
     setTimeout(() => {
       setIsSaving(false);
-      setSaveState('saved');
+      setSaveState("saved");
       setProfileCard(buildProfileCard(formData));
     }, 900);
   };
 
   const handleNotificationToggle = (id: string) => {
     setNotificationSettings((previous) =>
-      previous.map((option) => (option.id === id ? { ...option, enabled: !option.enabled } : option)),
+      previous.map((option) =>
+        option.id === id ? { ...option, enabled: !option.enabled } : option,
+      ),
     );
   };
 
@@ -205,7 +237,8 @@ export default function WorkspaceAccountSettingsPage() {
         provider.id === id
           ? {
               ...provider,
-              status: provider.status === 'connected' ? 'disconnected' : 'connected',
+              status:
+                provider.status === "connected" ? "disconnected" : "connected",
             }
           : provider,
       ),
@@ -230,16 +263,23 @@ export default function WorkspaceAccountSettingsPage() {
           <header className={styles.hero}>
             <div className={styles.heroContent}>
               <span className={styles.heroEyebrow}>Account hub</span>
-              <h1 className={styles.heroTitle}>Your JobMatch identity, refreshed</h1>
+              <h1 className={styles.heroTitle}>
+                Your JobMatch identity, refreshed
+              </h1>
               <p className={styles.heroSubtitle}>
-                Shape how hiring teams experience your profile, sync your social proof, and stay in the loop on every insight that moves
-                your search forward.
+                Shape how hiring teams experience your profile, sync your social
+                proof, and stay in the loop on every insight that moves your
+                search forward.
               </p>
               <div className={styles.heroHighlights}>
                 {HERO_HIGHLIGHTS.map((highlight) => (
                   <div key={highlight.label} className={styles.heroHighlight}>
-                    <span className={styles.heroHighlightValue}>{highlight.value}</span>
-                    <span className={styles.heroHighlightLabel}>{highlight.label}</span>
+                    <span className={styles.heroHighlightValue}>
+                      {highlight.value}
+                    </span>
+                    <span className={styles.heroHighlightLabel}>
+                      {highlight.label}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -269,14 +309,18 @@ export default function WorkspaceAccountSettingsPage() {
 
           <div className={styles.contentGrid}>
             <div className={styles.columnStack}>
-              <section className={styles.card} aria-labelledby="account-details-title">
+              <section
+                className={styles.card}
+                aria-labelledby="account-details-title"
+              >
                 <div className={styles.cardHeader}>
                   <div>
                     <h2 id="account-details-title" className={styles.cardTitle}>
                       Account details
                     </h2>
                     <p className={styles.cardSubtitle}>
-                      Keep your JobMatch profile polished so hiring managers and our AI both recognize your personal brand instantly.
+                      Keep your JobMatch profile polished so hiring managers and
+                      our AI both recognize your personal brand instantly.
                     </p>
                   </div>
                   <span className={styles.editBadge}>Profile</span>
@@ -285,7 +329,10 @@ export default function WorkspaceAccountSettingsPage() {
                 <form onSubmit={handleFormSubmit} noValidate>
                   <div className={styles.formGrid}>
                     <div className={styles.inputGroup}>
-                      <label htmlFor="account-first-name" className={styles.label}>
+                      <label
+                        htmlFor="account-first-name"
+                        className={styles.label}
+                      >
                         First name
                       </label>
                       <input
@@ -293,13 +340,16 @@ export default function WorkspaceAccountSettingsPage() {
                         name="firstName"
                         type="text"
                         value={formData.firstName}
-                        onChange={handleFormChange('firstName')}
+                        onChange={handleFormChange("firstName")}
                         className={styles.input}
                         autoComplete="given-name"
                       />
                     </div>
                     <div className={styles.inputGroup}>
-                      <label htmlFor="account-last-name" className={styles.label}>
+                      <label
+                        htmlFor="account-last-name"
+                        className={styles.label}
+                      >
                         Last name
                       </label>
                       <input
@@ -307,13 +357,16 @@ export default function WorkspaceAccountSettingsPage() {
                         name="lastName"
                         type="text"
                         value={formData.lastName}
-                        onChange={handleFormChange('lastName')}
+                        onChange={handleFormChange("lastName")}
                         className={styles.input}
                         autoComplete="family-name"
                       />
                     </div>
                     <div className={styles.inputGroup}>
-                      <label htmlFor="account-headline" className={styles.label}>
+                      <label
+                        htmlFor="account-headline"
+                        className={styles.label}
+                      >
                         Headline
                       </label>
                       <input
@@ -321,14 +374,17 @@ export default function WorkspaceAccountSettingsPage() {
                         name="headline"
                         type="text"
                         value={formData.headline}
-                        onChange={handleFormChange('headline')}
+                        onChange={handleFormChange("headline")}
                         className={styles.input}
                         placeholder="Your elevator pitch"
                         autoComplete="organization-title"
                       />
                     </div>
                     <div className={styles.inputGroup}>
-                      <label htmlFor="account-location" className={styles.label}>
+                      <label
+                        htmlFor="account-location"
+                        className={styles.label}
+                      >
                         Location
                       </label>
                       <input
@@ -336,7 +392,7 @@ export default function WorkspaceAccountSettingsPage() {
                         name="location"
                         type="text"
                         value={formData.location}
-                        onChange={handleFormChange('location')}
+                        onChange={handleFormChange("location")}
                         className={styles.input}
                         autoComplete="address-level2"
                       />
@@ -350,45 +406,65 @@ export default function WorkspaceAccountSettingsPage() {
                         name="email"
                         type="email"
                         value={formData.email}
-                        onChange={handleFormChange('email')}
+                        onChange={handleFormChange("email")}
                         className={styles.input}
                         autoComplete="email"
                       />
                     </div>
                   </div>
                   <p className={styles.helperText}>
-                    Use this email to sign in to JobMatch and receive status updates on your shortlisted roles.
+                    Use this email to sign in to JobMatch and receive status
+                    updates on your shortlisted roles.
                   </p>
                   <div className={styles.formFooter}>
-                    {saveState === 'saved' ? (
+                    {saveState === "saved" ? (
                       <span className={styles.statusPill} role="status">
                         ✓ Changes saved
                       </span>
                     ) : null}
-                    <button type="submit" className={styles.saveButton} disabled={isSaving}>
-                      {isSaving ? 'Saving…' : 'Save changes'}
+                    <button
+                      type="submit"
+                      className={styles.saveButton}
+                      disabled={isSaving}
+                    >
+                      {isSaving ? "Saving…" : "Save changes"}
                     </button>
                   </div>
                 </form>
               </section>
 
-              <section className={styles.card} aria-labelledby="notification-preferences-title">
+              <section
+                className={styles.card}
+                aria-labelledby="notification-preferences-title"
+              >
                 <div className={styles.cardHeader}>
                   <div>
-                    <h2 id="notification-preferences-title" className={styles.cardTitle}>
+                    <h2
+                      id="notification-preferences-title"
+                      className={styles.cardTitle}
+                    >
                       Email notifications
                     </h2>
                     <p className={styles.cardSubtitle}>
-                      Decide what lands in your inbox so you only hear from us when it accelerates your search.
+                      Decide what lands in your inbox so you only hear from us
+                      when it accelerates your search.
                     </p>
                   </div>
                 </div>
                 <div className={styles.notificationList}>
                   {notificationSettings.map((option) => (
-                    <label key={option.id} className={styles.notificationItem} htmlFor={`notification-${option.id}`}>
+                    <label
+                      key={option.id}
+                      className={styles.notificationItem}
+                      htmlFor={`notification-${option.id}`}
+                    >
                       <div className={styles.notificationCopy}>
-                        <span className={styles.notificationTitle}>{option.title}</span>
-                        <span className={styles.notificationDescription}>{option.description}</span>
+                        <span className={styles.notificationTitle}>
+                          {option.title}
+                        </span>
+                        <span className={styles.notificationDescription}>
+                          {option.description}
+                        </span>
                       </div>
                       <div className={styles.toggleWrapper}>
                         <input
@@ -408,45 +484,60 @@ export default function WorkspaceAccountSettingsPage() {
             </div>
 
             <div className={styles.columnStack}>
-              <section className={styles.card} aria-labelledby="social-connections-title">
+              <section
+                className={styles.card}
+                aria-labelledby="social-connections-title"
+              >
                 <div className={styles.cardHeader}>
                   <div>
-                    <h2 id="social-connections-title" className={styles.cardTitle}>
+                    <h2
+                      id="social-connections-title"
+                      className={styles.cardTitle}
+                    >
                       Social profile
                     </h2>
                     <p className={styles.cardSubtitle}>
-                      Connect the platforms recruiters check first to strengthen trust in every outreach.
+                      Connect the platforms recruiters check first to strengthen
+                      trust in every outreach.
                     </p>
                   </div>
                 </div>
                 <div className={styles.socialList}>
                   {socialConnections.map((provider) => {
-                    const isConnected = provider.status === 'connected';
-                    const actionLabel = isConnected ? 'Disconnect' : 'Connect';
+                    const isConnected = provider.status === "connected";
+                    const actionLabel = isConnected ? "Disconnect" : "Connect";
 
                     return (
                       <div key={provider.id} className={styles.socialItem}>
                         <div className={styles.socialMeta}>
-                          <div className={`${styles.socialIcon} ${provider.icon}`}>
+                          <div
+                            className={`${styles.socialIcon} ${provider.icon}`}
+                          >
                             {SOCIAL_ICON_ART[provider.icon]}
                           </div>
                           <div className={styles.socialCopy}>
-                            <span className={styles.socialTitle}>{provider.name}</span>
-                            <span className={styles.socialDescription}>{provider.description}</span>
+                            <span className={styles.socialTitle}>
+                              {provider.name}
+                            </span>
+                            <span className={styles.socialDescription}>
+                              {provider.description}
+                            </span>
                             <span
                               className={`${styles.socialStatus} ${
-                                isConnected ? styles.socialStatusConnected : styles.socialStatusDisconnected
+                                isConnected
+                                  ? styles.socialStatusConnected
+                                  : styles.socialStatusDisconnected
                               }`}
                             >
                               {isConnected
-                                ? `Connected${provider.connectedDetail ? ` - ${provider.connectedDetail}` : ''}`
-                                : 'Not connected'}
+                                ? `Connected${provider.connectedDetail ? ` - ${provider.connectedDetail}` : ""}`
+                                : "Not connected"}
                             </span>
                           </div>
                         </div>
                         <button
                           type="button"
-                          className={`${styles.linkButton} ${isConnected ? styles.disconnectButton : ''}`}
+                          className={`${styles.linkButton} ${isConnected ? styles.disconnectButton : ""}`}
                           onClick={() => handleSocialToggle(provider.id)}
                         >
                           {actionLabel}
@@ -457,31 +548,47 @@ export default function WorkspaceAccountSettingsPage() {
                 </div>
               </section>
 
-              <section className={`${styles.card} ${styles.supportCard}`} aria-labelledby="support-title">
+              <section
+                className={`${styles.card} ${styles.supportCard}`}
+                aria-labelledby="support-title"
+              >
                 <div className={styles.cardHeader}>
                   <div>
                     <h2 id="support-title" className={styles.cardTitle}>
                       Need a hand?
                     </h2>
                     <p className={styles.cardSubtitle}>
-                      We&apos;re on standby to help you polish your resume, decode feedback, and ship more confident applications.
+                      We&apos;re on standby to help you polish your resume,
+                      decode feedback, and ship more confident applications.
                     </p>
                   </div>
                 </div>
                 <div className={styles.supportActions}>
-                  <Link href="/workspace/help/faq" className={styles.supportLink}>
+                  <Link
+                    href="/workspace/help/faq"
+                    className={styles.supportLink}
+                  >
                     Browse the help center <span aria-hidden="true">→</span>
                   </Link>
-                  <a className={styles.supportLink} href="mailto:support@jobmatch.ai">
+                  <a
+                    className={styles.supportLink}
+                    href="mailto:support@jobmatch.ai"
+                  >
                     Email support <span aria-hidden="true">↗</span>
                   </a>
-                  <a className={styles.supportLink} href="/workspace/career-coaching">
+                  <a
+                    className={styles.supportLink}
+                    href="/workspace/career-coaching"
+                  >
                     Book a coach session <span aria-hidden="true">→</span>
                   </a>
                 </div>
               </section>
 
-              <section className={`${styles.card} ${styles.dangerCard}`} aria-labelledby="danger-zone-title">
+              <section
+                className={`${styles.card} ${styles.dangerCard}`}
+                aria-labelledby="danger-zone-title"
+              >
                 <div className={styles.cardHeader}>
                   <div>
                     <span className={styles.dangerBadge}>Danger zone</span>
@@ -491,7 +598,8 @@ export default function WorkspaceAccountSettingsPage() {
                   </div>
                 </div>
                 <p className={styles.dangerDescription}>
-                  Deleting your account is permanent. All saved resumes, job matches, interview prep, and analytics will be removed. Make
+                  Deleting your account is permanent. All saved resumes, job
+                  matches, interview prep, and analytics will be removed. Make
                   sure you&apos;ve exported anything you want to keep first.
                 </p>
                 <button type="button" className={styles.deleteButton}>

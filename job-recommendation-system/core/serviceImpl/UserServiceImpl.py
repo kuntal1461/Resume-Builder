@@ -20,7 +20,9 @@ class UserServiceImpl(UserService):
     def __init__(self, user_repository: UserRepository) -> None:
         self.user_repository = user_repository
 
-    def authenticate_user_email(self, req: AuthEmailLoginRequestVO) -> AuthEmailLoginResponseVO:
+    def authenticate_user_email(
+        self, req: AuthEmailLoginRequestVO
+    ) -> AuthEmailLoginResponseVO:
         """
         1) Fetch user by email (repo)
         2) If not found -> raise UserNotFoundError
@@ -54,7 +56,9 @@ class UserServiceImpl(UserService):
         if self.user_repository.get_user_by_username(req.username):
             raise UserAlreadyExistsError("Username already taken.")
 
-        if req.phone_number and self.user_repository.get_user_by_phone(req.phone_number):
+        if req.phone_number and self.user_repository.get_user_by_phone(
+            req.phone_number
+        ):
             raise UserAlreadyExistsError("Phone number already registered.")
 
         user = UserEntity(

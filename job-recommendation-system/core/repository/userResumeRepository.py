@@ -9,7 +9,9 @@ class UserResumeRepository:
     def __init__(self, db_session: Session):
         self.db_session = db_session
 
-    def get_by_user_and_template(self, user_id: int, template_id: int) -> Optional[UserResumeEntity]:
+    def get_by_user_and_template(
+        self, user_id: int, template_id: int
+    ) -> Optional[UserResumeEntity]:
         return (
             self.db_session.query(UserResumeEntity)
             .filter(

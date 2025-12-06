@@ -16,7 +16,9 @@
   z-index: 25;
   backdrop-filter: blur(9px);
   background: rgba(253, 252, 255, 0.88);
-  transition: box-shadow 0.3s ease, background 0.3s ease;
+  transition:
+    box-shadow 0.3s ease,
+    background 0.3s ease;
 }
 
 .headerScrolled {
@@ -100,7 +102,9 @@
   font-size: 0.95rem;
   text-decoration: none;
   box-shadow: 0 16px 32px rgba(124, 93, 250, 0.25);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .primaryCta:hover,
@@ -119,7 +123,9 @@
   font-weight: 600;
   font-size: 0.95rem;
   text-decoration: none;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .secondaryCta:hover,
@@ -183,7 +189,12 @@
 .hero {
   position: relative;
   overflow: hidden;
-  background: radial-gradient(circle at top left, rgba(124, 93, 250, 0.18), transparent 60%),
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(124, 93, 250, 0.18),
+      transparent 60%
+    ),
     linear-gradient(135deg, #f9f5ff 0%, #f1f5ff 100%);
   padding: clamp(72px, 12vw, 120px) 0 96px;
 }
@@ -321,7 +332,11 @@
 }
 
 .heroBadge {
-  background: linear-gradient(135deg, rgba(124, 93, 250, 0.12), rgba(88, 197, 255, 0.12));
+  background: linear-gradient(
+    135deg,
+    rgba(124, 93, 250, 0.12),
+    rgba(88, 197, 255, 0.12)
+  );
   border-radius: 18px;
   padding: 20px 24px;
   color: #4f39b4;
@@ -382,7 +397,7 @@
 }
 
 .uploadBullets li::before {
-  content: '✓';
+  content: "✓";
   color: #58c5ff;
   font-weight: 700;
   font-size: 1rem;
@@ -438,7 +453,9 @@
   font-weight: 600;
   padding: 14px 0;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
   box-shadow: 0 18px 30px rgba(124, 93, 250, 0.22);
 }
 
@@ -749,7 +766,7 @@
 }
 
 .pricingCard li::before {
-  content: '•';
+  content: "•";
   position: absolute;
   left: 0;
   color: #7c5dfa;
@@ -766,7 +783,9 @@
   font-weight: 600;
   padding: 14px 0;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
   box-shadow: 0 16px 28px rgba(124, 93, 250, 0.22);
 }
 
@@ -855,7 +874,12 @@
 .footer {
   position: relative;
   overflow: hidden;
-  background: radial-gradient(circle at top left, rgba(124, 93, 250, 0.28), transparent 55%),
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(124, 93, 250, 0.28),
+      transparent 55%
+    ),
     linear-gradient(160deg, #0f0a1f 0%, #1a1040 100%);
   color: rgba(255, 255, 255, 0.84);
   padding: 80px 0 36px;
@@ -866,7 +890,11 @@
   position: absolute;
   inset: -30% -25% auto;
   height: 420px;
-  background: radial-gradient(circle, rgba(102, 126, 234, 0.35), transparent 65%);
+  background: radial-gradient(
+    circle,
+    rgba(102, 126, 234, 0.35),
+    transparent 65%
+  );
   filter: blur(62px);
   opacity: 0.8;
 }
@@ -911,7 +939,9 @@
   color: rgba(255, 255, 255, 0.7);
   text-decoration: none;
   font-size: 0.95rem;
-  transition: color 0.2s ease, transform 0.2s ease;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .footerCol a:hover {
@@ -959,7 +989,9 @@
   color: white;
   font-size: 0.95rem;
   outline: none;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
 }
 
 .footerForm input::placeholder {
@@ -980,7 +1012,9 @@
   padding: 14px 20px;
   cursor: pointer;
   box-shadow: 0 18px 32px rgba(124, 93, 250, 0.35);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .footerForm button:hover {
@@ -1044,7 +1078,6 @@
   .footerContent {
     grid-template-columns: 1fr;
   }
-
 }
 
 @media (max-width: 720px) {

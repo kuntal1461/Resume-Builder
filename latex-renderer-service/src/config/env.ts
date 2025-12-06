@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import "dotenv/config";
 
 const coercePort = (value: string | undefined, fallback: number): number => {
   if (!value) {
@@ -13,14 +13,14 @@ const parseOrigins = (value: string | undefined): string[] => {
     return [];
   }
   return value
-    .split(',')
+    .split(",")
     .map((origin) => origin.trim())
     .filter(Boolean);
 };
 
 export const env = {
-  nodeEnv: process.env.NODE_ENV ?? 'development',
+  nodeEnv: process.env.NODE_ENV ?? "development",
   port: coercePort(process.env.PORT, 4100),
-  logLevel: process.env.LOG_LEVEL ?? 'info',
+  logLevel: process.env.LOG_LEVEL ?? "info",
   allowedOrigins: parseOrigins(process.env.ALLOWED_ORIGINS),
 };

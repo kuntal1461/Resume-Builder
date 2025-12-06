@@ -1,11 +1,11 @@
-import Head from 'next/head';
-import Link from 'next/link';
-import type { NextRouter } from 'next/router';
-import { useRouter } from 'next/router';
-import { useEffect, useMemo, useState } from 'react';
-import { type SidebarProfile } from '../../../lib/sidebarProfile';
-import { useSidebarProfile } from '../../../lib/useSidebarProfile';
-import styles from '../../../styles/admin/AdminView.module.css';
+import Head from "next/head";
+import Link from "next/link";
+import type { NextRouter } from "next/router";
+import { useRouter } from "next/router";
+import { useEffect, useMemo, useState } from "react";
+import { type SidebarProfile } from "../../../lib/sidebarProfile";
+import { useSidebarProfile } from "../../../lib/useSidebarProfile";
+import styles from "../../../styles/admin/AdminView.module.css";
 
 type TemplateRecord = {
   id: number;
@@ -24,28 +24,29 @@ type TemplateListResponse = {
 };
 
 const STATUS_TABS = [
-  { label: 'Published', value: 'published', description: 'Live to pods' },
-  { label: 'Archive', value: 'archive', description: 'Parked for later' },
+  { label: "Published", value: "published", description: "Live to pods" },
+  { label: "Archive", value: "archive", description: "Parked for later" },
 ];
 
 const DEFAULT_SIDEBAR_PROFILE: SidebarProfile = {
-  name: 'Admin User',
-  initials: 'AU',
-  tagline: 'Template Operations',
-  email: 'admin@example.com',
+  name: "Admin User",
+  initials: "AU",
+  tagline: "Template Operations",
+  email: "admin@example.com",
 };
 
 const NAV_LINKS = [
-  { label: 'Workspace overview', href: '/view', active: false },
-  { label: 'Templates', href: '/view/templates', active: true },
-  { label: 'Job tracker', href: '/workspace/job-tracker', active: false },
-  { label: 'Interview prep', href: '/workspace/interview-prep', active: false },
+  { label: "Workspace overview", href: "/view", active: false },
+  { label: "Templates", href: "/view/templates", active: true },
+  { label: "Job tracker", href: "/workspace/job-tracker", active: false },
+  { label: "Interview prep", href: "/workspace/interview-prep", active: false },
 ];
 
 export default function SavedTemplatesPage() {
   const sidebarProfile = useSidebarProfile(DEFAULT_SIDEBAR_PROFILE);
   const router = useRouter();
-  const [statusFilter, setStatusFilter] = useState<(typeof STATUS_TABS)[number]['value']>('published');
+  const [statusFilter, setStatusFilter] =
+    useState<(typeof STATUS_TABS)[number]["value"]>("published");
   const [templates, setTemplates] = useState<TemplateRecord[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -59,18 +60,28 @@ export default function SavedTemplatesPage() {
       setIsLoading(true);
       setError(null);
       try {
-        const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
-        const response = await fetch(`${basePath}/api/templates?status=${statusFilter}`, {
-          headers: { Accept: 'application/json' },
-          signal: controller.signal,
-        });
+        const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+        const response = await fetch(
+          `${basePath}/api/templates?status=${statusFilter}`,
+          {
+            headers: { Accept: "application/json" },
+            signal: controller.signal,
+          },
+        );
         if (!response.ok) {
           const reason = await response.text();
-          throw new Error(`Unable to load ${statusFilter} templates (status ${response.status}): ${reason || 'unknown error'}`);
+          throw new Error(
+            `Unable to load ${statusFilter} templates (status ${response.status}): ${reason || "unknown error"}`,
+          );
         }
-        const data = (await response.json()) as TemplateListResponse | { error?: string };
-        if (!('templates' in data)) {
-          const message = 'error' in data && data.error ? data.error : 'Unexpected response while loading templates.';
+        const data = (await response.json()) as
+          | TemplateListResponse
+          | { error?: string };
+        if (!("templates" in data)) {
+          const message =
+            "error" in data && data.error
+              ? data.error
+              : "Unexpected response while loading templates.";
           throw new Error(message);
         }
         if (isMounted) {
@@ -79,10 +90,16 @@ export default function SavedTemplatesPage() {
         }
       } catch (loadError) {
         if (!isMounted) return;
-        if (loadError instanceof DOMException && loadError.name === 'AbortError') {
+        if (
+          loadError instanceof DOMException &&
+          loadError.name === "AbortError"
+        ) {
           return;
         }
-        const message = loadError instanceof Error ? loadError.message : 'Unable to load templates.';
+        const message =
+          loadError instanceof Error
+            ? loadError.message
+            : "Unable to load templates.";
         setError(message);
       } finally {
         if (isMounted) {
@@ -100,42 +117,70 @@ export default function SavedTemplatesPage() {
 
   const metrics = useMemo(() => {
     const total = templates.length;
-    const synced = templates.filter((template) => Boolean(template.last_update_time)).length;
+    const synced = templates.filter((template) =>
+      Boolean(template.last_update_time),
+    ).length;
     const ownerSet = new Set(
       templates
-        .map((template) => template.owner_email?.toLowerCase() || template.owner_name?.toLowerCase() || '')
+        .map(
+          (template) =>
+            template.owner_email?.toLowerCase() ||
+            template.owner_name?.toLowerCase() ||
+            "",
+        )
         .filter(Boolean),
     );
     return { total, synced, owners: ownerSet.size };
   }, [templates]);
 
-  const statusLabel = STATUS_TABS.find((tab) => tab.value === statusFilter)?.label ?? 'Drafts';
+  const statusLabel =
+    STATUS_TABS.find((tab) => tab.value === statusFilter)?.label ?? "Drafts";
 
   return (
     <>
       <Head>
         <title>JobMatch · Saved Templates</title>
-        <meta name="description" content="Review published and archived resume templates that live outside the draft queue." />
+        <meta
+          name="description"
+          content="Review published and archived resume templates that live outside the draft queue."
+        />
       </Head>
       <main className={styles.workspaceShell}>
         <div className={styles.workspaceLayout}>
           <aside className={styles.workspaceSidebar}>
-            <Link href="/workspace/overview" className={styles.sidebarBrandLink} aria-label="Workspace home">
+            <Link
+              href="/workspace/overview"
+              className={styles.sidebarBrandLink}
+              aria-label="Workspace home"
+            >
               <span className={styles.sidebarBrandMark}>JM</span>
               <span>JobMatch App</span>
             </Link>
 
-            <section className={styles.sidebarProfileCard} aria-labelledby="profile-card-title">
+            <section
+              className={styles.sidebarProfileCard}
+              aria-labelledby="profile-card-title"
+            >
               <div className={styles.sidebarProfileHeader}>
-                <span className={styles.sidebarProfileAvatar} aria-hidden="true">
+                <span
+                  className={styles.sidebarProfileAvatar}
+                  aria-hidden="true"
+                >
                   {sidebarProfile.initials}
                 </span>
                 <div className={styles.sidebarProfileMeta}>
-                  <span className={styles.sidebarProfileName} id="profile-card-title">
+                  <span
+                    className={styles.sidebarProfileName}
+                    id="profile-card-title"
+                  >
                     {sidebarProfile.name}
                   </span>
-                  <span className={styles.sidebarProfileTagline}>{sidebarProfile.tagline}</span>
-                  <span className={styles.sidebarProfileEmail}>{sidebarProfile.email}</span>
+                  <span className={styles.sidebarProfileTagline}>
+                    {sidebarProfile.tagline}
+                  </span>
+                  <span className={styles.sidebarProfileEmail}>
+                    {sidebarProfile.email}
+                  </span>
                 </div>
               </div>
             </section>
@@ -146,7 +191,7 @@ export default function SavedTemplatesPage() {
                   <li key={link.label} className={styles.sidebarMenuItem}>
                     <Link
                       href={link.href}
-                      className={`${styles.sidebarMenuLink} ${link.active ? styles.sidebarMenuLinkActive : ''}`}
+                      className={`${styles.sidebarMenuLink} ${link.active ? styles.sidebarMenuLinkActive : ""}`}
                     >
                       <span>{link.label}</span>
                     </Link>
@@ -159,22 +204,34 @@ export default function SavedTemplatesPage() {
           <div className={styles.workspaceMain}>
             <section className={styles.savedTemplatesHero}>
               <div>
-                <p className={styles.dashboardGreeting}>Published & archive hub</p>
+                <p className={styles.dashboardGreeting}>
+                  Published & archive hub
+                </p>
                 <h1>Keep live and parked templates in sync</h1>
                 <p>
-                  This space focuses on templates already live to pods or intentionally archived. Review ownership,
-                  gather approvals, or recycle layouts into new drafts without sifting through the draft queue.
+                  This space focuses on templates already live to pods or
+                  intentionally archived. Review ownership, gather approvals, or
+                  recycle layouts into new drafts without sifting through the
+                  draft queue.
                 </p>
                 <div className={styles.savedTemplatesHeroActions}>
-                  <Link href="/view/templates/latex-upload" className={styles.primaryActionButton}>
+                  <Link
+                    href="/view/templates/latex-upload"
+                    className={styles.primaryActionButton}
+                  >
                     Create another template
                   </Link>
-                  <Link href="/view/templates/queue" className={styles.secondaryActionButton}>
+                  <Link
+                    href="/view/templates/queue"
+                    className={styles.secondaryActionButton}
+                  >
                     View review queue
                   </Link>
                 </div>
                 <span className={styles.savedTemplatesRefresh}>
-                  {lastRefreshed ? `Last refreshed ${lastRefreshed.toLocaleTimeString()}` : 'Loading activity…'}
+                  {lastRefreshed
+                    ? `Last refreshed ${lastRefreshed.toLocaleTimeString()}`
+                    : "Loading activity…"}
                 </span>
               </div>
               <div className={styles.savedTemplatesMetrics}>
@@ -198,9 +255,16 @@ export default function SavedTemplatesPage() {
                 <div>
                   <p className={styles.queuePanelEyebrow}>Filtered view</p>
                   <h2>{statusLabel} templates</h2>
-                  <p>Switch statuses to review published resumes or revisit archived work.</p>
+                  <p>
+                    Switch statuses to review published resumes or revisit
+                    archived work.
+                  </p>
                 </div>
-                <div className={styles.savedTemplatesFilters} role="tablist" aria-label="Template status filter">
+                <div
+                  className={styles.savedTemplatesFilters}
+                  role="tablist"
+                  aria-label="Template status filter"
+                >
                   {STATUS_TABS.map((tab) => {
                     const isActive = tab.value === statusFilter;
                     return (
@@ -209,7 +273,7 @@ export default function SavedTemplatesPage() {
                         type="button"
                         role="tab"
                         aria-selected={isActive}
-                        className={`${styles.savedTemplatesFilterButton} ${isActive ? styles.savedTemplatesFilterButtonActive : ''}`}
+                        className={`${styles.savedTemplatesFilterButton} ${isActive ? styles.savedTemplatesFilterButtonActive : ""}`}
                         onClick={() => setStatusFilter(tab.value)}
                       >
                         <strong>{tab.label}</strong>
@@ -221,7 +285,9 @@ export default function SavedTemplatesPage() {
               </header>
 
               {isLoading ? (
-                <div className={styles.savedTemplatesEmpty}>Crunching template activity…</div>
+                <div className={styles.savedTemplatesEmpty}>
+                  Crunching template activity…
+                </div>
               ) : error ? (
                 <div className={styles.savedTemplatesError} role="alert">
                   {error}
@@ -229,40 +295,68 @@ export default function SavedTemplatesPage() {
               ) : templates.length === 0 ? (
                 <div className={styles.savedTemplatesEmpty}>
                   <p>No templates in this status yet.</p>
-                  <p>Try switching the filter or creating a new template to see it appear here.</p>
+                  <p>
+                    Try switching the filter or creating a new template to see
+                    it appear here.
+                  </p>
                 </div>
               ) : (
                 <div className={styles.savedTemplatesGrid}>
                   {templates.map((template) => (
-                    <article key={template.id} className={styles.savedTemplateCard}>
+                    <article
+                      key={template.id}
+                      className={styles.savedTemplateCard}
+                    >
                       <div className={styles.savedTemplateCardHeader}>
                         <div>
-                          <p className={styles.savedTemplateCardEyebrow}>Template #{template.id}</p>
+                          <p className={styles.savedTemplateCardEyebrow}>
+                            Template #{template.id}
+                          </p>
                           <h3>{template.title}</h3>
                         </div>
-                        <span className={styles.savedTemplateStatus}>{template.status_label}</span>
+                        <span className={styles.savedTemplateStatus}>
+                          {template.status_label}
+                        </span>
                       </div>
                       <div className={styles.savedTemplateMeta}>
                         <div>
                           <span>Owner</span>
-                          <strong>{template.owner_name || template.owner_email || 'Unassigned'}</strong>
+                          <strong>
+                            {template.owner_name ||
+                              template.owner_email ||
+                              "Unassigned"}
+                          </strong>
                         </div>
                         <div>
                           <span>Last update</span>
-                          <strong>{formatRelativeUpdatedAt(template.last_update_time)}</strong>
+                          <strong>
+                            {formatRelativeUpdatedAt(template.last_update_time)}
+                          </strong>
                         </div>
                       </div>
                       {template.preview_image_url ? (
                         <div className={styles.savedTemplatePreview}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={template.preview_image_url} alt={`Preview for ${template.title}`} loading="lazy" />
+                          <img
+                            src={template.preview_image_url}
+                            alt={`Preview for ${template.title}`}
+                            loading="lazy"
+                          />
                         </div>
                       ) : null}
                       <div className={styles.savedTemplateActions}>
-                        <button type="button" onClick={() => handleOpenTemplate(template.id, router)}>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleOpenTemplate(template.id, router)
+                          }
+                        >
                           Continue editing
                         </button>
-                        <button type="button" className={styles.savedTemplateGhostButton}>
+                        <button
+                          type="button"
+                          className={styles.savedTemplateGhostButton}
+                        >
                           Share preview
                         </button>
                       </div>
@@ -279,15 +373,15 @@ export default function SavedTemplatesPage() {
 }
 
 function formatRelativeUpdatedAt(updatedAt: string | null): string {
-  if (!updatedAt) return 'No updates yet';
+  if (!updatedAt) return "No updates yet";
   const date = new Date(updatedAt);
-  if (Number.isNaN(date.getTime())) return 'No updates yet';
+  if (Number.isNaN(date.getTime())) return "No updates yet";
   const diffMs = Date.now() - date.getTime();
   const minute = 60 * 1000;
   const hour = 60 * minute;
   const day = 24 * hour;
 
-  if (diffMs < minute) return 'Updated just now';
+  if (diffMs < minute) return "Updated just now";
   if (diffMs < hour) {
     const minutes = Math.round(diffMs / minute);
     return `Updated ${minutes}m ago`;
@@ -302,7 +396,7 @@ function formatRelativeUpdatedAt(updatedAt: string | null): string {
 
 function handleOpenTemplate(templateId: number, router: NextRouter): void {
   void router.push({
-    pathname: '/view/templates/latex-upload',
+    pathname: "/view/templates/latex-upload",
     query: { templateId },
   });
 }

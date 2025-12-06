@@ -235,6 +235,33 @@
   color: #f4f7ff;
 }
 
+.logoutActionButton {
+  border-color: rgba(255, 172, 172, 0.6);
+  color: #ffe6eb;
+  background: rgba(255, 107, 129, 0.18);
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.logoutActionButton:hover,
+.logoutActionButton:focus-visible {
+  background: rgba(255, 107, 129, 0.3);
+  box-shadow: 0 10px 22px rgba(255, 107, 129, 0.35);
+  transform: translateY(-1px);
+}
+
+.logoutActionButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.logoutError {
+  margin: 10px 0 0;
+  color: #ffe6eb;
+  font-size: 0.85rem;
+}
+
 .dashboardMetrics {
   display: flex;
   flex-direction: column;

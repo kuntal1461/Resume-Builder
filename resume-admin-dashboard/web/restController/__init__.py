@@ -10,10 +10,14 @@ from .AdminProfileController import (
 from .JobSourceMetaController import (
     router as job_source_meta_router,
 )
+from .AuthController import (
+    router as auth_router,
+)
 
 __all__ = [
     "template_categories_router",
     "template_mutation_router",
     "admin_profile_router",
     "job_source_meta_router",
+    "auth_router",
 ]

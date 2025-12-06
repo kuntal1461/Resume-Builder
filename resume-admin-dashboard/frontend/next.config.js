@@ -47,6 +47,8 @@ const nextConfig = {
     config.resolve = config.resolve || {};
     config.resolve.alias = config.resolve.alias || {};
     config.resolve.alias['@frontend-common'] = path.join(workspaceRoot, 'frontend-common');
+    config.resolve.alias['lib'] = path.join(__dirname, 'lib');
+    config.resolve.alias['styles'] = path.join(__dirname, 'styles');
 
     return config;
   },

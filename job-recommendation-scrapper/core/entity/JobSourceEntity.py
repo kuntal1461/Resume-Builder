@@ -1,6 +1,7 @@
 """SQLAlchemy model for job_source table."""
 
-from sqlalchemy import BigInteger, Boolean, Column, String, Text
+from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, String, Text
+from sqlalchemy.orm import relationship
 
 from core.baseEntity.baseEntity import BaseEntity
 from core.constants.table_constant import TableConstant
@@ -16,5 +17,9 @@ class JobSourceEntity(BaseEntity):
     scrape_type = Column(BigInteger, nullable=True)
     api_endpoint = Column(String(500), nullable=True)
     api_key = Column(String(500), nullable=True)
+    company_id = Column(BigInteger, ForeignKey("company_master.id"), nullable=True)
     rate_limit_per_min = Column(String(50), nullable=True)
     scraping_schedule = Column(BigInteger, nullable=True)
+
+    # Relationship to company_master to allow resolving company name from the FK.
+    company = relationship("CompanyMasterEntity", backref="job_sources")

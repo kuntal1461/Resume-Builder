@@ -1,10 +1,10 @@
-import os
-
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
 
 from core.repository import AdminUserRepository
+from core.service import AdminProfile, AdminProfileService
+from core.serviceImpl import AdminProfileServiceImpl
 
 from ..database import get_db
 
@@ -20,43 +20,25 @@ class AdminProfileResponse(BaseModel):
     isAdmin: bool = True
 
 
-def _fallback_profile() -> AdminProfileResponse:
-    fallback_email = os.getenv("ADMIN_PROFILE_EMAIL", "admin@example.com")
-    fallback_username = os.getenv("ADMIN_PROFILE_USERNAME", "admin")
+def _get_admin_profile_service(db: Session = Depends(get_db)) -> AdminProfileService:
+    user_repo = AdminUserRepository(db)
+    return AdminProfileServiceImpl(session=db, user_repo=user_repo)
+
+
+def _serialize_profile(profile: AdminProfile) -> AdminProfileResponse:
     return AdminProfileResponse(
-        id=0,
-        email=fallback_email,
-        username=fallback_username,
-        firstName=os.getenv("ADMIN_PROFILE_FIRST_NAME", "Admin"),
-        lastName=os.getenv("ADMIN_PROFILE_LAST_NAME", "User"),
-        isAdmin=True,
+        id=int(profile.id),
+        email=profile.email,
+        username=profile.username,
+        firstName=profile.first_name,
+        lastName=profile.last_name,
+        isAdmin=bool(profile.is_admin),
     )
 
 
 @router.get("/current", response_model=AdminProfileResponse)
 def get_current_admin_profile(
-    db: Session = Depends(get_db),
+    service: AdminProfileService = Depends(_get_admin_profile_service),
 ):
-    repository = AdminUserRepository(db)
-    admin = repository.find_first_admin()
-    if admin is None:
-        admin_email = os.getenv("ADMIN_PROFILE_EMAIL", "admin@example.com")
-        admin_username = os.getenv("ADMIN_PROFILE_USERNAME", "admin")
-        admin_first_name = os.getenv("ADMIN_PROFILE_FIRST_NAME", "Admin")
-        admin_last_name = os.getenv("ADMIN_PROFILE_LAST_NAME", "User")
-        admin = repository.create_admin(
-            email=admin_email,
-            username=admin_username,
-            first_name=admin_first_name,
-            last_name=admin_last_name,
-            is_admin=True,
-        )
-
-    return AdminProfileResponse(
-        id=int(admin.id),
-        email=admin.email,
-        username=admin.username,
-        firstName=getattr(admin, "first_name", None),
-        lastName=getattr(admin, "last_name", None),
-        isAdmin=bool(getattr(admin, "is_admin", True)),
-    )
+    profile = service.get_or_create_current_admin()
+    return _serialize_profile(profile)

@@ -1,3 +1,4 @@
+from .AdminProfileService import AdminProfile, AdminProfileService
 from .JobSourceQueueService import (
     JobSourceQueueEntryData,
     JobSourceQueueError,
@@ -7,6 +8,8 @@ from .ResumeTemplateCategoryService import ResumeTemplateCategoryService
 from .ResumeTemplateService import ResumeTemplateService
 
 __all__ = [
+    "AdminProfile",
+    "AdminProfileService",
     "JobSourceQueueEntryData",
     "JobSourceQueueError",
     "JobSourceQueueService",

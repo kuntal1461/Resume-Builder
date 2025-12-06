@@ -2,6 +2,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { type SidebarProfile } from '../../lib/sidebarProfile';
 import { useSidebarProfile } from '../../lib/useSidebarProfile';
+import { useAdminLogout } from '../../lib/useAdminLogout';
 import styles from '../../styles/admin/AdminView.module.css';
 
 const QUICK_ACTIONS = [
@@ -37,6 +38,7 @@ const NAV_LINKS = [
 
 export default function AdminViewPage() {
   const sidebarProfile = useSidebarProfile(DEFAULT_SIDEBAR_PROFILE);
+  const { logout, isLoggingOut, error: logoutError } = useAdminLogout({ redirectTo: '/' });
 
   return (
     <>
@@ -103,7 +105,22 @@ export default function AdminViewPage() {
                   <button type="button" className={styles.secondaryActionButton}>
                     View audit log
                   </button>
+                  <button
+                    type="button"
+                    className={`${styles.secondaryActionButton} ${styles.logoutActionButton}`}
+                    onClick={() => {
+                      void logout();
+                    }}
+                    disabled={isLoggingOut}
+                  >
+                    {isLoggingOut ? 'Logging out...' : 'Log out'}
+                  </button>
                 </div>
+                {logoutError ? (
+                  <p className={styles.logoutError} role="alert" aria-live="assertive">
+                    {logoutError}
+                  </p>
+                ) : null}
               </div>
               <div className={styles.dashboardMetrics}>
                 {HEALTH_METRICS.map((metric) => (

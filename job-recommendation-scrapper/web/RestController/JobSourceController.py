@@ -10,10 +10,11 @@ from core.entity.JobSourceEntity import JobSourceEntity
 from core.enums.job_source_name import JobSourceName
 from core.enums.scrape_type import ScrapeType
 from core.enums.scraping_schedule import ScrapingSchedule
+from core.repository.company_master_repository import CompanyMasterRepository
 from core.repository.job_source_repository import JobSourceRepository
 from core.service import JobSourceService
 from core.service_impl import JobSourceServiceImpl
-from ..database import get_db
+from database import get_db
 
 router = APIRouter(prefix="/api/job-sources", tags=["job-sources"])
 
@@ -59,6 +60,11 @@ class JobSourceResponse(BaseModel):
             except ValueError:
                 schedule_label = None
 
+        company_name: Optional[str] = None
+        # Prefer the linked company_master record when available.
+        if getattr(entity, "company", None) is not None and entity.company is not None:
+            company_name = entity.company.company_name
+
         return cls(
             id=entity.id,
             sourceNameId=entity.source_name,
@@ -71,7 +77,7 @@ class JobSourceResponse(BaseModel):
             scrapingSchedule=schedule_label,
             apiEndpoint=entity.api_endpoint,
             apiKey=entity.api_key,
-            companyName=getattr(entity, "field1", None),
+            companyName=company_name,
         )
 
 
@@ -86,31 +92,43 @@ class CreateJobSourceBody(BaseModel):
     companyName: Optional[str] = Field(default=None, max_length=255)
 
 
+def get_job_source_repo(db: Session = Depends(get_db)) -> JobSourceRepository:
+    return JobSourceRepository(db)
+
+
 def get_service(db: Session = Depends(get_db)) -> JobSourceService:
-    repo = JobSourceRepository(db)
-    return JobSourceServiceImpl(repo)
+    job_source_repo = JobSourceRepository(db)
+    company_repo = CompanyMasterRepository(db)
+    return JobSourceServiceImpl(job_source_repo, company_repo)
 
 
 @router.get("", response_model=List[JobSourceResponse])
 def list_job_sources(
     includeDisabled: bool = Query(default=False),
-    service: JobSourceService = Depends(get_service),
+    repo: JobSourceRepository = Depends(get_job_source_repo),
 ):
-    sources = service.list_sources(only_enabled=not includeDisabled)
+    sources = repo.list_sources(only_enabled=not includeDisabled)
     return [JobSourceResponse.from_entity(source) for source in sources]
 
 
 @router.get("/{source_id}", response_model=JobSourceResponse)
-def fetch_job_source(source_id: int, service: JobSourceService = Depends(get_service)):
-    entity = service.fetch_by_id(source_id)
+def fetch_job_source(
+    source_id: int,
+    repo: JobSourceRepository = Depends(get_job_source_repo),
+):
+    entity = repo.fetch_by_id(source_id)
     if not entity:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Job source not found.")
     return JobSourceResponse.from_entity(entity)
 
 
 @router.post("", response_model=JobSourceResponse, status_code=status.HTTP_201_CREATED)
-def register_job_source(body: CreateJobSourceBody, service: JobSourceService = Depends(get_service)):
-    existing = service.find_by_name(body.sourceName)
+def register_job_source(
+    body: CreateJobSourceBody,
+    service: JobSourceService = Depends(get_service),
+    repo: JobSourceRepository = Depends(get_job_source_repo),
+):
+    existing = repo.find_by_name(body.sourceName)
     if existing:
         raise HTTPException(status.HTTP_409_CONFLICT, "A job source with this name already exists.")
 

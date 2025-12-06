@@ -89,6 +89,8 @@ services:
     environment:
       RESUME_ADMIN_FRONTEND_ORIGIN: http://resume-admin-frontend:3000
       DATABASE_URL: ${ADMIN_DASHBOARD_DATABASE_URL:-mysql+pymysql://resume_user:resume_pass@mysql:3306/resumes?charset=utf8mb4}
+      # Point the admin dashboard to the scrapper API container, not localhost
+      SCRAPPER_API_BASE_URL: http://scraper-core:8200/api
     volumes:
       - ./resume-admin-dashboard:/app/resume-admin-dashboard:rw,cached
       - ./backend-common:/app/backend_common:rw,cached
@@ -170,10 +172,14 @@ services:
     ports:
       - "8200:8200"
     volumes:
-      - ./job-recommendation-scrapper/core:/app:rw,cached
-      - ./backend-common:/backend_common:rw,cached
+      # Mount the scrapper FastAPI web app so `main.py` is available at /app/main.py
+      - ./job-recommendation-scrapper/web:/app:rw,cached
+      # Mount the core library as a package `core`
+      - ./job-recommendation-scrapper/core:/app/core:rw,cached
+      # Mount the shared backend-common package inside /app so it can be imported as `backend_common`
+      - ./backend-common:/app/backend_common:rw,cached
     working_dir: /app
-    command: uvicorn main:app --host 0.0.0.0 --port 8200 --reload
+    command: uvicorn main:app --host 0.0.0.0 --port 8200
     depends_on:
       - redis
       - mysql

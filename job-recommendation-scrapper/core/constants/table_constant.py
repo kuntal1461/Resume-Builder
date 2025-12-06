@@ -5,3 +5,5 @@ class TableConstant:
     JOB_LISTINGS = "job_listings"
     JOB_RAW_SCRAPE = "job_raw_scrape"
     JOB_SOURCE = "job_source"
+    JOB_MASTER = "job_master"
+    COMPANY_MASTER = "company_master"

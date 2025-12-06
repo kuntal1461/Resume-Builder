@@ -90,3 +90,15 @@ export function resolveSidebarProfile(defaultProfile: SidebarProfile): SidebarPr
     return defaultProfile;
   }
 }
+
+export function clearStoredSidebarProfile(): void {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    window.localStorage.removeItem(ADMIN_PROFILE_STORAGE_KEY);
+  } catch (error) {
+    console.warn('Failed to clear admin profile from storage', error);
+  }
+}

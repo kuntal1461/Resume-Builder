@@ -6,6 +6,7 @@
       "dom.iterable",
       "esnext"
     ],
+    "baseUrl": ".",
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -17,14 +18,26 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
-    "incremental": true
+    "incremental": true,
+    "paths": {
+      "@frontend-common/*": [
+        "../../frontend-common/*"
+      ],
+      "lib/*": [
+        "./lib/*"
+      ]
+    }
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    "../../frontend-common/**/*.ts"
   ],
   "exclude": [
     "node_modules"
+  ],
+  "references": [
+    { "path": "../../frontend-common" }
   ]
 }

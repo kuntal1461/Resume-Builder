@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, Iterable, Optional
 
 import requests
+from requests import RequestException
 from backend_common import get_server_environment
 
 DEFAULT_LOCAL_SCRAPPER_API = "http://localhost:8200/api"
@@ -118,13 +119,22 @@ class ScrapperApiClient:
         json: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         url = self._build_url(path)
-        response = self._session.request(
-            method=method.upper(),
-            url=url,
-            params=params,
-            json=json,
-            timeout=self._timeout,
-        )
+        try:
+            response = self._session.request(
+                method=method.upper(),
+                url=url,
+                params=params,
+                json=json,
+                timeout=self._timeout,
+            )
+        except RequestException as exc:
+            # Normalize low-level network errors (connection issues, timeouts, etc.)
+            # into ScrapperApiError so callers can surface a consistent HTTP response.
+            raise ScrapperApiError(
+                message=f"Scrapper API call to {path} failed: {exc.__class__.__name__}: {exc}",
+                status_code=502,
+                response_text=str(exc),
+            ) from exc
         if not response.ok:
             raise ScrapperApiError(
                 message=f"Scrapper API call to {path} failed.",

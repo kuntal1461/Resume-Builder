@@ -1,7 +1,7 @@
 from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Numeric, String, Text
 
 from core.baseEntity.baseEntity import BaseEntity
-from core.constants import TableConstant
+from core.constants.table_constant import TableConstant
 
 
 class JobMasterEntity(BaseEntity):
@@ -26,3 +26,4 @@ class JobMasterEntity(BaseEntity):
     salary_max = Column(Numeric(15, 2), nullable=True)
     job_description = Column(Text, nullable=True)
     posted_date = Column(DateTime, nullable=True)
+

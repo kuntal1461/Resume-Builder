@@ -10,7 +10,3 @@ class TableConstant:
     RESUME_TEMPLATE_SUB_CATEGORY = "resume_template_sub_category_master"
     RESUME_TEMPLATE = "resume_template"
     RESUME_TEMPLATE_VERSION = "resume_template_version"
-
-    JOB_MASTER = "job_master"
-
-    COMPANY_MASTER = "company_master"

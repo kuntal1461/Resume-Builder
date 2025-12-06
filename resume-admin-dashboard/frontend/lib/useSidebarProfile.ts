@@ -14,6 +14,25 @@ export type AdminProfileApiResponse = {
   isAdmin?: boolean | null;
 };
 
+const ACCESS_TOKEN_STORAGE_KEY = 'jobmatch.accessToken';
+
+const isBrowser = () =>
+  typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+
+const hasAccessToken = (): boolean => {
+  if (!isBrowser()) {
+    return false;
+  }
+
+  try {
+    const token = window.localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY);
+    return !!token && token.trim().length > 0;
+  } catch (error) {
+    console.warn('Unable to read access token while loading admin sidebar profile', error);
+    return false;
+  }
+};
+
 export function useSidebarProfile(defaultProfile: SidebarProfile): SidebarProfile {
   const [profile, setProfile] = useState<SidebarProfile>(defaultProfile);
 
@@ -26,6 +45,24 @@ export function useSidebarProfile(defaultProfile: SidebarProfile): SidebarProfil
 
     const loadProfile = async () => {
       try {
+        if (!hasAccessToken()) {
+          if (typeof window !== 'undefined') {
+            try {
+              window.localStorage.removeItem(ADMIN_PROFILE_STORAGE_KEY);
+            } catch (storageError) {
+              console.warn(
+                'Failed to clear stored admin profile while user is logged out',
+                storageError,
+              );
+            }
+          }
+
+          if (isMounted) {
+            setProfile(defaultProfile);
+          }
+          return;
+        }
+
         const data = await fetchCachedAdminProfile();
 
         if (typeof window !== 'undefined') {
@@ -62,6 +99,10 @@ export function useSidebarProfile(defaultProfile: SidebarProfile): SidebarProfil
 
 let cachedAdminProfile: AdminProfileApiResponse | null = null;
 let pendingAdminProfileFetch: Promise<AdminProfileApiResponse> | null = null;
+export function clearCachedAdminProfile(): void {
+  cachedAdminProfile = null;
+  pendingAdminProfileFetch = null;
+}
 
 async function fetchAdminProfile(): Promise<AdminProfileApiResponse> {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';

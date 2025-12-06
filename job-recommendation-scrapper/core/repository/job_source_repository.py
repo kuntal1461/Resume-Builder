@@ -26,7 +26,7 @@ class JobSourceRepository:
             query = query.filter(JobSourceEntity.enabled_for_scrapping.is_(True))
         return list(query.order_by(JobSourceEntity.source_name.asc()).all())
 
-    def find_by_id(self, source_id: int) -> Optional[JobSourceEntity]:
+    def fetch_by_id(self, source_id: int) -> Optional[JobSourceEntity]:
         return self._session.get(JobSourceEntity, source_id)
 
     def find_by_name(self, source_name: JobSourceName) -> Optional[JobSourceEntity]:

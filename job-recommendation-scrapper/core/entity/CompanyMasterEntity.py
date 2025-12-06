@@ -1,7 +1,7 @@
 from sqlalchemy import BigInteger, Column, String, Text
 
 from core.baseEntity.baseEntity import BaseEntity
-from core.constants import TableConstant
+from core.constants.table_constant import TableConstant
 
 
 class CompanyMasterEntity(BaseEntity):
@@ -15,3 +15,4 @@ class CompanyMasterEntity(BaseEntity):
     logo_url = Column(Text, nullable=True)
     website_url = Column(Text, nullable=True)
     slug = Column(String(255), nullable=False, unique=True)
+

@@ -12,7 +12,7 @@ from core.entity.JobSourceEntity import JobSourceEntity
 from core.enums.job_raw_scrape_status import JobRawScrapeStatus
 from core.repository.job_raw_scrape_repository import JobRawScrapeRepository
 from core.repository.job_source_repository import JobSourceRepository
-from ..database import get_db
+from database import get_db
 
 router = APIRouter(prefix="/api/raw-scrapes", tags=["job-raw-scrapes"])
 
@@ -65,7 +65,7 @@ def create_job_raw_scrape(
 ):
     raw_repo = JobRawScrapeRepository(db)
     source_repo = JobSourceRepository(db)
-    source: Optional[JobSourceEntity] = source_repo.find_by_id(body.sourceId)
+    source: Optional[JobSourceEntity] = source_repo.fetch_by_id(body.sourceId)
     if not source:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Source does not exist.")
 

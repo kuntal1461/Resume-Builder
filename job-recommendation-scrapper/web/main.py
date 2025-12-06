@@ -4,13 +4,13 @@ from typing import List
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend_common import get_server_environment
+from backend_common import get_server_environment  # type: ignore[import]
 
-from .controller.HomeController import router as home_router
-from .database import init_db
-from .db_ping import ping_db
-from .RestController.JobSourceController import router as job_source_router
-from .RestController.JobRawScrapeController import router as job_raw_scrape_router
+from controller.HomeController import router as home_router
+from database import init_db
+from db_ping import ping_db
+from RestController.JobSourceController import router as job_source_router
+from RestController.JobRawScrapeController import router as job_raw_scrape_router
 
 app = FastAPI(title="Job Recommendation Scrapper API")
 
@@ -51,4 +51,3 @@ def health():
 app.include_router(home_router)
 app.include_router(job_source_router)
 app.include_router(job_raw_scrape_router)
-

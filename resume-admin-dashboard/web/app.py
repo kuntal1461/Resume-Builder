@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend_common import get_server_environment
 from .database import init_db
 from .restController import (
+    auth_router,
     admin_profile_router,
     job_source_meta_router,
     template_categories_router,
@@ -57,6 +58,7 @@ def create_app() -> FastAPI:
     app.include_router(template_mutation_router)
     app.include_router(admin_profile_router)
     app.include_router(job_source_meta_router)
+    app.include_router(auth_router)
     return app
 
 
